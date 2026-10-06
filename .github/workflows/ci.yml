@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  flutter:
+    name: Analyze, test and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # Generates android/ and web/ folders only if they are not committed yet.
+      # Existing files (lib/, test/, pubspec.yaml) are never overwritten.
+      - name: Ensure platform folders
+        run: |
+          if [ ! -d android ] || [ ! -d web ]; then
+            flutter create . --platforms=android,web --org ke.ac.maseno --project-name mindquest
+          fi
+
+      - name: Install packages
+        run: flutter pub get
+
+      # Reports unformatted files without failing the build (run `dart format .` locally to fix).
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+        continue-on-error: true
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build web
+        run: flutter build web --release
+
+      - name: Build Android APK (debug)
+        run: flutter build apk --debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: mindquest-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 14
