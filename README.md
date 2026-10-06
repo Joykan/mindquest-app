@@ -1,72 +1,64 @@
 # MindQuest
 
-A gamified AI chatbot for mental health awareness among Kenyan youth, in English and Kiswahili.
+[![CI](https://github.com/Joykan/mindquest-app/actions/workflows/ci.yml/badge.svg)](https://github.com/Joykan/mindquest-app/actions/workflows/ci.yml)
 
-CIT 409 individual project, Maseno University, School of Computing and Informatics.
-Kandie Joy Jepkorir (CIT/00039/022).
+MindQuest is a mobile chatbot that helps young people in Kenya check in on their mental
+wellbeing. It chats in English and Kiswahili, lets you log your mood, and uses streaks,
+XP and badges to make small healthy habits stick.
 
-> MindQuest offers support and information. It does not diagnose or replace professional care.
+This is my final-year project for CIT 409 at Maseno University (BSc Information Technology).
 
-## Tech stack (proposal Table 4)
+Kandie Joy Jepkorir · CIT/00039/022
 
-| Layer | Technology |
-|---|---|
-| App (Android, iOS, web) | Flutter |
-| Auth | Supabase Auth (guest, email, Google) |
-| Database | Supabase PostgreSQL with Row Level Security |
-| Backend logic | Supabase Edge Functions and database triggers |
-| NLP | Rasa (English + Kiswahili), Dialogflow ES (English) |
-| Notifications | flutter_local_notifications |
-| Version control and CI | Git, GitHub, GitHub Actions |
+**Note:** MindQuest gives support and information only. It is not a diagnosis tool and does
+not replace a counsellor or doctor.
 
-## Project structure
+## Built with
+
+- Flutter for the app (Android and web for now)
+- Supabase for login, the database and server functions
+- Rasa for understanding messages in English and Kiswahili, with Dialogflow for comparison
+- GitHub Actions to build and test every push
+
+## Folder layout
 
 ```
-lib/
-  core/        config, router, theme
-  features/    one folder per module (see lib/features/README.md)
-test/          widget and unit tests
-supabase/      migrations and Edge Functions
-nlp/           Rasa project and Dialogflow export
-docs/design/   wireframes, diagrams and workshop links
-.github/       CI workflow
+lib/core/        app config, routes and theme
+lib/features/    one folder per part of the app (chat, mood, learn, ...)
+test/            tests
+supabase/        database migrations and server functions
+nlp/             chatbot training data
+docs/design/     links to wireframes and diagrams
 ```
 
-## Getting started
+## Running it locally
 
-Requirements: Flutter (stable), Supabase CLI.
+You need Flutter (stable channel).
 
 ```bash
 git clone https://github.com/Joykan/mindquest-app.git
 cd mindquest-app
 flutter create . --platforms=android,web --org ke.ac.maseno --project-name mindquest
 flutter pub get
-cp config/dev.json.example config/dev.json   # then add your Supabase URL and anon key
+cp config/dev.json.example config/dev.json
 flutter run --dart-define-from-file=config/dev.json
 ```
 
-`config/dev.json` is git-ignored so keys are never committed.
+Put the Supabase URL and publishable key in `config/dev.json`. That file is in
+`.gitignore`, so keys don't end up on GitHub.
 
-## Continuous integration
+## Progress
 
-Every push to `main` and every pull request runs formatting checks, static analysis,
-tests, a web build and a debug Android APK build. The APK is downloadable from the
-workflow run's artifacts.
-
-## Implementation progress
-
-| Step | Status |
-|---|---|
-| 1. Wireframes (Figma) | Done |
-| 2. Detailed models (Lucidchart, Draw.io, Miro) | Done |
-| 3. Project setup (repo, Flutter, Supabase, CI) | In progress |
-| 4. Database | |
-| 5. NLP dataset | |
-| 6. Rasa training and evaluation | |
-| 7. Chat back end and crisis detection | |
-| 8. Core screens: sign-in, chat, mood | |
-| 9. Gamification, articles, rewards | |
-| 10. Offline support and notifications | |
-| 11. Admin dashboard | |
-| 12. Testing and UAT | |
-| 13. Documentation and presentation | |
+- [x] Wireframes
+- [x] Architecture, conversation flow and gamification design
+- [x] Project setup
+- [ ] Database
+- [ ] Chatbot training data
+- [ ] Rasa model training and evaluation
+- [ ] Chat backend and crisis detection
+- [ ] Login, chat and mood screens
+- [ ] Rewards and learning articles
+- [ ] Offline mode and reminders
+- [ ] Admin dashboard
+- [ ] Testing with users
+- [ ] Final report and presentation
