@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: subosito/flutter-action@v2
         with:
@@ -32,11 +32,22 @@ jobs:
 
       # Reports unformatted files without failing the build (run `dart format .` locally to fix).
       - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed lib test
+        run: |
+          dart format --output=none --set-exit-if-changed lib test | sed -n 's/^Changed \(.*\)$/::warning file=\1::File is not formatted (run dart format)/p'
+          exit ${PIPESTATUS[0]}
         continue-on-error: true
+        shell: bash
 
       - name: Analyze
-        run: flutter analyze --no-fatal-infos
+        shell: bash
+        run: |
+          # Machine output turned into GitHub annotations so problems show on the run page.
+          set +e
+          dart analyze --format=machine --fatal-warnings lib test > analyze.txt 2>&1
+          code=$?
+          awk -F'|' 'NF>=8 {f=$4; sub(ENVIRON["GITHUB_WORKSPACE"]"/","",f); lvl=($1=="ERROR")?"error":"warning"; printf "::%s file=%s,line=%s,col=%s::%s %s\n", lvl, f, $5, $6, $3, $8}' analyze.txt
+          cat analyze.txt
+          exit $code
 
       - name: Run tests
         run: flutter test
@@ -48,7 +59,7 @@ jobs:
         run: flutter build apk --debug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: mindquest-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
