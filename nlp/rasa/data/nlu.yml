@@ -1,0 +1,376 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  # User says hello
+  examples: |
+    - hi
+    - hello
+    - hey
+    - good morning
+    - good afternoon
+    - good evening
+    - hey there
+    - hello MindQuest
+    - hi friend
+    - morning
+    - hiya
+    - hey, are you there?
+    - hello, anyone there?
+    - hi there, how are you?
+    - yo
+    - habari
+    - habari yako
+    - mambo
+    - hujambo
+    - sasa
+    - vipi
+    - niaje
+    - hodi
+    - salamu
+    - habari za asubuhi
+    - habari za mchana
+    - habari za jioni
+    - shikamoo
+    - mambo vipi
+    - sasa msee
+
+- intent: goodbye
+  # User ends the conversation
+  examples: |
+    - bye
+    - goodbye
+    - see you later
+    - talk to you later
+    - I have to go
+    - good night
+    - see you tomorrow
+    - catch you later
+    - bye for now
+    - I'm leaving now
+    - that's all for today
+    - gotta go
+    - take care, bye
+    - later
+    - I'm done for today
+    - kwaheri
+    - tutaonana
+    - tutaonana kesho
+    - usiku mwema
+    - nimeenda
+    - nitarudi baadaye
+    - kwaheri ya kuonana
+    - ngoja niende
+    - nataka kwenda sasa
+    - tuonane baadaye
+    - acha niende
+    - nimemaliza kwa leo
+    - poa, baadaye
+    - lala salama
+    - nitakucheki baadaye
+
+- intent: thank
+  # User says thank you
+  examples: |
+    - thanks
+    - thank you
+    - thank you so much
+    - thanks a lot
+    - I appreciate it
+    - that helped
+    - that was helpful
+    - thanks for listening
+    - cheers
+    - thanks, I feel better
+    - much appreciated
+    - thank you for your help
+    - thx
+    - that really helped me
+    - great, thanks
+    - asante
+    - asante sana
+    - nashukuru
+    - shukrani
+    - asante kwa kunisikiliza
+    - hiyo imenisaidia
+    - nimesaidika
+    - asante kwa msaada
+    - ahsante
+    - nashukuru sana
+    - asante, najisikia vizuri sasa
+    - umenisaidia sana
+    - shukran
+    - asante rafiki
+    - Mungu akubariki
+
+- intent: affirm
+  # User agrees, e.g. accepts a breathing exercise
+  examples: |
+    - yes
+    - yeah
+    - sure
+    - okay
+    - ok
+    - yes please
+    - let's do it
+    - let's try
+    - alright
+    - of course
+    - I'd like that
+    - sounds good
+    - go ahead
+    - why not
+    - definitely
+    - ndio
+    - ndiyo
+    - sawa
+    - sawa sawa
+    - poa
+    - haya
+    - naam
+    - tujaribu
+    - ndio tafadhali
+    - twende
+    - sawa, tuanze
+    - bila shaka
+    - nakubali
+    - ndio nataka
+    - fiti
+
+- intent: deny
+  # User declines, e.g. does not want the exercise
+  examples: |
+    - no
+    - nope
+    - not now
+    - no thanks
+    - maybe later
+    - I don't want to
+    - not really
+    - nah
+    - I'd rather not
+    - no, I'm fine
+    - not today
+    - skip
+    - never mind
+    - I don't think so
+    - no way
+    - hapana
+    - la
+    - sitaki
+    - si sasa
+    - hapana asante
+    - sidhani
+    - sina hamu
+    - wacha
+    - achana nayo
+    - hapana, niko sawa
+    - siwezi sasa
+    - labda baadaye
+    - hapana bwana
+    - aah, hapana
+    - sitaki kwa sasa
+
+- intent: feel_stressed
+  # User describes stress or pressure
+  examples: |
+    - I'm stressed
+    - I'm so stressed out
+    - exams are stressing me
+    - there's too much pressure
+    - I feel overwhelmed
+    - I have too much work
+    - school is too much
+    - I can't cope with everything
+    - my workload is crazy
+    - I'm under a lot of pressure
+    - deadlines are killing me
+    - I'm burnt out
+    - money problems are stressing me
+    - I can't handle all this
+    - everything is piling up
+    - nina stress
+    - nina msongo wa mawazo
+    - mitihani inanisumbua
+    - nimezidiwa na kazi
+    - kuna shinikizo nyingi
+    - shule imenichosha
+    - siwezi kustahimili haya yote
+    - nina presha sana
+    - kazi ni nyingi mno
+    - pesa zinanisumbua
+    - nimechoka kimawazo
+    - mambo ni mengi sana
+    - karo inanipa stress
+    - nimelemewa
+    - najihisi kubanwa
+
+- intent: feel_anxious
+  # User describes worry, fear or anxiety
+  examples: |
+    - I feel anxious
+    - I'm so worried
+    - I can't stop worrying
+    - my heart is racing
+    - I'm nervous about tomorrow
+    - I have anxiety
+    - I feel panicky
+    - I'm scared about the future
+    - I keep overthinking
+    - I feel on edge
+    - I can't calm down
+    - I'm afraid something bad will happen
+    - my chest feels tight with worry
+    - I get anxious around people
+    - I'm worried about my results
+    - nina wasiwasi
+    - nina hofu
+    - naogopa
+    - siwezi kuacha kuwaza
+    - moyo unadunda kwa kasi
+    - nina woga kuhusu kesho
+    - nahisi hofu
+    - naogopa maisha ya baadaye
+    - nawaza sana
+    - sina amani
+    - siwezi kutulia
+    - naogopa kitu kibaya kitatokea
+    - najihisi na wasiwasi mwingi
+    - naogopa matokeo yangu
+    - nina wasiwasi kila wakati
+
+- intent: feel_sad
+  # User describes sadness or loneliness
+  examples: |
+    - I feel sad
+    - I'm feeling down
+    - I feel low today
+    - I've been crying
+    - I feel empty
+    - nothing makes me happy
+    - I feel lonely
+    - I'm really depressed
+    - I feel like nobody cares
+    - I'm heartbroken
+    - I miss my family
+    - I'm not okay
+    - I feel unhappy
+    - I feel alone
+    - I've been sad for days
+    - nina huzuni
+    - najisikia vibaya
+    - nimeshuka moyo
+    - nimekuwa nikilia
+    - najihisi mtupu
+    - hakuna kinachonifurahisha
+    - nahisi upweke
+    - nina majonzi
+    - hakuna anayenijali
+    - moyo wangu umevunjika
+    - sijisikii vizuri
+    - nimevunjika moyo
+    - nawakumbuka familia yangu
+    - siko sawa
+    - najisikia mpweke
+
+- intent: feel_good
+  # User reports a good mood
+  examples: |
+    - I feel great
+    - I'm happy today
+    - I'm doing well
+    - feeling good
+    - I'm in a good mood
+    - today was a good day
+    - I feel better
+    - I'm fine
+    - I'm okay
+    - I passed my exam!
+    - things are going well
+    - I feel calm
+    - I'm excited
+    - life is good
+    - I'm proud of myself
+    - niko poa
+    - najisikia vizuri
+    - nina furaha
+    - niko sawa
+    - leo ni siku nzuri
+    - najisikia nafuu
+    - nimefaulu mtihani
+    - mambo yanaenda vizuri
+    - niko fiti
+    - nimetulia
+    - nina amani
+    - nimefurahi sana
+    - maisha ni mazuri
+    - najivunia
+    - niko safi
+
+- intent: ask_breathing
+  # User asks for a calming or breathing exercise
+  examples: |
+    - how can I calm down
+    - teach me a breathing exercise
+    - help me relax
+    - I need to relax
+    - give me a relaxation exercise
+    - how do I breathe to calm down
+    - any tips to relax
+    - guide me through meditation
+    - give me a coping tip
+    - what can I do to feel calmer
+    - help me breathe
+    - can we do a breathing exercise
+    - how do I stop panicking
+    - show me a mindfulness exercise
+    - I need something to calm me down
+    - nitatulizaje akili
+    - nifundishe zoezi la kupumua
+    - nisaidie kutulia
+    - nataka kupumzika
+    - nipe zoezi la kutuliza
+    - napumua vipi ili nitulie
+    - nipe mbinu za kutuliza akili
+    - niongoze kutafakari
+    - nipe ushauri wa kukabiliana
+    - nifanye nini nitulie
+    - nisaidie kupumua
+    - tufanye zoezi la kupumua
+    - nitaachaje hofu hii
+    - nionyeshe zoezi la utulivu
+    - nahitaji kitu cha kunituliza
+
+- intent: ask_about_bot
+  # User asks what MindQuest is or about privacy
+  examples: |
+    - who are you
+    - what is MindQuest
+    - what can you do
+    - are you a real person
+    - are you a human
+    - are you a therapist
+    - how does this app work
+    - can you diagnose me
+    - are my chats private
+    - who made you
+    - is this confidential
+    - can you replace a counselor
+    - what are you
+    - are you a robot
+    - how can you help me
+    - wewe ni nani
+    - MindQuest ni nini
+    - unaweza kufanya nini
+    - wewe ni binadamu
+    - wewe ni mtu halisi
+    - wewe ni daktari
+    - programu hii inafanyaje kazi
+    - unaweza kunipima ugonjwa
+    - mazungumzo yangu ni siri
+    - nani alikutengeneza
+    - je, hii ni siri
+    - unaweza kuchukua nafasi ya mshauri
+    - wewe ni roboti
+    - unaweza kunisaidiaje
+    - wewe ni kitu gani

@@ -1,0 +1,79 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - good day
+    - hey hey
+    - habari gani
+    - hali yako je
+
+- intent: goodbye
+  examples: |
+    - alright bye
+    - see ya
+    - kwaheri rafiki
+    - tutaongea kesho
+
+- intent: thank
+  examples: |
+    - thank u
+    - you've been helpful
+    - asante kwa ushauri
+    - nimefurahi, asante
+
+- intent: affirm
+  examples: |
+    - yep
+    - okay let's go
+    - eeh
+    - sawa basi
+
+- intent: deny
+  examples: |
+    - nah thanks
+    - not right now
+    - hapana kwa sasa
+    - si leo
+
+- intent: feel_stressed
+  examples: |
+    - I'm stressed about my exams
+    - too much on my plate
+    - nina stress ya mitihani
+    - maisha yamenibana
+
+- intent: feel_anxious
+  examples: |
+    - I'm really nervous
+    - I'm worried all the time
+    - nina hofu sana
+    - akili haitulii
+
+- intent: feel_sad
+  examples: |
+    - I'm so sad
+    - I feel down lately
+    - nina huzuni leo
+    - roho yangu iko chini
+
+- intent: feel_good
+  examples: |
+    - I'm feeling awesome
+    - all good here
+    - niko poa sana
+    - leo nimefurahi
+
+- intent: ask_breathing
+  examples: |
+    - breathing exercise please
+    - how do I relax
+    - nisaidie nitulie
+    - zoezi la kupumua tafadhali
+
+- intent: ask_about_bot
+  examples: |
+    - what are you exactly
+    - is this a bot
+    - wewe ni AI
+    - unanisaidiaje
