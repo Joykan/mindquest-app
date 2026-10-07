@@ -52,7 +52,7 @@ Put the Supabase URL and publishable key in `config/dev.json`. That file is in
 - [x] Wireframes
 - [x] Architecture, conversation flow and gamification design
 - [x] Project setup
-- [ ] Database
+- [x] Database
 - [ ] Chatbot training data
 - [ ] Rasa model training and evaluation
 - [ ] Chat backend and crisis detection

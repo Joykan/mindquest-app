@@ -2,9 +2,8 @@
 -- daily chat cap and weekly reports use the same day as the action itself
 -- (this matters for mood entries that sync later from offline use).
 
-drop function public.award_xp(uuid, text, integer);
-
-create function public.award_xp(p_user uuid, p_reason text, p_amount integer, p_at timestamptz default now())
+-- New function alongside award_xp (kept for compatibility, no longer used).
+create function public.award_xp_at(p_user uuid, p_reason text, p_amount integer, p_at timestamptz)
 returns void
 language plpgsql
 security definer
@@ -39,7 +38,7 @@ begin
        set streak = case when v_last = v_today - 1 then streak + 1 else 1 end,
            last_checkin = v_today
      where id = new.user_id;
-    perform public.award_xp(new.user_id, 'mood_checkin', 10, new.created_at);
+    perform public.award_xp_at(new.user_id, 'mood_checkin', 10, new.created_at);
   end if;
 
   select count(distinct public.local_date(created_at)) into v_days
@@ -52,7 +51,7 @@ begin
     values (new.user_id, 'weekly_checkins', v_week_start)
     on conflict do nothing;
     if found then
-      perform public.award_xp(new.user_id, 'weekly_quest', 25, new.created_at);
+      perform public.award_xp_at(new.user_id, 'weekly_quest', 25, new.created_at);
     end if;
   end if;
 
@@ -84,7 +83,7 @@ begin
      and public.local_date(created_at) = public.local_date(new.created_at);
 
   if v_today_xp + 2 <= 20 then
-    perform public.award_xp(v_user, 'chat_message', 2, new.created_at);
+    perform public.award_xp_at(v_user, 'chat_message', 2, new.created_at);
   end if;
 
   perform public.evaluate_badges(v_user);
@@ -99,10 +98,10 @@ security definer
 set search_path = ''
 as $$
 begin
-  perform public.award_xp(new.user_id, 'article_read', 5, new.read_at);
+  perform public.award_xp_at(new.user_id, 'article_read', 5, new.read_at);
   perform public.evaluate_badges(new.user_id);
   return new;
 end
 $$;
 
-revoke execute on function public.award_xp(uuid, text, integer, timestamptz) from public, anon, authenticated;
+revoke execute on function public.award_xp_at(uuid, text, integer, timestamptz) from public, anon, authenticated;
