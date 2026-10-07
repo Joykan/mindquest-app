@@ -1,0 +1,50 @@
+# Rasa NLU pipeline for MindQuest (English + Kiswahili)
+#
+# A message passes through these components in order. Each one adds
+# information to the message, and the last ones decide the intent.
+
+recipe: default.v1
+
+# Rasa needs a language code. The components below do not use language-specific
+# models, so the same pipeline works for both English and Kiswahili.
+language: en
+
+assistant_id: mindquest
+
+pipeline:
+  # 1. Split the message into words using spaces.
+  #    "nina stress ya mitihani" -> [nina, stress, ya, mitihani]
+  - name: WhitespaceTokenizer
+
+  # 2. Word-shape features, e.g. is the word capitalised, is it a number,
+  #    what are its first and last letters.
+  - name: LexicalSyntacticFeaturizer
+
+  # 3. Bag of words: which whole words appear in the message.
+  - name: CountVectorsFeaturizer
+
+  # 4. Bag of character groups (1 to 4 letters inside each word).
+  #    This lets the model link "mitihani" and "mtihani", or spot shared
+  #    roots in Kiswahili words, and copes with typos and Sheng spellings.
+  - name: CountVectorsFeaturizer
+    analyzer: char_wb
+    min_ngram: 1
+    max_ngram: 4
+
+  # 5. DIET (Dual Intent and Entity Transformer): a small neural network that
+  #    learns from the features above and predicts the intent with a
+  #    confidence score between 0 and 1.
+  - name: DIETClassifier
+    epochs: 100
+    constrain_similarities: true
+
+  # 6. Safety net: if the top intent's confidence is below 0.5, or the top two
+  #    intents are within 0.1 of each other, the message is labelled
+  #    nlu_fallback and MindQuest replies "I didn't quite get that".
+  - name: FallbackClassifier
+    threshold: 0.5
+    ambiguity_threshold: 0.1
+
+# Dialogue handling (which reply to send, and the "accept the exercise?" step)
+# is added in step 7 when the chatbot is connected to the app.
+policies: []

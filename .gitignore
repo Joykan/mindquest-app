@@ -32,6 +32,7 @@ config/prod.json
 supabase/.temp/
 supabase/.branches/
 
-# Rasa
+# Rasa (virtual environment, trained models and local caches)
+nlp/rasa/.venv/
 nlp/rasa/models/
 nlp/rasa/.rasa/
