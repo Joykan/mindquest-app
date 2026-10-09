@@ -4,7 +4,7 @@ Example phrases the Rasa model learns from, in English and Kiswahili (with some 
 
 ```
 nlp/
-  rasa/data/nlu.yml          training examples (391)
+  rasa/data/nlu.yml          training examples (569)
   rasa/tests/test_nlu.yml    held-out test examples (44), never used for training
   rasa/tests/test_names.yml  held-out test for names vs feelings (12)
   rasa/results/              output of each test run (reports, confusion matrices)
@@ -18,19 +18,19 @@ handle the "Accept the breathing exercise?" step.
 
 | Intent | Meaning | Train (EN + SW) | Test |
 |---|---|---|---|
-| `greet` | Says hello | 17 + 15 | 4 |
-| `goodbye` | Ends the conversation | 15 + 15 | 4 |
-| `thank` | Says thank you | 18 + 16 | 4 |
-| `affirm` | Agrees (yes, sawa, poa) | 15 + 18 | 4 |
-| `deny` | Declines (no, hapana) | 15 + 15 | 4 |
-| `feel_stressed` | Stress or pressure | 16 + 17 | 4 |
-| `feel_anxious` | Worry, fear or anxiety | 16 + 17 | 4 |
-| `feel_sad` | Sadness or loneliness | 16 + 17 | 4 |
-| `feel_good` | Good mood | 23 + 20 | 4 + 4 (names test) |
-| `ask_breathing` | Wants a calming or breathing exercise | 15 + 15 | 4 |
-| `ask_about_bot` | Asks what MindQuest is or about privacy | 15 + 15 | 4 |
-| `tell_name` | Says their name; the name is extracted | 15 + 15 | 8 (names test) |
-| **Total** | | **391** | **44 + 12** |
+| `greet` | Says hello | 21 + 20 | 4 |
+| `goodbye` | Ends the conversation | 21 + 20 | 4 |
+| `thank` | Says thank you | 22 + 20 | 4 |
+| `affirm` | Agrees (yes, sawa, poa) | 26 + 29 | 4 |
+| `deny` | Declines (no, hapana) | 25 + 24 | 4 |
+| `feel_stressed` | Stress or pressure | 24 + 25 | 4 |
+| `feel_anxious` | Worry, fear or anxiety | 24 + 25 | 4 |
+| `feel_sad` | Sadness or loneliness | 29 + 28 | 4 |
+| `feel_good` | Good mood | 33 + 30 | 4 + 4 (names test) |
+| `ask_breathing` | Wants a calming or breathing exercise | 21 + 19 | 4 |
+| `ask_about_bot` | Asks what MindQuest is or about privacy | 21 + 21 | 4 |
+| `tell_name` | Says their name; the name is extracted | 21 + 20 | 8 (names test) |
+| **Total** | | **569** | **44 + 12** |
 
 ## How the data was put together
 
@@ -79,6 +79,20 @@ a lot" for thank. A new `tell_name` intent (30 examples plus 6 contrast examples
 in feel_good) separates names like Joy and Furaha from feelings (see above). No
 test phrases were copied into training, and the original 44-phrase test set is
 unchanged, so v1 and v2 compare fairly.
+
+**v3** (569 examples): 178 examples added, mostly to the intents that were weak
+in v2 cross-validation. They target three kinds of error:
+
+- Negation: "siko vizuri", "I'm not happy", "sina furaha" for feel_sad, so
+  "sawa", "okay" and "vizuri" no longer point straight to feel_good.
+- One-word replies: words like "poa", "fiti", "la" and "nah" now appear in
+  several affirm and deny examples ("poa, tuanze", "la, sitaki") instead of once.
+- "I'm ...": phrases like "I'm ready", "I'm happy" and "I'm not fine" so the model
+  doesn't treat every "I'm X" as a name.
+
+Two v2 examples were replaced because they were too close to the names test
+("I feel so much joy today" and "jina langu furaha"). The pipeline and both test
+files are unchanged, so any difference from v2 comes from the data.
 
 ## Results (v2)
 

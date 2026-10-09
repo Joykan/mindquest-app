@@ -21,6 +21,10 @@ nlu:
     - yo
     - good morning to you
     - hello, good afternoon
+    - hello there
+    - hi again
+    - hey, good evening
+    - hi, how's it going
     - habari
     - habari yako
     - mambo
@@ -36,6 +40,11 @@ nlu:
     - shikamoo
     - mambo vipi
     - sasa msee
+    - habari za leo
+    - mambo, uko aje
+    - hujambo rafiki
+    - niaje msee
+    - salamu kwako
 
 - intent: goodbye
   # User ends the conversation
@@ -55,6 +64,12 @@ nlu:
     - take care, bye
     - later
     - I'm done for today
+    - goodbye for now
+    - I'm going to sleep now
+    - see you soon
+    - bye bye
+    - have a good night
+    - I'll be back later
     - kwaheri
     - tutaonana
     - tutaonana kesho
@@ -70,6 +85,11 @@ nlu:
     - poa, baadaye
     - lala salama
     - nitakucheki baadaye
+    - kwaheri basi
+    - nitaongea nawe baadaye
+    - nakwenda kulala
+    - tuonane kesho
+    - usiku mwema, tutaonana
 
 - intent: thank
   # User says thank you
@@ -92,6 +112,10 @@ nlu:
     - you're really helpful
     - you helped me a lot
     - I'm grateful
+    - thanks so much for this
+    - I'm thankful
+    - thank you, that was nice
+    - appreciate you
     - asante
     - asante sana
     - nashukuru
@@ -108,6 +132,10 @@ nlu:
     - asante rafiki
     - Mungu akubariki
     - umekuwa msaada mkubwa
+    - asante kwa kunisaidia
+    - nakushukuru
+    - shukrani nyingi
+    - asante kwa muda wako
 
 - intent: affirm
   # User agrees, e.g. accepts a breathing exercise
@@ -127,6 +155,17 @@ nlu:
     - go ahead
     - why not
     - definitely
+    - yes, let's do it
+    - ok sure
+    - yeah sure
+    - sure, go ahead
+    - yes I want to
+    - I'm ready
+    - count me in
+    - absolutely
+    - okay, I'll try
+    - right, let's start
+    - fine, let's do it
     - ndio
     - ndiyo
     - sawa
@@ -145,6 +184,17 @@ nlu:
     - ehe
     - ndiyo kabisa
     - sawa kabisa
+    - ndio, niko tayari
+    - niko tayari
+    - sawa, twende
+    - poa, tuanze
+    - fiti, tufanye
+    - ndio, nataka kujaribu
+    - naam, tuanze
+    - bila shaka, tuanze
+    - ehe, sawa
+    - tufanye hivyo
+    - sawa, nitajaribu
 
 - intent: deny
   # User declines, e.g. does not want the exercise
@@ -164,6 +214,16 @@ nlu:
     - never mind
     - I don't think so
     - no way
+    - no, not now
+    - no, I don't want to
+    - nah, I'm good
+    - I'll pass
+    - not interested
+    - no, skip it
+    - no, maybe another time
+    - please no
+    - I don't feel like it
+    - nope, not today
     - hapana
     - la
     - sitaki
@@ -179,6 +239,15 @@ nlu:
     - hapana bwana
     - aah, hapana
     - sitaki kwa sasa
+    - hapana, sitaki
+    - la, sitaki
+    - sitaki kujaribu
+    - hapana, wacha tu
+    - acha tu
+    - la hasha
+    - sina haja
+    - hapana, baadaye
+    - sijisikii kufanya hivyo
 
 - intent: feel_stressed
   # User describes stress or pressure
@@ -199,6 +268,14 @@ nlu:
     - I can't handle all this
     - everything is piling up
     - life is too hard right now
+    - I'm stressed with school
+    - work is too much for me
+    - I have so many assignments
+    - I'm exhausted from all this work
+    - the pressure is too much
+    - I'm drowning in work
+    - rent is stressing me out
+    - I don't have time for anything
     - nina stress
     - nina msongo wa mawazo
     - mitihani inanisumbua
@@ -216,6 +293,14 @@ nlu:
     - najihisi kubanwa
     - maisha ni magumu sana
     - nimebanwa na majukumu
+    - nina kazi nyingi sana
+    - assignment ni nyingi
+    - nimechoka na shule
+    - presha ya kazi ni nyingi
+    - kodi inanisumbua
+    - sina muda wa kitu chochote
+    - nimechoka na majukumu
+    - kazi imenilemea
 
 - intent: feel_anxious
   # User describes worry, fear or anxiety
@@ -236,6 +321,14 @@ nlu:
     - I get anxious around people
     - I'm worried about my results
     - my mind won't stop racing
+    - I'm anxious about my interview
+    - I'm scared
+    - I'm panicking
+    - I have a bad feeling
+    - I can't sleep because of worry
+    - I'm afraid of failing
+    - my hands are shaking
+    - what if everything goes wrong
     - nina wasiwasi
     - nina hofu
     - naogopa
@@ -253,6 +346,14 @@ nlu:
     - nina wasiwasi kila wakati
     - akili yangu haina amani
     - mawazo hayaishi kichwani
+    - nina wasiwasi mwingi
+    - naogopa kushindwa
+    - siwezi kulala kwa sababu ya wasiwasi
+    - nina hofu kuhusu mtihani
+    - mikono inatetemeka
+    - naogopa kuongea na watu
+    - wasiwasi umenizidi
+    - nina woga
 
 - intent: feel_sad
   # User describes sadness or loneliness
@@ -273,6 +374,19 @@ nlu:
     - I feel alone
     - I've been sad for days
     - my heart feels heavy
+    - I don't feel good
+    - I'm not doing well
+    - I'm not happy
+    - I'm not fine
+    - I feel really low
+    - I'm so unhappy
+    - I've been feeling empty
+    - I'm feeling lonely
+    - everything feels sad
+    - I can't stop crying
+    - nobody understands me
+    - I feel left out
+    - I'm grieving
     - nina huzuni
     - najisikia vibaya
     - nimeshuka moyo
@@ -290,6 +404,17 @@ nlu:
     - najisikia mpweke
     - moyo wangu uko chini
     - nimejawa na huzuni
+    - sina furaha
+    - siko vizuri
+    - sijisikii sawa
+    - nimehuzunika
+    - nimekuwa mpweke
+    - sina raha
+    - nalia kila siku
+    - nimekosa furaha
+    - hakuna anayenielewa
+    - nimesononeka
+    - moyo wangu una huzuni
 
 - intent: feel_good
   # User reports a good mood
@@ -315,8 +440,18 @@ nlu:
     - everything is good
     - all is well
     - I'm full of joy
-    - I feel so much joy today
+    - I'm feeling joyful
     - my heart is full of joy
+    - I'm good
+    - I feel good today
+    - I'm doing great
+    - I'm happy
+    - I feel relaxed
+    - I'm feeling better now
+    - I feel peaceful
+    - I'm really happy
+    - things are better now
+    - I had a great day
     - niko poa
     - najisikia vizuri
     - nina furaha
@@ -337,6 +472,16 @@ nlu:
     - nimejawa na furaha
     - nina furaha tele
     - moyo wangu una amani
+    - najisikia furaha
+    - niko na furaha
+    - niko sawa kabisa
+    - najisikia vizuri leo
+    - nimepumzika vizuri
+    - niko na amani
+    - leo nimeshinda
+    - mambo safi
+    - niko freshi
+    - najisikia mchangamfu
 
 - intent: ask_breathing
   # User asks for a calming or breathing exercise
@@ -356,6 +501,12 @@ nlu:
     - how do I stop panicking
     - show me a mindfulness exercise
     - I need something to calm me down
+    - can you help me calm down
+    - I need a minute to breathe
+    - how do I calm my mind
+    - give me a grounding exercise
+    - help me stop panicking
+    - let's do a calming exercise
     - nitatulizaje akili
     - nifundishe zoezi la kupumua
     - nisaidie kutulia
@@ -371,6 +522,10 @@ nlu:
     - nitaachaje hofu hii
     - nionyeshe zoezi la utulivu
     - nahitaji kitu cha kunituliza
+    - nisaidie kupumzika
+    - nifundishe kutuliza akili
+    - nipe zoezi la kutuliza mawazo
+    - tufanye zoezi la kutuliza
 
 - intent: ask_about_bot
   # User asks what MindQuest is or about privacy
@@ -390,6 +545,12 @@ nlu:
     - what are you
     - are you a robot
     - how can you help me
+    - what is this app
+    - who built this app
+    - do you keep my messages
+    - can anyone else see my chats
+    - what does MindQuest do
+    - is my data safe
     - wewe ni nani
     - MindQuest ni nini
     - unaweza kufanya nini
@@ -405,6 +566,12 @@ nlu:
     - wewe ni roboti
     - unaweza kunisaidiaje
     - wewe ni kitu gani
+    - programu hii ni ya nini
+    - nani anaona mazungumzo yangu
+    - data yangu iko salama
+    - unafanya kazi aje
+    - MindQuest inafanya nini
+    - wewe ni mshauri
 
 - intent: tell_name
   # User says their name (name is extracted as an entity)
@@ -424,6 +591,12 @@ nlu:
     - name's [Chebet](name)
     - they call me [Blessing](name)
     - hey im [joy](name)
+    - hey, my name is [Neema](name)
+    - I go by [Sharon](name)
+    - people call me [Kip](name)
+    - I'm [Baraka](name), nice to meet you
+    - hi there, I'm [Peace](name)
+    - my friends call me [Shiru](name)
     - naitwa [Furaha](name)
     - jina langu ni [Amani](name)
     - mimi ni [Neema](name)
@@ -438,4 +611,9 @@ nlu:
     - habari, naitwa [Wambui](name)
     - mimi ni [Kandie](name)
     - ni mimi [Faith](name)
-    - jina langu [furaha](name)
+    - jina langu [baraka](name)
+    - mimi ni [Kamau](name), habari
+    - jina langu ni [Zawadi](name)
+    - wananiita [Nafula](name)
+    - naitwa [Rehema](name) mimi
+    - niite tu [Wema](name)
