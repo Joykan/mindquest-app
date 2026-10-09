@@ -7,6 +7,7 @@ nlp/
   rasa/data/nlu.yml          training examples (391)
   rasa/tests/test_nlu.yml    held-out test examples (44), never used for training
   rasa/tests/test_names.yml  held-out test for names vs feelings (12)
+  rasa/results/              output of each test run (reports, confusion matrices)
   review/kiswahili_review.csv  sheet for a Kiswahili speaker to check every phrase
 ```
 
