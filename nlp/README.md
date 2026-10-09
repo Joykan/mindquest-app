@@ -72,8 +72,41 @@ Y or N, and suggest corrections. Corrections are then copied into `nlu.yml` and
 "good" (greet vs feel_good), "feeling" (feel_good vs feel_sad) and the Kiswahili
 root "tulia" (feel_anxious vs ask_breathing).
 
-**v2** (355 examples): 25 examples added to the weakest intents to separate
+**v2** (391 examples): 25 examples added to the weakest intents to separate
 those overlaps, for example "I'm feeling great" for feel_good and "you helped me
-a lot" for thank. A new `tell_name` intent separates names like Joy and Furaha
-from feelings (see above). No test phrases were copied into training, and the
-original 44-phrase test set is unchanged, so v1 and v2 compare fairly.
+a lot" for thank. A new `tell_name` intent (30 examples plus 6 contrast examples
+in feel_good) separates names like Joy and Furaha from feelings (see above). No
+test phrases were copied into training, and the original 44-phrase test set is
+unchanged, so v1 and v2 compare fairly.
+
+## Results (v2)
+
+| Test | What it measures | Accuracy | Macro F1 |
+|---|---|---|---|
+| `test_nlu.yml`, 44 phrases | New wording, 11 intents | 93.2% (v1: 81.8%) | 0.93 (v1: 0.82) |
+| `test_names.yml`, 12 phrases | Names vs feelings | 91.7% | 0.90 |
+| 5-fold cross-validation, 391 phrases | Every example tested once | 62.7% | 0.63 |
+
+Name extraction on the names test: precision 0.89, recall 1.00, F1 0.94. All 8
+names were found; one feeling phrase was wrongly read as a name.
+
+Remaining errors on the 44-phrase test: one deny read as thank, one feel_anxious
+read as ask_breathing, one greet read as feel_good.
+
+**Why cross-validation is much lower.** The two test files are small (4 phrases
+per intent), so one mistake moves accuracy by more than 2%. Also, the v2
+additions were chosen after looking at v1's test errors, which slightly favours
+that test set. Cross-validation tests every one of the 391 examples while
+training on only about 24 per intent, so it is the stricter and more honest
+figure. It shows where the model is still weak:
+
+- `affirm` (F1 0.43) and `deny` (0.51): short replies like "poa", "sawa", "fiti"
+  look like feel_good or goodbye, and affirm and deny get mixed up.
+- `feel_sad` (0.49): 12 sad phrases were read as feel_good, because both use the
+  same words ("feeling", "today", "leo", "moyo").
+- `feel_stressed` vs `feel_anxious` (0.58 each): the two feelings overlap in
+  everyday speech, so some confusion is expected.
+
+The next version should add more varied examples to these intents. In the app,
+any prediction below 0.5 confidence goes to the fallback reply instead of a
+guessed answer.
