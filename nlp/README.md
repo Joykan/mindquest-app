@@ -125,3 +125,40 @@ figure. It shows where the model is still weak:
 The next version should add more varied examples to these intents. In the app,
 any prediction below 0.5 confidence goes to the fallback reply instead of a
 guessed answer.
+
+## Results (v3)
+
+| Test | v2 | v3 |
+|---|---|---|
+| 5-fold cross-validation (accuracy / macro F1) | 62.7% / 0.63 | **75.7% / 0.77** |
+| `test_nlu.yml`, 44 phrases | 93.2% / 0.93 | 86.4% / 0.87 |
+| `test_names.yml`, 12 phrases | 91.7% / 0.90 | 83.3% / 0.78 |
+| Name extraction F1, names test | 0.94 | 0.94 |
+| Name extraction F1, cross-validation | not measured | 0.94 |
+
+Cross-validation went up for every intent: affirm 0.43 to 0.82, deny 0.51 to
+0.67, feel_sad 0.49 to 0.67, feel_stressed 0.58 to 0.73, goodbye 0.60 to 0.79.
+
+The two small tests went down by 3 phrases and 1 phrase:
+
+- "so much joy today" was correct in v2 only because training had the almost
+  identical "I feel so much joy today". With that removed, it fails. So v2's
+  names score was too high, and v3's is the honest one.
+- "I feel joy" and "all good here" were read as tell_name. "joy" is a name in
+  most training examples that contain it, and "here" appears in name phrases
+  like "Precious here".
+- "alright bye" was read as affirm ("alright" is an affirm word),
+  "nimefurahi, asante" as feel_good (it really is both), and the idiom "roho
+  yangu iko chini" was missed again.
+
+With 4 phrases per intent, three phrases is a 7% swing, so these tests are too
+small to rank v2 and v3 on their own. Cross-validation uses all 569 phrases,
+which makes it the better guide. **v3 is the model used in the app.**
+
+Data changes stop here, so the test sets are not tuned any further. The
+remaining name/feeling mix-ups are handled in the chat logic instead (step 7):
+
+1. A message only counts as tell_name if a name was actually extracted.
+   Otherwise the next most likely intent is used.
+2. If the extracted name is also a feeling word (Joy, Furaha, Amani, Hope,
+   Peace, Faraja...), the bot asks "Is Joy your name?" before using it.
