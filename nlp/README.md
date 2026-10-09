@@ -4,8 +4,9 @@ Example phrases the Rasa model learns from, in English and Kiswahili (with some 
 
 ```
 nlp/
-  rasa/data/nlu.yml          training examples (355)
+  rasa/data/nlu.yml          training examples (391)
   rasa/tests/test_nlu.yml    held-out test examples (44), never used for training
+  rasa/tests/test_names.yml  held-out test for names vs feelings (12)
   review/kiswahili_review.csv  sheet for a Kiswahili speaker to check every phrase
 ```
 
@@ -24,15 +25,16 @@ handle the "Accept the breathing exercise?" step.
 | `feel_stressed` | Stress or pressure | 16 + 17 | 4 |
 | `feel_anxious` | Worry, fear or anxiety | 16 + 17 | 4 |
 | `feel_sad` | Sadness or loneliness | 16 + 17 | 4 |
-| `feel_good` | Good mood | 20 + 17 | 4 |
+| `feel_good` | Good mood | 23 + 20 | 4 + 4 (names test) |
 | `ask_breathing` | Wants a calming or breathing exercise | 15 + 15 | 4 |
 | `ask_about_bot` | Asks what MindQuest is or about privacy | 15 + 15 | 4 |
-| **Total** | | **355** | **44** |
+| `tell_name` | Says their name; the name is extracted | 15 + 15 | 8 (names test) |
+| **Total** | | **391** | **44 + 12** |
 
 ## How the data was put together
 
-- Each intent has the same number of English and Kiswahili examples so the model
-  does not favour one language.
+- Each intent has about the same number of English and Kiswahili examples so the
+  model does not favour one language.
 - Examples vary in length, formality and wording (short replies like "poa",
   full sentences, Sheng, and some code-mixing like "nina stress ya mitihani").
 - The test set uses phrases that do not appear in training, so accuracy
@@ -40,6 +42,21 @@ handle the "Accept the breathing exercise?" step.
 - Crisis messages are not an intent. They are caught by a keyword check before
   the model runs (see the conversation flow), so a missed classification can
   never hide a crisis.
+
+## Names that are also feelings
+
+Many Kenyan names are also emotion words: Joy, Hope, Grace, Faith, Furaha,
+Amani, Neema, Imani, Baraka. Without help, "naitwa Furaha" (my name is Furaha)
+would be read as feeling good, because "furaha" means happiness.
+
+- `tell_name` examples mark the name as an entity, e.g. `naitwa [Furaha](name)`.
+  The DIET classifier learns to predict the intent and pull out `name: Furaha`
+  at the same time, so the bot can reply "Nice to meet you, Furaha".
+- `feel_good` has contrast examples that use the same words as feelings, e.g.
+  "I'm full of joy" and "nimejawa na furaha", so the model learns that the
+  surrounding words ("my name is", "naitwa" vs "full of", "nimejawa na") decide
+  the meaning.
+- `tests/test_names.yml` checks both directions on phrases not used in training.
 
 ## Review
 
@@ -57,5 +74,6 @@ root "tulia" (feel_anxious vs ask_breathing).
 
 **v2** (355 examples): 25 examples added to the weakest intents to separate
 those overlaps, for example "I'm feeling great" for feel_good and "you helped me
-a lot" for thank. No test phrases were copied into training, so the test set
-still measures performance on unseen wording.
+a lot" for thank. A new `tell_name` intent separates names like Joy and Furaha
+from feelings (see above). No test phrases were copied into training, and the
+original 44-phrase test set is unchanged, so v1 and v2 compare fairly.

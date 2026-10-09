@@ -1,0 +1,20 @@
+version: "3.1"
+
+nlu:
+- intent: tell_name
+  examples: |
+    - hey, I'm [Faith](name)
+    - my name is [Amani](name)
+    - call me [Joy](name)
+    - [Hope](name) here
+    - naitwa [Joy](name)
+    - jina langu ni [Furaha](name)
+    - mimi ni [Grace](name)
+    - niite [Imani](name)
+
+- intent: feel_good
+  examples: |
+    - I feel joy
+    - so much joy today
+    - nina furaha sana leo
+    - nimejaa furaha

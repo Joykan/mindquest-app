@@ -314,6 +314,9 @@ nlu:
     - feeling happy today
     - everything is good
     - all is well
+    - I'm full of joy
+    - I feel so much joy today
+    - my heart is full of joy
     - niko poa
     - najisikia vizuri
     - nina furaha
@@ -331,6 +334,9 @@ nlu:
     - niko safi
     - mambo ni mazuri
     - niko vizuri sana
+    - nimejawa na furaha
+    - nina furaha tele
+    - moyo wangu una amani
 
 - intent: ask_breathing
   # User asks for a calming or breathing exercise
@@ -399,3 +405,37 @@ nlu:
     - wewe ni roboti
     - unaweza kunisaidiaje
     - wewe ni kitu gani
+
+- intent: tell_name
+  # User says their name (name is extracted as an entity)
+  examples: |
+    - my name is [Joy](name)
+    - I'm [Joy](name)
+    - call me [Hope](name)
+    - I am [Grace](name)
+    - it's [Faith](name) here
+    - [Precious](name) here
+    - you can call me [Happy](name)
+    - my name's [Brian](name)
+    - this is [Mercy](name)
+    - hi, I'm [Wanjiru](name)
+    - hello, my name is [Kevin](name)
+    - I'm called [Otieno](name)
+    - name's [Chebet](name)
+    - they call me [Blessing](name)
+    - hey im [joy](name)
+    - naitwa [Furaha](name)
+    - jina langu ni [Amani](name)
+    - mimi ni [Neema](name)
+    - mimi naitwa [Imani](name)
+    - niite [Baraka](name)
+    - ni [Faraja](name) hapa
+    - jina langu ni [Tumaini](name)
+    - naitwa [Achieng](name)
+    - mimi ni [Kiprop](name)
+    - unaweza kuniita [Mutua](name)
+    - jina langu ni [Joy](name)
+    - habari, naitwa [Wambui](name)
+    - mimi ni [Kandie](name)
+    - ni mimi [Faith](name)
+    - jina langu [furaha](name)
