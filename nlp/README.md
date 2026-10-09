@@ -4,7 +4,7 @@ Example phrases the Rasa model learns from, in English and Kiswahili (with some 
 
 ```
 nlp/
-  rasa/data/nlu.yml          training examples (330)
+  rasa/data/nlu.yml          training examples (355)
   rasa/tests/test_nlu.yml    held-out test examples (44), never used for training
   review/kiswahili_review.csv  sheet for a Kiswahili speaker to check every phrase
 ```
@@ -16,18 +16,18 @@ handle the "Accept the breathing exercise?" step.
 
 | Intent | Meaning | Train (EN + SW) | Test |
 |---|---|---|---|
-| `greet` | Says hello | 15 + 15 | 4 |
+| `greet` | Says hello | 17 + 15 | 4 |
 | `goodbye` | Ends the conversation | 15 + 15 | 4 |
-| `thank` | Says thank you | 15 + 15 | 4 |
-| `affirm` | Agrees (yes, sawa, poa) | 15 + 15 | 4 |
+| `thank` | Says thank you | 18 + 16 | 4 |
+| `affirm` | Agrees (yes, sawa, poa) | 15 + 18 | 4 |
 | `deny` | Declines (no, hapana) | 15 + 15 | 4 |
-| `feel_stressed` | Stress or pressure | 15 + 15 | 4 |
-| `feel_anxious` | Worry, fear or anxiety | 15 + 15 | 4 |
-| `feel_sad` | Sadness or loneliness | 15 + 15 | 4 |
-| `feel_good` | Good mood | 15 + 15 | 4 |
+| `feel_stressed` | Stress or pressure | 16 + 17 | 4 |
+| `feel_anxious` | Worry, fear or anxiety | 16 + 17 | 4 |
+| `feel_sad` | Sadness or loneliness | 16 + 17 | 4 |
+| `feel_good` | Good mood | 20 + 17 | 4 |
 | `ask_breathing` | Wants a calming or breathing exercise | 15 + 15 | 4 |
 | `ask_about_bot` | Asks what MindQuest is or about privacy | 15 + 15 | 4 |
-| **Total** | | **330** | **44** |
+| **Total** | | **355** | **44** |
 
 ## How the data was put together
 
@@ -47,3 +47,15 @@ Before training, a fluent Kiswahili speaker should go through
 `review/kiswahili_review.csv` (opens in Excel or Google Sheets), mark each phrase
 Y or N, and suggest corrections. Corrections are then copied into `nlu.yml` and
 `test_nlu.yml`.
+
+## Versions
+
+**v1** (330 examples, 30 per intent): 81.8% accuracy and macro F1 0.82 on the
+44 test phrases. Most errors came from words shared across intents, such as
+"good" (greet vs feel_good), "feeling" (feel_good vs feel_sad) and the Kiswahili
+root "tulia" (feel_anxious vs ask_breathing).
+
+**v2** (355 examples): 25 examples added to the weakest intents to separate
+those overlaps, for example "I'm feeling great" for feel_good and "you helped me
+a lot" for thank. No test phrases were copied into training, so the test set
+still measures performance on unseen wording.

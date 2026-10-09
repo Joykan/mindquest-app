@@ -19,6 +19,8 @@ nlu:
     - hello, anyone there?
     - hi there, how are you?
     - yo
+    - good morning to you
+    - hello, good afternoon
     - habari
     - habari yako
     - mambo
@@ -87,6 +89,9 @@ nlu:
     - thx
     - that really helped me
     - great, thanks
+    - you're really helpful
+    - you helped me a lot
+    - I'm grateful
     - asante
     - asante sana
     - nashukuru
@@ -102,6 +107,7 @@ nlu:
     - shukran
     - asante rafiki
     - Mungu akubariki
+    - umekuwa msaada mkubwa
 
 - intent: affirm
   # User agrees, e.g. accepts a breathing exercise
@@ -136,6 +142,9 @@ nlu:
     - nakubali
     - ndio nataka
     - fiti
+    - ehe
+    - ndiyo kabisa
+    - sawa kabisa
 
 - intent: deny
   # User declines, e.g. does not want the exercise
@@ -189,6 +198,7 @@ nlu:
     - money problems are stressing me
     - I can't handle all this
     - everything is piling up
+    - life is too hard right now
     - nina stress
     - nina msongo wa mawazo
     - mitihani inanisumbua
@@ -204,6 +214,8 @@ nlu:
     - karo inanipa stress
     - nimelemewa
     - najihisi kubanwa
+    - maisha ni magumu sana
+    - nimebanwa na majukumu
 
 - intent: feel_anxious
   # User describes worry, fear or anxiety
@@ -223,6 +235,7 @@ nlu:
     - my chest feels tight with worry
     - I get anxious around people
     - I'm worried about my results
+    - my mind won't stop racing
     - nina wasiwasi
     - nina hofu
     - naogopa
@@ -238,6 +251,8 @@ nlu:
     - najihisi na wasiwasi mwingi
     - naogopa matokeo yangu
     - nina wasiwasi kila wakati
+    - akili yangu haina amani
+    - mawazo hayaishi kichwani
 
 - intent: feel_sad
   # User describes sadness or loneliness
@@ -257,6 +272,7 @@ nlu:
     - I feel unhappy
     - I feel alone
     - I've been sad for days
+    - my heart feels heavy
     - nina huzuni
     - najisikia vibaya
     - nimeshuka moyo
@@ -272,6 +288,8 @@ nlu:
     - nawakumbuka familia yangu
     - siko sawa
     - najisikia mpweke
+    - moyo wangu uko chini
+    - nimejawa na huzuni
 
 - intent: feel_good
   # User reports a good mood
@@ -291,6 +309,11 @@ nlu:
     - I'm excited
     - life is good
     - I'm proud of myself
+    - I'm feeling great
+    - I'm feeling amazing
+    - feeling happy today
+    - everything is good
+    - all is well
     - niko poa
     - najisikia vizuri
     - nina furaha
@@ -306,6 +329,8 @@ nlu:
     - maisha ni mazuri
     - najivunia
     - niko safi
+    - mambo ni mazuri
+    - niko vizuri sana
 
 - intent: ask_breathing
   # User asks for a calming or breathing exercise
