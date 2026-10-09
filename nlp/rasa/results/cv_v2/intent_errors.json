@@ -1,0 +1,1170 @@
+[
+  {
+    "text": "good afternoon",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.6144921183586121
+    }
+  },
+  {
+    "text": "good evening",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9996592998504639
+    }
+  },
+  {
+    "text": "niaje",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "ask_about_bot",
+      "confidence": 0.96881502866745
+    }
+  },
+  {
+    "text": "nimemaliza kwa leo",
+    "intent": "goodbye",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9725493788719177
+    }
+  },
+  {
+    "text": "thx",
+    "intent": "thank",
+    "intent_prediction": {
+      "name": "deny",
+      "confidence": 0.2883642613887787
+    }
+  },
+  {
+    "text": "Mungu akubariki",
+    "intent": "thank",
+    "intent_prediction": {
+      "name": "affirm",
+      "confidence": 0.858817994594574
+    }
+  },
+  {
+    "text": "umekuwa msaada mkubwa",
+    "intent": "thank",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.949357271194458
+    }
+  },
+  {
+    "text": "okay",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9994654059410095
+    }
+  },
+  {
+    "text": "I'd like that",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.9382185339927673
+    }
+  },
+  {
+    "text": "naam",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "deny",
+      "confidence": 0.8409106731414795
+    }
+  },
+  {
+    "text": "twende",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.9997064471244812
+    }
+  },
+  {
+    "text": "fiti",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9997465014457703
+    }
+  },
+  {
+    "text": "sidhani",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "affirm",
+      "confidence": 0.48141807317733765
+    }
+  },
+  {
+    "text": "wacha",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "affirm",
+      "confidence": 0.7517491579055786
+    }
+  },
+  {
+    "text": "labda baadaye",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.9998996257781982
+    }
+  },
+  {
+    "text": "I have too much work",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.8286756277084351
+    }
+  },
+  {
+    "text": "I can't cope with everything",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.5909464955329895
+    }
+  },
+  {
+    "text": "my workload is crazy",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.5880135297775269
+    }
+  },
+  {
+    "text": "life is too hard right now",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.8506266474723816
+    }
+  },
+  {
+    "text": "I have anxiety",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.982755720615387
+    }
+  },
+  {
+    "text": "moyo unadunda kwa kasi",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.4006858766078949
+    }
+  },
+  {
+    "text": "I feel low today",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9998514652252197
+    }
+  },
+  {
+    "text": "I feel empty",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.7972502112388611
+    }
+  },
+  {
+    "text": "I feel unhappy",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9996811151504517
+    }
+  },
+  {
+    "text": "nina majonzi",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.6608926653862
+    }
+  },
+  {
+    "text": "I feel better",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.9859581589698792
+    }
+  },
+  {
+    "text": "najisikia nafuu",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.5136964321136475
+    }
+  },
+  {
+    "text": "nina amani",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.9362198114395142
+    }
+  },
+  {
+    "text": "nimejawa na furaha",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.7712740302085876
+    }
+  },
+  {
+    "text": "nani alikutengeneza",
+    "intent": "ask_about_bot",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.31031325459480286
+    }
+  },
+  {
+    "text": "niite Baraka",
+    "intent": "tell_name",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.8005496263504028
+    }
+  },
+  {
+    "text": "unaweza kuniita Mutua",
+    "intent": "tell_name",
+    "intent_prediction": {
+      "name": "ask_about_bot",
+      "confidence": 0.9995357990264893
+    }
+  },
+  {
+    "text": "salamu",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.9442644119262695
+    }
+  },
+  {
+    "text": "I have to go",
+    "intent": "goodbye",
+    "intent_prediction": {
+      "name": "ask_breathing",
+      "confidence": 0.46186813712120056
+    }
+  },
+  {
+    "text": "nitakucheki baadaye",
+    "intent": "goodbye",
+    "intent_prediction": {
+      "name": "deny",
+      "confidence": 0.8313940763473511
+    }
+  },
+  {
+    "text": "I'm grateful",
+    "intent": "thank",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9956157207489014
+    }
+  },
+  {
+    "text": "yeah",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "deny",
+      "confidence": 0.6920222640037537
+    }
+  },
+  {
+    "text": "alright",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.9399349093437195
+    }
+  },
+  {
+    "text": "tujaribu",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "thank",
+      "confidence": 0.3554484248161316
+    }
+  },
+  {
+    "text": "bila shaka",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "deny",
+      "confidence": 0.6654465198516846
+    }
+  },
+  {
+    "text": "no thanks",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "thank",
+      "confidence": 0.9998117089271545
+    }
+  },
+  {
+    "text": "no, I'm fine",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9996036887168884
+    }
+  },
+  {
+    "text": "never mind",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.4817761778831482
+    }
+  },
+  {
+    "text": "si sasa",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "greet",
+      "confidence": 0.9988508224487305
+    }
+  },
+  {
+    "text": "siwezi sasa",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.9880457520484924
+    }
+  },
+  {
+    "text": "I can't handle all this",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.599208652973175
+    }
+  },
+  {
+    "text": "shule imenichosha",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "thank",
+      "confidence": 0.9836251139640808
+    }
+  },
+  {
+    "text": "maisha ni magumu sana",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.6119310855865479
+    }
+  },
+  {
+    "text": "I feel panicky",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.4316118657588959
+    }
+  },
+  {
+    "text": "I keep overthinking",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.9405210614204407
+    }
+  },
+  {
+    "text": "nina hofu",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9296741485595703
+    }
+  },
+  {
+    "text": "I'm not okay",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.521312952041626
+    }
+  },
+  {
+    "text": "najihisi mtupu",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.7525231838226318
+    }
+  },
+  {
+    "text": "siko sawa",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9900256395339966
+    }
+  },
+  {
+    "text": "everything is good",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.9995006322860718
+    }
+  },
+  {
+    "text": "nipe ushauri wa kukabiliana",
+    "intent": "ask_breathing",
+    "intent_prediction": {
+      "name": "ask_about_bot",
+      "confidence": 0.5139089822769165
+    }
+  },
+  {
+    "text": "are you a therapist",
+    "intent": "ask_about_bot",
+    "intent_prediction": {
+      "name": "greet",
+      "confidence": 0.5400340557098389
+    }
+  },
+  {
+    "text": "how does this app work",
+    "intent": "ask_about_bot",
+    "intent_prediction": {
+      "name": "ask_breathing",
+      "confidence": 0.8888556361198425
+    }
+  },
+  {
+    "text": "how can you help me",
+    "intent": "ask_about_bot",
+    "intent_prediction": {
+      "name": "ask_breathing",
+      "confidence": 0.9917526841163635
+    }
+  },
+  {
+    "text": "Precious here",
+    "intent": "tell_name",
+    "intent_prediction": {
+      "name": "greet",
+      "confidence": 0.8198980093002319
+    }
+  },
+  {
+    "text": "this is Mercy",
+    "intent": "tell_name",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.3143344819545746
+    }
+  },
+  {
+    "text": "good night",
+    "intent": "goodbye",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9776775240898132
+    }
+  },
+  {
+    "text": "nataka kwenda sasa",
+    "intent": "goodbye",
+    "intent_prediction": {
+      "name": "affirm",
+      "confidence": 0.9426179528236389
+    }
+  },
+  {
+    "text": "lala salama",
+    "intent": "goodbye",
+    "intent_prediction": {
+      "name": "greet",
+      "confidence": 0.9044964909553528
+    }
+  },
+  {
+    "text": "nimesaidika",
+    "intent": "thank",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.863484263420105
+    }
+  },
+  {
+    "text": "sure",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.8674449324607849
+    }
+  },
+  {
+    "text": "go ahead",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.9977656602859497
+    }
+  },
+  {
+    "text": "poa",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.7279406785964966
+    }
+  },
+  {
+    "text": "haya",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.3179672062397003
+    }
+  },
+  {
+    "text": "nakubali",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "thank",
+      "confidence": 0.9232153296470642
+    }
+  },
+  {
+    "text": "skip",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "affirm",
+      "confidence": 0.9522464871406555
+    }
+  },
+  {
+    "text": "deadlines are killing me",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.5928142070770264
+    }
+  },
+  {
+    "text": "nina msongo wa mawazo",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.9322527647018433
+    }
+  },
+  {
+    "text": "nimelemewa",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.7697678804397583
+    }
+  },
+  {
+    "text": "I'm nervous about tomorrow",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.8730881214141846
+    }
+  },
+  {
+    "text": "I feel on edge",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.9981184005737305
+    }
+  },
+  {
+    "text": "I can't calm down",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "ask_breathing",
+      "confidence": 0.9999443292617798
+    }
+  },
+  {
+    "text": "sina amani",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.8531666398048401
+    }
+  },
+  {
+    "text": "akili yangu haina amani",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.8752989768981934
+    }
+  },
+  {
+    "text": "I'm feeling down",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9997809529304504
+    }
+  },
+  {
+    "text": "nothing makes me happy",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "deny",
+      "confidence": 0.3705543875694275
+    }
+  },
+  {
+    "text": "my heart feels heavy",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.8106461763381958
+    }
+  },
+  {
+    "text": "najisikia vibaya",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9084054827690125
+    }
+  },
+  {
+    "text": "hakuna kinachonifurahisha",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9185282588005066
+    }
+  },
+  {
+    "text": "moyo wangu uko chini",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9987778067588806
+    }
+  },
+  {
+    "text": "I feel calm",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "ask_breathing",
+      "confidence": 0.9613264799118042
+    }
+  },
+  {
+    "text": "nimetulia",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "ask_breathing",
+      "confidence": 0.3501245975494385
+    }
+  },
+  {
+    "text": "guide me through meditation",
+    "intent": "ask_breathing",
+    "intent_prediction": {
+      "name": "tell_name",
+      "confidence": 0.5379504561424255
+    }
+  },
+  {
+    "text": "how do I stop panicking",
+    "intent": "ask_breathing",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.9998986721038818
+    }
+  },
+  {
+    "text": "nitaachaje hofu hii",
+    "intent": "ask_breathing",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.6840916275978088
+    }
+  },
+  {
+    "text": "are my chats private",
+    "intent": "ask_about_bot",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.3090946674346924
+    }
+  },
+  {
+    "text": "hi, I'm Wanjiru",
+    "intent": "tell_name",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.6668580770492554
+    }
+  },
+  {
+    "text": "ni Faraja hapa",
+    "intent": "tell_name",
+    "intent_prediction": {
+      "name": "deny",
+      "confidence": 0.9989926218986511
+    }
+  },
+  {
+    "text": "hello MindQuest",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "ask_about_bot",
+      "confidence": 0.9426149129867554
+    }
+  },
+  {
+    "text": "yo",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "affirm",
+      "confidence": 0.868658721446991
+    }
+  },
+  {
+    "text": "nimeenda",
+    "intent": "goodbye",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.8573495149612427
+    }
+  },
+  {
+    "text": "let's do it",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "tell_name",
+      "confidence": 0.48090070486068726
+    }
+  },
+  {
+    "text": "let's try",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.37437501549720764
+    }
+  },
+  {
+    "text": "of course",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9795759916305542
+    }
+  },
+  {
+    "text": "sounds good",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.4879915118217468
+    }
+  },
+  {
+    "text": "why not",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "deny",
+      "confidence": 0.999275267124176
+    }
+  },
+  {
+    "text": "definitely",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.5663377046585083
+    }
+  },
+  {
+    "text": "nah",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "affirm",
+      "confidence": 0.9940390586853027
+    }
+  },
+  {
+    "text": "la",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "affirm",
+      "confidence": 0.9656349420547485
+    }
+  },
+  {
+    "text": "hapana asante",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "thank",
+      "confidence": 0.8746227025985718
+    }
+  },
+  {
+    "text": "sina hamu",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.999647855758667
+    }
+  },
+  {
+    "text": "I feel overwhelmed",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.3468916118144989
+    }
+  },
+  {
+    "text": "I'm burnt out",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "tell_name",
+      "confidence": 0.46565696597099304
+    }
+  },
+  {
+    "text": "everything is piling up",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9996473789215088
+    }
+  },
+  {
+    "text": "I'm afraid something bad will happen",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "ask_breathing",
+      "confidence": 0.9732083082199097
+    }
+  },
+  {
+    "text": "mawazo hayaishi kichwani",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.9990944862365723
+    }
+  },
+  {
+    "text": "nimeshuka moyo",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "thank",
+      "confidence": 0.685874342918396
+    }
+  },
+  {
+    "text": "I'm okay",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.6720505356788635
+    }
+  },
+  {
+    "text": "I passed my exam!",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.8773263096809387
+    }
+  },
+  {
+    "text": "najivunia",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.7640426754951477
+    }
+  },
+  {
+    "text": "moyo wangu una amani",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.9690782427787781
+    }
+  },
+  {
+    "text": "how can I calm down",
+    "intent": "ask_breathing",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.7299026846885681
+    }
+  },
+  {
+    "text": "niongoze kutafakari",
+    "intent": "ask_breathing",
+    "intent_prediction": {
+      "name": "affirm",
+      "confidence": 0.857414186000824
+    }
+  },
+  {
+    "text": "programu hii inafanyaje kazi",
+    "intent": "ask_about_bot",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.9493190050125122
+    }
+  },
+  {
+    "text": "hey im joy",
+    "intent": "tell_name",
+    "intent_prediction": {
+      "name": "greet",
+      "confidence": 0.7111167907714844
+    }
+  },
+  {
+    "text": "sasa",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "deny",
+      "confidence": 0.9981208443641663
+    }
+  },
+  {
+    "text": "shikamoo",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "affirm",
+      "confidence": 0.7981330156326294
+    }
+  },
+  {
+    "text": "see you tomorrow",
+    "intent": "goodbye",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.9831759929656982
+    }
+  },
+  {
+    "text": "I'm leaving now",
+    "intent": "goodbye",
+    "intent_prediction": {
+      "name": "deny",
+      "confidence": 0.9960069060325623
+    }
+  },
+  {
+    "text": "usiku mwema",
+    "intent": "goodbye",
+    "intent_prediction": {
+      "name": "ask_about_bot",
+      "confidence": 0.6844545006752014
+    }
+  },
+  {
+    "text": "cheers",
+    "intent": "thank",
+    "intent_prediction": {
+      "name": "greet",
+      "confidence": 0.7925044894218445
+    }
+  },
+  {
+    "text": "asante, najisikia vizuri sasa",
+    "intent": "thank",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9999675750732422
+    }
+  },
+  {
+    "text": "ehe",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "greet",
+      "confidence": 0.8709707260131836
+    }
+  },
+  {
+    "text": "maybe later",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.9999262094497681
+    }
+  },
+  {
+    "text": "not really",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "thank",
+      "confidence": 0.9874869585037231
+    }
+  },
+  {
+    "text": "not today",
+    "intent": "deny",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.40543144941329956
+    }
+  },
+  {
+    "text": "siwezi kustahimili haya yote",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "feel_anxious",
+      "confidence": 0.4056921601295471
+    }
+  },
+  {
+    "text": "mambo ni mengi sana",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "greet",
+      "confidence": 0.4972486197948456
+    }
+  },
+  {
+    "text": "naogopa maisha ya baadaye",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.863269031047821
+    }
+  },
+  {
+    "text": "siwezi kutulia",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "ask_breathing",
+      "confidence": 0.961108386516571
+    }
+  },
+  {
+    "text": "I'm really depressed",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.9985325336456299
+    }
+  },
+  {
+    "text": "nimekuwa nikilia",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.999139666557312
+    }
+  },
+  {
+    "text": "hakuna anayenijali",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "affirm",
+      "confidence": 0.8081828355789185
+    }
+  },
+  {
+    "text": "sijisikii vizuri",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9999929666519165
+    }
+  },
+  {
+    "text": "I'm fine",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "deny",
+      "confidence": 0.999637246131897
+    }
+  },
+  {
+    "text": "I'm full of joy",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "tell_name",
+      "confidence": 0.9981566071510315
+    }
+  },
+  {
+    "text": "my heart is full of joy",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "tell_name",
+      "confidence": 0.9768214821815491
+    }
+  },
+  {
+    "text": "what can I do to feel calmer",
+    "intent": "ask_breathing",
+    "intent_prediction": {
+      "name": "ask_about_bot",
+      "confidence": 0.950049877166748
+    }
+  },
+  {
+    "text": "is this confidential",
+    "intent": "ask_about_bot",
+    "intent_prediction": {
+      "name": "tell_name",
+      "confidence": 0.5960625410079956
+    }
+  },
+  {
+    "text": "mazungumzo yangu ni siri",
+    "intent": "ask_about_bot",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.53717440366745
+    }
+  },
+  {
+    "text": "unaweza kunisaidiaje",
+    "intent": "ask_about_bot",
+    "intent_prediction": {
+      "name": "thank",
+      "confidence": 0.5478665828704834
+    }
+  }
+]

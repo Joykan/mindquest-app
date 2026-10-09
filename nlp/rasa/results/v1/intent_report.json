@@ -1,0 +1,113 @@
+{
+  "greet": {
+    "precision": 0.6,
+    "recall": 0.75,
+    "f1-score": 0.6666666666666665,
+    "support": 4,
+    "confused_with": {
+      "feel_good": 1
+    }
+  },
+  "feel_anxious": {
+    "precision": 1.0,
+    "recall": 0.75,
+    "f1-score": 0.8571428571428571,
+    "support": 4,
+    "confused_with": {
+      "ask_breathing": 1
+    }
+  },
+  "ask_about_bot": {
+    "precision": 0.8,
+    "recall": 1.0,
+    "f1-score": 0.888888888888889,
+    "support": 4,
+    "confused_with": {}
+  },
+  "deny": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 4,
+    "confused_with": {}
+  },
+  "feel_sad": {
+    "precision": 0.5,
+    "recall": 0.75,
+    "f1-score": 0.6,
+    "support": 4,
+    "confused_with": {
+      "ask_about_bot": 1
+    }
+  },
+  "feel_stressed": {
+    "precision": 1.0,
+    "recall": 0.75,
+    "f1-score": 0.8571428571428571,
+    "support": 4,
+    "confused_with": {
+      "feel_sad": 1
+    }
+  },
+  "goodbye": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 4,
+    "confused_with": {}
+  },
+  "affirm": {
+    "precision": 1.0,
+    "recall": 0.75,
+    "f1-score": 0.8571428571428571,
+    "support": 4,
+    "confused_with": {
+      "greet": 1
+    }
+  },
+  "ask_breathing": {
+    "precision": 0.8,
+    "recall": 1.0,
+    "f1-score": 0.888888888888889,
+    "support": 4,
+    "confused_with": {}
+  },
+  "thank": {
+    "precision": 1.0,
+    "recall": 0.75,
+    "f1-score": 0.8571428571428571,
+    "support": 4,
+    "confused_with": {
+      "feel_sad": 1
+    }
+  },
+  "feel_good": {
+    "precision": 0.6666666666666666,
+    "recall": 0.5,
+    "f1-score": 0.5714285714285715,
+    "support": 4,
+    "confused_with": {
+      "greet": 1,
+      "feel_sad": 1
+    }
+  },
+  "accuracy": 0.8181818181818182,
+  "macro avg": {
+    "precision": 0.8515151515151514,
+    "recall": 0.8181818181818182,
+    "f1-score": 0.8222222222222222,
+    "support": 44
+  },
+  "weighted avg": {
+    "precision": 0.8515151515151514,
+    "recall": 0.8181818181818182,
+    "f1-score": 0.8222222222222222,
+    "support": 44
+  },
+  "micro avg": {
+    "precision": 0.8181818181818182,
+    "recall": 0.8181818181818182,
+    "f1-score": 0.8181818181818182,
+    "support": 44
+  }
+}

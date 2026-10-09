@@ -1,0 +1,66 @@
+[
+  {
+    "text": "good day",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9999886751174927
+    }
+  },
+  {
+    "text": "you've been helpful",
+    "intent": "thank",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.9504280090332031
+    }
+  },
+  {
+    "text": "eeh",
+    "intent": "affirm",
+    "intent_prediction": {
+      "name": "greet",
+      "confidence": 0.5158405303955078
+    }
+  },
+  {
+    "text": "maisha yamenibana",
+    "intent": "feel_stressed",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.8144209384918213
+    }
+  },
+  {
+    "text": "akili haitulii",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "ask_breathing",
+      "confidence": 0.99993896484375
+    }
+  },
+  {
+    "text": "roho yangu iko chini",
+    "intent": "feel_sad",
+    "intent_prediction": {
+      "name": "ask_about_bot",
+      "confidence": 0.9962584972381592
+    }
+  },
+  {
+    "text": "I'm feeling awesome",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "feel_sad",
+      "confidence": 0.7663378715515137
+    }
+  },
+  {
+    "text": "all good here",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "greet",
+      "confidence": 0.8122724294662476
+    }
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "text": "I feel joy",
+    "entities": [],
+    "predicted_entities": [
+      {
+        "entity": "name",
+        "start": 7,
+        "end": 10,
+        "confidence_entity": 0.9943649768829346,
+        "value": "joy",
+        "extractor": "DIETClassifier"
+      }
+    ]
+  }
+]
