@@ -1,0 +1,2847 @@
+[
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hi"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hello"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hey"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "good morning"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "good afternoon"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "good evening"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hey there"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hello MindQuest"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hi friend"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "morning"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hiya"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hey, are you there?"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hello, anyone there?"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hi there, how are you?"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "yo"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "good morning to you"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hello, good afternoon"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hello there"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hi again"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hey, good evening"
+ },
+ {
+  "intent": "greet",
+  "lang": "en",
+  "text": "hi, how's it going"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "habari"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "habari yako"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "mambo"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "hujambo"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "sasa"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "vipi"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "niaje"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "hodi"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "salamu"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "habari za asubuhi"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "habari za mchana"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "habari za jioni"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "shikamoo"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "mambo vipi"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "sasa msee"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "habari za leo"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "mambo, uko aje"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "hujambo rafiki"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "niaje msee"
+ },
+ {
+  "intent": "greet",
+  "lang": "sw",
+  "text": "salamu kwako"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "bye"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "goodbye"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "see you later"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "talk to you later"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "I have to go"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "good night"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "see you tomorrow"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "catch you later"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "bye for now"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "I'm leaving now"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "that's all for today"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "gotta go"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "take care, bye"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "later"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "I'm done for today"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "goodbye for now"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "I'm going to sleep now"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "see you soon"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "bye bye"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "have a good night"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "I'll be back later"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "kwaheri"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "tutaonana"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "tutaonana kesho"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "usiku mwema"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "nimeenda"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "nitarudi baadaye"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "kwaheri ya kuonana"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "ngoja niende"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "nataka kwenda sasa"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "tuonane baadaye"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "acha niende"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "nimemaliza kwa leo"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "poa, baadaye"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "lala salama"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "nitakucheki baadaye"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "kwaheri basi"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "nitaongea nawe baadaye"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "nakwenda kulala"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "tuonane kesho"
+ },
+ {
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "usiku mwema, tutaonana"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "thanks"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "thank you"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "thank you so much"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "thanks a lot"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "I appreciate it"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "that helped"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "that was helpful"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "thanks for listening"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "cheers"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "thanks, I feel better"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "much appreciated"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "thank you for your help"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "thx"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "that really helped me"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "great, thanks"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "you're really helpful"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "you helped me a lot"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "I'm grateful"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "thanks so much for this"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "I'm thankful"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "thank you, that was nice"
+ },
+ {
+  "intent": "thank",
+  "lang": "en",
+  "text": "appreciate you"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "asante"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "asante sana"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "nashukuru"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "shukrani"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "asante kwa kunisikiliza"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "hiyo imenisaidia"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "nimesaidika"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "asante kwa msaada"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "ahsante"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "nashukuru sana"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "asante, najisikia vizuri sasa"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "umenisaidia sana"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "shukran"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "asante rafiki"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "Mungu akubariki"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "umekuwa msaada mkubwa"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "asante kwa kunisaidia"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "nakushukuru"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "shukrani nyingi"
+ },
+ {
+  "intent": "thank",
+  "lang": "sw",
+  "text": "asante kwa muda wako"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "yes"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "yeah"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "sure"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "okay"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "ok"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "yes please"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "let's do it"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "let's try"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "alright"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "of course"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "I'd like that"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "sounds good"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "go ahead"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "why not"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "definitely"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "yes, let's do it"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "ok sure"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "yeah sure"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "sure, go ahead"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "yes I want to"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "I'm ready"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "count me in"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "absolutely"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "okay, I'll try"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "right, let's start"
+ },
+ {
+  "intent": "affirm",
+  "lang": "en",
+  "text": "fine, let's do it"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "ndio"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "ndiyo"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "sawa"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "sawa sawa"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "poa"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "haya"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "naam"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "tujaribu"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "ndio tafadhali"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "twende"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "sawa, tuanze"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "bila shaka"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "nakubali"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "ndio nataka"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "fiti"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "ehe"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "ndiyo kabisa"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "sawa kabisa"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "ndio, niko tayari"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "niko tayari"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "sawa, twende"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "poa, tuanze"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "fiti, tufanye"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "ndio, nataka kujaribu"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "naam, tuanze"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "bila shaka, tuanze"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "ehe, sawa"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "tufanye hivyo"
+ },
+ {
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "sawa, nitajaribu"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "no"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "nope"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "not now"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "no thanks"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "maybe later"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "I don't want to"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "not really"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "nah"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "I'd rather not"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "no, I'm fine"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "not today"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "skip"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "never mind"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "I don't think so"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "no way"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "no, not now"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "no, I don't want to"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "nah, I'm good"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "I'll pass"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "not interested"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "no, skip it"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "no, maybe another time"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "please no"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "I don't feel like it"
+ },
+ {
+  "intent": "deny",
+  "lang": "en",
+  "text": "nope, not today"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "hapana"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "la"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "sitaki"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "si sasa"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "hapana asante"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "sidhani"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "sina hamu"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "wacha"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "achana nayo"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "hapana, niko sawa"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "siwezi sasa"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "labda baadaye"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "hapana bwana"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "aah, hapana"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "sitaki kwa sasa"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "hapana, sitaki"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "la, sitaki"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "sitaki kujaribu"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "hapana, wacha tu"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "acha tu"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "la hasha"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "sina haja"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "hapana, baadaye"
+ },
+ {
+  "intent": "deny",
+  "lang": "sw",
+  "text": "sijisikii kufanya hivyo"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I'm stressed"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I'm so stressed out"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "exams are stressing me"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "there's too much pressure"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I feel overwhelmed"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I have too much work"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "school is too much"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I can't cope with everything"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "my workload is crazy"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I'm under a lot of pressure"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "deadlines are killing me"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I'm burnt out"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "money problems are stressing me"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I can't handle all this"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "everything is piling up"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "life is too hard right now"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I'm stressed with school"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "work is too much for me"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I have so many assignments"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I'm exhausted from all this work"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "the pressure is too much"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I'm drowning in work"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "rent is stressing me out"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I don't have time for anything"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "nina stress"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "nina msongo wa mawazo"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "mitihani inanisumbua"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "nimezidiwa na kazi"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "kuna shinikizo nyingi"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "shule imenichosha"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "siwezi kustahimili haya yote"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "nina presha sana"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "kazi ni nyingi mno"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "pesa zinanisumbua"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "nimechoka kimawazo"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "mambo ni mengi sana"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "karo inanipa stress"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "nimelemewa"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "najihisi kubanwa"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "maisha ni magumu sana"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "nimebanwa na majukumu"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "nina kazi nyingi sana"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "assignment ni nyingi"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "nimechoka na shule"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "presha ya kazi ni nyingi"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "kodi inanisumbua"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "sina muda wa kitu chochote"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "nimechoka na majukumu"
+ },
+ {
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "kazi imenilemea"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I feel anxious"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I'm so worried"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I can't stop worrying"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "my heart is racing"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I'm nervous about tomorrow"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I have anxiety"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I feel panicky"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I'm scared about the future"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I keep overthinking"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I feel on edge"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I can't calm down"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I'm afraid something bad will happen"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "my chest feels tight with worry"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I get anxious around people"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I'm worried about my results"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "my mind won't stop racing"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I'm anxious about my interview"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I'm scared"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I'm panicking"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I have a bad feeling"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I can't sleep because of worry"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I'm afraid of failing"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "my hands are shaking"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "what if everything goes wrong"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "nina wasiwasi"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "nina hofu"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "naogopa"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "siwezi kuacha kuwaza"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "moyo unadunda kwa kasi"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "nina woga kuhusu kesho"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "nahisi hofu"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "naogopa maisha ya baadaye"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "nawaza sana"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "sina amani"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "siwezi kutulia"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "naogopa kitu kibaya kitatokea"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "najihisi na wasiwasi mwingi"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "naogopa matokeo yangu"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "nina wasiwasi kila wakati"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "akili yangu haina amani"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "mawazo hayaishi kichwani"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "nina wasiwasi mwingi"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "naogopa kushindwa"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "siwezi kulala kwa sababu ya wasiwasi"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "nina hofu kuhusu mtihani"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "mikono inatetemeka"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "naogopa kuongea na watu"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "wasiwasi umenizidi"
+ },
+ {
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "nina woga"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I feel sad"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I'm feeling down"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I feel low today"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I've been crying"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I feel empty"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "nothing makes me happy"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I feel lonely"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I'm really depressed"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I feel like nobody cares"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I'm heartbroken"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I miss my family"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I'm not okay"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I feel unhappy"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I feel alone"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I've been sad for days"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "my heart feels heavy"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I don't feel good"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I'm not doing well"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I'm not happy"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I'm not fine"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I feel really low"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I'm so unhappy"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I've been feeling empty"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I'm feeling lonely"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "everything feels sad"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I can't stop crying"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "nobody understands me"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I feel left out"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I'm grieving"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nina huzuni"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "najisikia vibaya"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nimeshuka moyo"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nimekuwa nikilia"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "najihisi mtupu"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "hakuna kinachonifurahisha"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nahisi upweke"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nina majonzi"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "hakuna anayenijali"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "moyo wangu umevunjika"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "sijisikii vizuri"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nimevunjika moyo"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nawakumbuka familia yangu"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "siko sawa"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "najisikia mpweke"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "moyo wangu uko chini"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nimejawa na huzuni"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "sina furaha"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "siko vizuri"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "sijisikii sawa"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nimehuzunika"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nimekuwa mpweke"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "sina raha"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nalia kila siku"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nimekosa furaha"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "hakuna anayenielewa"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nimesononeka"
+ },
+ {
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "moyo wangu una huzuni"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I feel great"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm happy today"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm doing well"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "feeling good"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm in a good mood"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "today was a good day"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I feel better"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm fine"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm okay"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I passed my exam!"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "things are going well"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I feel calm"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm excited"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "life is good"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm proud of myself"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm feeling great"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm feeling amazing"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "feeling happy today"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "everything is good"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "all is well"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm full of joy"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm feeling joyful"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "my heart is full of joy"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm good"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I feel good today"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm doing great"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm happy"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I feel relaxed"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm feeling better now"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I feel peaceful"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm really happy"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "things are better now"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I had a great day"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "niko poa"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "najisikia vizuri"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "nina furaha"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "niko sawa"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "leo ni siku nzuri"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "najisikia nafuu"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "nimefaulu mtihani"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "mambo yanaenda vizuri"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "niko fiti"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "nimetulia"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "nina amani"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "nimefurahi sana"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "maisha ni mazuri"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "najivunia"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "niko safi"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "mambo ni mazuri"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "niko vizuri sana"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "nimejawa na furaha"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "nina furaha tele"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "moyo wangu una amani"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "najisikia furaha"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "niko na furaha"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "niko sawa kabisa"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "najisikia vizuri leo"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "nimepumzika vizuri"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "niko na amani"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "leo nimeshinda"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "mambo safi"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "niko freshi"
+ },
+ {
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "najisikia mchangamfu"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "how can I calm down"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "teach me a breathing exercise"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "help me relax"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "I need to relax"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "give me a relaxation exercise"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "how do I breathe to calm down"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "any tips to relax"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "guide me through meditation"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "give me a coping tip"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "what can I do to feel calmer"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "help me breathe"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "can we do a breathing exercise"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "how do I stop panicking"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "show me a mindfulness exercise"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "I need something to calm me down"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "can you help me calm down"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "I need a minute to breathe"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "how do I calm my mind"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "give me a grounding exercise"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "help me stop panicking"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "let's do a calming exercise"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nitatulizaje akili"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nifundishe zoezi la kupumua"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nisaidie kutulia"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nataka kupumzika"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nipe zoezi la kutuliza"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "napumua vipi ili nitulie"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nipe mbinu za kutuliza akili"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "niongoze kutafakari"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nipe ushauri wa kukabiliana"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nifanye nini nitulie"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nisaidie kupumua"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "tufanye zoezi la kupumua"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nitaachaje hofu hii"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nionyeshe zoezi la utulivu"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nahitaji kitu cha kunituliza"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nisaidie kupumzika"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nifundishe kutuliza akili"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nipe zoezi la kutuliza mawazo"
+ },
+ {
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "tufanye zoezi la kutuliza"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "who are you"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "what is MindQuest"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "what can you do"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "are you a real person"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "are you a human"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "are you a therapist"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "how does this app work"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "can you diagnose me"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "are my chats private"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "who made you"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "is this confidential"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "can you replace a counselor"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "what are you"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "are you a robot"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "how can you help me"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "what is this app"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "who built this app"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "do you keep my messages"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "can anyone else see my chats"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "what does MindQuest do"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "is my data safe"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "wewe ni nani"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "MindQuest ni nini"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "unaweza kufanya nini"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "wewe ni binadamu"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "wewe ni mtu halisi"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "wewe ni daktari"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "programu hii inafanyaje kazi"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "unaweza kunipima ugonjwa"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "mazungumzo yangu ni siri"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "nani alikutengeneza"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "je, hii ni siri"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "unaweza kuchukua nafasi ya mshauri"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "wewe ni roboti"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "unaweza kunisaidiaje"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "wewe ni kitu gani"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "programu hii ni ya nini"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "nani anaona mazungumzo yangu"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "data yangu iko salama"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "unafanya kazi aje"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "MindQuest inafanya nini"
+ },
+ {
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "wewe ni mshauri"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "my name is [Joy](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "I'm [Joy](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "call me [Hope](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "I am [Grace](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "it's [Faith](name) here"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "[Precious](name) here"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "you can call me [Happy](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "my name's [Brian](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "this is [Mercy](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "hi, I'm [Wanjiru](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "hello, my name is [Kevin](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "I'm called [Otieno](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "name's [Chebet](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "they call me [Blessing](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "hey im [joy](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "hey, my name is [Neema](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "I go by [Sharon](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "people call me [Kip](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "I'm [Baraka](name), nice to meet you"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "hi there, I'm [Peace](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "my friends call me [Shiru](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "naitwa [Furaha](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "jina langu ni [Amani](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "mimi ni [Neema](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "mimi naitwa [Imani](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "niite [Baraka](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "ni [Faraja](name) hapa"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "jina langu ni [Tumaini](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "naitwa [Achieng](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "mimi ni [Kiprop](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "unaweza kuniita [Mutua](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "jina langu ni [Joy](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "habari, naitwa [Wambui](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "mimi ni [Kandie](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "ni mimi [Faith](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "jina langu [baraka](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "mimi ni [Kamau](name), habari"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "jina langu ni [Zawadi](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "wananiita [Nafula](name)"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "naitwa [Rehema](name) mimi"
+ },
+ {
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "niite tu [Wema](name)"
+ }
+]

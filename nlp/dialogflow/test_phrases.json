@@ -1,0 +1,338 @@
+[
+ {
+  "set": "test_nlu",
+  "intent": "greet",
+  "lang": "en",
+  "text": "good day"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "greet",
+  "lang": "en",
+  "text": "hey hey"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "greet",
+  "lang": "sw",
+  "text": "habari gani"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "greet",
+  "lang": "sw",
+  "text": "hali yako je"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "alright bye"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "goodbye",
+  "lang": "en",
+  "text": "see ya"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "kwaheri rafiki"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "goodbye",
+  "lang": "sw",
+  "text": "tutaongea kesho"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "thank",
+  "lang": "en",
+  "text": "thank u"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "thank",
+  "lang": "en",
+  "text": "you've been helpful"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "thank",
+  "lang": "sw",
+  "text": "asante kwa ushauri"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "thank",
+  "lang": "sw",
+  "text": "nimefurahi, asante"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "affirm",
+  "lang": "en",
+  "text": "yep"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "affirm",
+  "lang": "en",
+  "text": "okay let's go"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "eeh"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "affirm",
+  "lang": "sw",
+  "text": "sawa basi"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "deny",
+  "lang": "en",
+  "text": "nah thanks"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "deny",
+  "lang": "en",
+  "text": "not right now"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "deny",
+  "lang": "sw",
+  "text": "hapana kwa sasa"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "deny",
+  "lang": "sw",
+  "text": "si leo"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "I'm stressed about my exams"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_stressed",
+  "lang": "en",
+  "text": "too much on my plate"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "nina stress ya mitihani"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_stressed",
+  "lang": "sw",
+  "text": "maisha yamenibana"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I'm really nervous"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_anxious",
+  "lang": "en",
+  "text": "I'm worried all the time"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "nina hofu sana"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_anxious",
+  "lang": "sw",
+  "text": "akili haitulii"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I'm so sad"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_sad",
+  "lang": "en",
+  "text": "I feel down lately"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "nina huzuni leo"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_sad",
+  "lang": "sw",
+  "text": "roho yangu iko chini"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I'm feeling awesome"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "all good here"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "niko poa sana"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "leo nimefurahi"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "breathing exercise please"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "ask_breathing",
+  "lang": "en",
+  "text": "how do I relax"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "nisaidie nitulie"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "ask_breathing",
+  "lang": "sw",
+  "text": "zoezi la kupumua tafadhali"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "what are you exactly"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "ask_about_bot",
+  "lang": "en",
+  "text": "is this a bot"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "wewe ni AI"
+ },
+ {
+  "set": "test_nlu",
+  "intent": "ask_about_bot",
+  "lang": "sw",
+  "text": "unanisaidiaje"
+ },
+ {
+  "set": "test_names",
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "hey, I'm [Faith](name)"
+ },
+ {
+  "set": "test_names",
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "my name is [Amani](name)"
+ },
+ {
+  "set": "test_names",
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "call me [Joy](name)"
+ },
+ {
+  "set": "test_names",
+  "intent": "tell_name",
+  "lang": "en",
+  "text": "[Hope](name) here"
+ },
+ {
+  "set": "test_names",
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "naitwa [Joy](name)"
+ },
+ {
+  "set": "test_names",
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "jina langu ni [Furaha](name)"
+ },
+ {
+  "set": "test_names",
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "mimi ni [Grace](name)"
+ },
+ {
+  "set": "test_names",
+  "intent": "tell_name",
+  "lang": "sw",
+  "text": "niite [Imani](name)"
+ },
+ {
+  "set": "test_names",
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "I feel joy"
+ },
+ {
+  "set": "test_names",
+  "intent": "feel_good",
+  "lang": "en",
+  "text": "so much joy today"
+ },
+ {
+  "set": "test_names",
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "nina furaha sana leo"
+ },
+ {
+  "set": "test_names",
+  "intent": "feel_good",
+  "lang": "sw",
+  "text": "nimejaa furaha"
+ }
+]

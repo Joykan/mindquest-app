@@ -36,3 +36,7 @@ supabase/.branches/
 nlp/rasa/.venv/
 nlp/rasa/models/
 nlp/rasa/.rasa/
+
+# Dialogflow comparison
+nlp/dialogflow/.venv/
+*-key.json
