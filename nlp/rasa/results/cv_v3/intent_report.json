@@ -1,0 +1,141 @@
+{
+  "affirm": {
+    "precision": 0.8461538461538461,
+    "recall": 0.8,
+    "f1-score": 0.8224299065420562,
+    "support": 55,
+    "confused_with": {
+      "feel_good": 4,
+      "feel_sad": 2
+    }
+  },
+  "feel_good": {
+    "precision": 0.6,
+    "recall": 0.7619047619047619,
+    "f1-score": 0.6713286713286712,
+    "support": 63,
+    "confused_with": {
+      "feel_sad": 3,
+      "ask_breathing": 3
+    }
+  },
+  "feel_stressed": {
+    "precision": 0.8048780487804879,
+    "recall": 0.673469387755102,
+    "f1-score": 0.7333333333333334,
+    "support": 49,
+    "confused_with": {
+      "feel_anxious": 7,
+      "feel_good": 3
+    }
+  },
+  "ask_about_bot": {
+    "precision": 0.8125,
+    "recall": 0.9285714285714286,
+    "f1-score": 0.8666666666666666,
+    "support": 42,
+    "confused_with": {
+      "feel_stressed": 1,
+      "feel_good": 1
+    }
+  },
+  "tell_name": {
+    "precision": 0.9375,
+    "recall": 0.7317073170731707,
+    "f1-score": 0.821917808219178,
+    "support": 41,
+    "confused_with": {
+      "feel_good": 6,
+      "greet": 2
+    }
+  },
+  "deny": {
+    "precision": 0.7209302325581395,
+    "recall": 0.6326530612244898,
+    "f1-score": 0.6739130434782609,
+    "support": 49,
+    "confused_with": {
+      "feel_sad": 7,
+      "feel_good": 3
+    }
+  },
+  "ask_breathing": {
+    "precision": 0.813953488372093,
+    "recall": 0.875,
+    "f1-score": 0.8433734939759036,
+    "support": 40,
+    "confused_with": {
+      "ask_about_bot": 2,
+      "greet": 1
+    }
+  },
+  "greet": {
+    "precision": 0.7446808510638298,
+    "recall": 0.8536585365853658,
+    "f1-score": 0.7954545454545454,
+    "support": 41,
+    "confused_with": {
+      "deny": 2,
+      "affirm": 2
+    }
+  },
+  "goodbye": {
+    "precision": 0.8378378378378378,
+    "recall": 0.7560975609756098,
+    "f1-score": 0.7948717948717948,
+    "support": 41,
+    "confused_with": {
+      "feel_good": 3,
+      "greet": 2
+    }
+  },
+  "feel_anxious": {
+    "precision": 0.6666666666666666,
+    "recall": 0.6938775510204082,
+    "f1-score": 0.6799999999999999,
+    "support": 49,
+    "confused_with": {
+      "feel_sad": 5,
+      "ask_breathing": 3
+    }
+  },
+  "feel_sad": {
+    "precision": 0.6451612903225806,
+    "recall": 0.7017543859649122,
+    "f1-score": 0.6722689075630253,
+    "support": 57,
+    "confused_with": {
+      "feel_good": 7,
+      "feel_stressed": 3
+    }
+  },
+  "thank": {
+    "precision": 0.9393939393939394,
+    "recall": 0.7380952380952381,
+    "f1-score": 0.8266666666666667,
+    "support": 42,
+    "confused_with": {
+      "feel_good": 3,
+      "greet": 2
+    }
+  },
+  "accuracy": 0.7574692442882249,
+  "macro avg": {
+    "precision": 0.7808046834291185,
+    "recall": 0.7622324357642073,
+    "f1-score": 0.7668520698416751,
+    "support": 569
+  },
+  "weighted avg": {
+    "precision": 0.7697757096195178,
+    "recall": 0.7574692442882249,
+    "f1-score": 0.7590135346182468,
+    "support": 569
+  },
+  "micro avg": {
+    "precision": 0.7574692442882249,
+    "recall": 0.7574692442882249,
+    "f1-score": 0.7574692442882249,
+    "support": 569
+  }
+}
