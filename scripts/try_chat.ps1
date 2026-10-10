@@ -9,7 +9,7 @@
 param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Messages)
 
 if (-not $Messages) {
-    $Messages = @("hi", "my name is Joy", "yes", "I'm so stressed about exams", "yes", "thank you")
+    $Messages = @("hi", "my name is Joy", "I feel joy today", "I'm so stressed about exams", "yes", "thank you")
 }
 
 $cfg = Get-Content (Join-Path $PSScriptRoot "..\config\dev.json") -Raw | ConvertFrom-Json
