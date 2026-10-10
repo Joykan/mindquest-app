@@ -51,3 +51,36 @@ update public.profiles set role = 'admin' where id = 'USER-ID';
 supabase init
 supabase link --project-ref dqcgeugyhpiemucdypok
 ```
+
+## Chat function
+
+`functions/chat` is the Edge Function behind the chat screen (UC-01). The app
+sends `{ "text": "...", "session_id": "..." }` with the user's access token.
+
+1. **Crisis check first.** Every message is checked against a list of English,
+   Kiswahili and Sheng crisis phrases (`crisis.ts`). On a match the model is
+   skipped, a row is added to `crisis_events` (time and user only, never the
+   text) and the reply includes the verified helplines. If none are verified
+   yet, Kenya's emergency numbers 999 and 112 are returned instead.
+2. **Otherwise Rasa.** The text goes to the Rasa server (`/model/parse`). The
+   reply is chosen in `logic.ts`:
+   - below 0.5 confidence, or `nlu_fallback`, gives the fallback reply
+   - stress and anxiety offer a breathing exercise; the next "yes"/"no" is read
+     against that offer
+   - names: a name only counts if Rasa extracted one, and names that are also
+     feeling words (Joy, Furaha, Amani...) are confirmed first
+   - if Rasa can't be reached, the user gets a "try again" reply and the
+     crisis check still works
+3. **Saved.** Both messages go into `messages`, with the intent and confidence
+   on the user's message and the reply key on the bot's. Saving the user's
+   message awards chat XP through the existing trigger.
+
+Replies in both languages are in `replies.ts`; the user's `profiles.language`
+picks which. Tests: `cd supabase/functions/chat && deno test` (also run in CI).
+
+Secrets (Dashboard > Edge Functions > Secrets):
+
+| Name | Value |
+|---|---|
+| `RASA_URL` | Public address of the Rasa server, e.g. the ngrok address |
+| `RASA_TOKEN` | Same token Rasa was started with (`nlp/rasa/.rasa-token`) |

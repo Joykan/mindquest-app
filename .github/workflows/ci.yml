@@ -64,3 +64,26 @@ jobs:
           name: mindquest-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
           retention-days: 14
+
+  chat-function:
+    name: Chat function tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: supabase/functions/chat
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Format and lint
+        run: deno fmt --check && deno lint
+
+      - name: Type check
+        run: deno check index.ts
+
+      - name: Unit tests
+        run: deno test
