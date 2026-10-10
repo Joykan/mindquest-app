@@ -57,6 +57,12 @@ class FakeAccount implements AccountRepository {
     onboardedLanguage = language;
     profile = Profile(username: username, language: language, onboarded: true);
   }
+
+  @override
+  Future<void> updateLanguage(String language) async {
+    final Profile? p = profile;
+    if (p != null) profile = Profile(username: p.username, language: language, onboarded: p.onboarded);
+  }
 }
 
 Widget wrap(Widget child) => MaterialApp(theme: AppTheme.light(), home: child);
@@ -90,8 +96,9 @@ void main() {
       final SessionController s = SessionController(account);
       await account.signIn(email: 'a@b.co', password: 'correct-horse');
       await s.refresh();
-      expect(redirectFor(s, '/welcome'), '/chat');
-      expect(redirectFor(s, '/onboarding'), '/chat');
+      expect(redirectFor(s, '/welcome'), '/home');
+      expect(redirectFor(s, '/onboarding'), '/home');
+      expect(redirectFor(s, '/home'), isNull);
       expect(redirectFor(s, '/chat'), isNull);
       expect(s.language, 'sw');
     });

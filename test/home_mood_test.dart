@@ -1,0 +1,134 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mindquest/core/theme/app_theme.dart';
+import 'package:mindquest/features/chat/chat_models.dart';
+import 'package:mindquest/features/gamification/levels.dart';
+import 'package:mindquest/features/home/home_screen.dart';
+import 'package:mindquest/features/home/progress_repository.dart';
+import 'package:mindquest/features/mood/mood_screen.dart';
+
+class FakeProgress implements ProgressRepository {
+  FakeProgress(this.summary);
+
+  HomeSummary summary;
+  final List<(int, String?)> logged = <(int, String?)>[];
+
+  @override
+  Future<HomeSummary> loadHome() async => summary;
+
+  @override
+  Future<MoodSaved> logMood({required int mood, String? note}) async {
+    logged.add((mood, note));
+    return MoodSaved(xpEarned: logged.length == 1 ? 10 : 0, streak: 4);
+  }
+
+  @override
+  Future<List<Helpline>> loadHelplines() async =>
+      const <Helpline>[Helpline(name: 'Kenya Red Cross', phone: '1199', description: 'Toll-free, 24 hours')];
+}
+
+/// A phone-sized screen (360 x 800) so the whole Home screen is laid out.
+void usePhoneScreen(WidgetTester tester) {
+  tester.view.physicalSize = const Size(1080, 2400);
+  tester.view.devicePixelRatio = 3;
+  addTearDown(tester.view.reset);
+}
+
+void main() {
+  group('levels match public.level_for_xp', () {
+    test('thresholds', () {
+      final Map<int, int> cases = <int, int>{0: 1, 49: 1, 50: 2, 99: 2, 100: 3, 199: 3, 200: 4, 349: 4, 350: 5, 549: 5, 550: 6, 750: 7};
+      cases.forEach((int xp, int level) => expect(levelForXp(xp), level, reason: '$xp XP'));
+    });
+
+    test('progress to the next level (the wireframe example: 160 XP)', () {
+      final LevelProgress p = LevelProgress(160);
+      expect(p.level, 3);
+      expect(p.earned, 60);
+      expect(p.needed, 100);
+    });
+  });
+
+  group('Nairobi day and week boundaries', () {
+    test('just after midnight in Nairobi is already the new day', () {
+      // 21:30 UTC on 10 Oct = 00:30 on 11 Oct in Nairobi.
+      final DateTime start = startOfTodayUtc(DateTime.utc(2026, 10, 10, 21, 30));
+      expect(start, DateTime.utc(2026, 10, 10, 21));
+    });
+
+    test('week starts on Monday', () {
+      // Saturday 10 Oct 2026, noon Nairobi -> Monday 5 Oct 00:00 Nairobi.
+      final DateTime start = startOfWeekUtc(DateTime.utc(2026, 10, 10, 9));
+      expect(start, DateTime.utc(2026, 10, 4, 21));
+    });
+  });
+
+  testWidgets('Home shows streak, level progress and quests', (tester) async {
+    usePhoneScreen(tester);
+    int? tappedMood;
+    final FakeProgress repo = FakeProgress(const HomeSummary(
+      username: 'Amani',
+      xp: 160,
+      streak: 3,
+      doneToday: <String>{'chat_message'},
+      weekCheckinDays: 2,
+    ));
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: HomeScreen(
+        repository: repo,
+        onMoodTap: (int m) => tappedMood = m,
+        onTalk: () {},
+        onProfile: () {},
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Hi, Amani'), findsOneWidget);
+    expect(find.text('3-day streak'), findsOneWidget);
+    expect(find.text('Level 3'), findsOneWidget);
+    expect(find.text('60 / 100 XP to Level 4'), findsOneWidget);
+    expect(find.text('1 / 3'), findsOneWidget);
+    expect(find.text('2 / 5'), findsOneWidget);
+    expect(find.text('+10 XP'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('mood-4')));
+    expect(tappedMood, 4);
+
+    await tester.scrollUntilVisible(find.byKey(const Key('helplines')), 100);
+    await tester.tap(find.byKey(const Key('helplines')));
+    await tester.pumpAndSettle();
+    expect(find.text('Kenya Red Cross'), findsOneWidget);
+  });
+
+  testWidgets('Mood check-in saves the face and note, and shows the XP', (tester) async {
+    usePhoneScreen(tester);
+    final FakeProgress repo = FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0));
+    int savedCalls = 0;
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: MoodScreen(repository: repo, onSaved: () => savedCalls++),
+    ));
+
+    FilledButton save() => tester.widget<FilledButton>(find.byKey(const Key('save-mood')));
+    expect(save().onPressed, isNull, reason: 'nothing chosen yet');
+
+    await tester.tap(find.byKey(const Key('choose-mood-2')));
+    await tester.enterText(find.byKey(const Key('mood-note')), 'exams tomorrow');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('save-mood')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(repo.logged, <(int, String?)>[(2, 'exams tomorrow')]);
+    expect(find.textContaining('Check-in saved. +10 XP'), findsOneWidget);
+    expect(savedCalls, 1);
+  });
+
+  testWidgets('A face tapped on Home arrives already selected', (tester) async {
+    usePhoneScreen(tester);
+    final FakeProgress repo = FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0));
+    await tester.pumpWidget(MaterialApp(theme: AppTheme.light(), home: MoodScreen(repository: repo, initialMood: 5)));
+    expect(tester.widget<FilledButton>(find.byKey(const Key('save-mood'))).onPressed, isNotNull);
+  });
+}
