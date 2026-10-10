@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../home/progress_repository.dart';
+import 'check_in_summary.dart';
+import 'mood_tags.dart';
 import 'moods.dart';
 
 /// Mood check-in (wireframe 07, UC-02 Log mood entry).
@@ -14,7 +16,17 @@ class MoodScreen extends StatefulWidget {
     this.onSaved,
     this.onBack,
     this.onHistory,
+    this.onSupport,
+    this.onTalk,
+    this.language = 'en',
   });
+
+  /// Opens the Support screen (offered after a low mood).
+  final VoidCallback? onSupport;
+
+  /// Opens the chat (offered after a low mood).
+  final VoidCallback? onTalk;
+  final String language;
 
   final ProgressRepository repository;
 
@@ -37,6 +49,7 @@ class MoodScreen extends StatefulWidget {
 class _MoodScreenState extends State<MoodScreen> {
   final TextEditingController _note = TextEditingController();
   late int? _mood = widget.initialMood;
+  final Set<String> _tags = <String>{};
   bool _saving = false;
 
   @override
@@ -56,36 +69,48 @@ class _MoodScreenState extends State<MoodScreen> {
   Future<void> _save() async {
     final int? mood = _mood;
     if (mood == null) return;
+    final List<String> tags = <String>[
+      for (final MoodTag t in moodTags)
+        if (_tags.contains(t.id)) t.id,
+    ];
     setState(() => _saving = true);
+    final MoodSaved saved;
     try {
-      final MoodSaved saved =
-          await widget.repository.logMood(mood: mood, note: _note.text);
-      if (!mounted) return;
-      final String streak =
-          saved.streak == 1 ? '1-day streak' : '${saved.streak}-day streak';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            saved.xpEarned > 0
-                ? 'Check-in saved. +${saved.xpEarned} XP · $streak 🔥'
-                : 'Check-in saved · $streak 🔥',
-          ),
-        ),
-      );
-      setState(() {
-        _mood = null;
-        _note.clear();
-      });
-      widget.onSaved?.call();
+      saved = await widget.repository.logMood(mood: mood, note: _note.text, tags: tags);
     } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text("Couldn't save. Check your connection and try again.")),
-      );
-    } finally {
-      if (mounted) setState(() => _saving = false);
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Couldn't save. Check your connection and try again.")),
+        );
+      }
+      return;
+    }
+    if (!mounted) return;
+    setState(() {
+      _saving = false;
+      _mood = null;
+      _tags.clear();
+      _note.clear();
+    });
+    final CheckInNext next = await showCheckInSummary(
+      context,
+      mood: mood,
+      saved: saved,
+      repository: widget.repository,
+      tags: tags,
+      canOpenSupport: widget.onSupport != null,
+      canTalk: widget.onTalk != null,
+    );
+    if (!mounted) return;
+    widget.onSaved?.call();
+    switch (next) {
+      case CheckInNext.support:
+        widget.onSupport?.call();
+      case CheckInNext.talk:
+        widget.onTalk?.call();
+      case CheckInNext.done:
+        break;
     }
   }
 
@@ -117,6 +142,27 @@ class _MoodScreenState extends State<MoodScreen> {
                       option: m,
                       selected: _mood == m.value,
                       onTap: () => setState(() => _mood = m.value),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Text("What's it about?", style: theme.textTheme.titleMedium),
+              const SizedBox(height: 4),
+              Text(
+                'Optional. Pick any that fit. Chipu uses them to spot patterns.',
+                style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: <Widget>[
+                  for (final MoodTag t in moodTags)
+                    FilterChip(
+                      key: Key('tag-${t.id}'),
+                      label: Text('${t.emoji} ${t.label(widget.language)}'),
+                      selected: _tags.contains(t.id),
+                      onSelected: (bool on) => setState(() => on ? _tags.add(t.id) : _tags.remove(t.id)),
                     ),
                 ],
               ),

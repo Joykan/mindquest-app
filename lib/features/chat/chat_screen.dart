@@ -141,7 +141,7 @@ class _ChatScreenState extends State<ChatScreen> {
       widget.onMoodSaved?.call();
       setState(() {
         _week = week;
-        _addBot(_moodReply(mood));
+        _addBot(moodReply(mood));
         _addBot(
           saved.xpEarned > 0
               ? "I've added that to your graph. +${saved.xpEarned} XP"
@@ -170,13 +170,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  static String _moodReply(int mood) => switch (mood) {
-        5 => "That's wonderful! I'm so glad to hear it.",
-        4 => "I'm glad to hear that!",
-        3 => 'Thanks for checking in. Want to tell me more about your day?',
-        _ => "I'm sorry it's a hard day. I'm here. Tell me what's going on, "
-            'or try a breathing exercise with me.',
-      };
 
   void _showError(String text) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
