@@ -13,4 +13,8 @@ if (-not (Test-Path .rasa-token)) {
 }
 $token = (Get-Content .rasa-token -Raw).Trim()
 
-rasa run --enable-api --auth-token $token --model models --port 5005
+# Use the Rasa venv in this folder even if another venv is active.
+$rasa = Join-Path $PSScriptRoot ".venv\Scripts\rasa.exe"
+if (-not (Test-Path $rasa)) { $rasa = "rasa" }
+
+& $rasa run --enable-api --auth-token $token --model models --port 5005
