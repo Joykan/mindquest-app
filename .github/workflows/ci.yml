@@ -66,8 +66,10 @@ jobs:
       - name: Build web
         run: flutter build web --release
 
+      # Retries once: the first Android build downloads Gradle and SDK parts,
+      # and a brief network error there shouldn't fail the whole run.
       - name: Build Android APK (debug)
-        run: flutter build apk --debug
+        run: flutter build apk --debug || (echo "Retrying after a build error..." && sleep 30 && flutter build apk --debug)
 
       - name: Upload APK
         uses: actions/upload-artifact@v5
