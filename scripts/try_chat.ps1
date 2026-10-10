@@ -3,10 +3,14 @@
 #
 #   .\scripts\try_chat.ps1                                  # a short sample conversation
 #   .\scripts\try_chat.ps1 "habari" "nina stress" "ndio"    # your own messages, in order
+#   .\scripts\try_chat.ps1 -Sw "habari" "nina stress" "ndio" # same, with Kiswahili replies
 #
 # Each run creates a new anonymous user in Supabase (Authentication > Users).
 
-param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Messages)
+param(
+    [switch]$Sw,
+    [Parameter(ValueFromRemainingArguments = $true)][string[]]$Messages
+)
 
 if (-not $Messages) {
     $Messages = @("hi", "my name is Joy", "I feel joy today", "I'm so stressed about exams", "yes", "thank you")
@@ -19,6 +23,12 @@ $key = $cfg.SUPABASE_ANON_KEY
 $auth = Invoke-RestMethod -Method Post "$url/auth/v1/signup" -Headers @{ apikey = $key } `
     -ContentType "application/json" -Body "{}"
 $headers = @{ apikey = $key; Authorization = "Bearer $($auth.access_token)" }
+
+if ($Sw) {
+    # Same as choosing Kiswahili in the profile screen.
+    Invoke-RestMethod -Method Patch "$url/rest/v1/profiles?id=eq.$($auth.user.id)" -Headers $headers `
+        -ContentType "application/json" -Body '{"language":"sw"}' | Out-Null
+}
 
 $session = $null
 foreach ($m in $Messages) {
