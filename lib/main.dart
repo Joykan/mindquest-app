@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
 import 'core/config/env.dart';
+import 'core/theme/theme_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,5 +15,6 @@ Future<void> main() async {
     );
   }
 
-  runApp(const MindQuestApp());
+  final ThemeController theme = await ThemeController.load();
+  runApp(MindQuestApp(themeController: theme));
 }
