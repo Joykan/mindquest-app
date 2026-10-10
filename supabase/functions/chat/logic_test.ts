@@ -1,6 +1,6 @@
 import { deepStrictEqual as assertEquals, ok as assert } from "node:assert";
 import { isCrisis, normalize } from "./crisis.ts";
-import { cleanName, decide, introducesName, type RasaParse, resolve } from "./logic.ts";
+import { cleanName, decide, introducesName, type RasaParse, resolve, soundsHappy } from "./logic.ts";
 
 const first = () => 0; // always pick the first reply variant
 
@@ -166,4 +166,23 @@ Deno.test("every intent the model knows has a reply in both languages", async ()
   ) {
     assert(REPLIES[key]?.en?.length && REPLIES[key]?.sw?.length, key);
   }
+});
+
+Deno.test("rule 3: a name with no name found, plus a happy word, is read as feeling good", () => {
+  const p: RasaParse = {
+    intent: { name: "tell_name", confidence: 0.85 },
+    entities: [],
+    intent_ranking: [{ name: "tell_name", confidence: 0.85 }, { name: "feel_good", confidence: 0.1 }],
+  };
+  assertEquals(decide(p, null, "en", first, "I feel joy today").replyKey, "feel_good");
+  assertEquals(decide(p, null, "sw", first, "nina furaha leo").replyKey, "feel_good");
+  // Without a happy word it still falls back.
+  assertEquals(decide(p, null, "en", first, "whatever").replyKey, "fallback");
+});
+
+Deno.test("soundsHappy only matches whole happy words", () => {
+  assert(soundsHappy("so much JOY today"));
+  assert(soundsHappy("nimefurahi sana"));
+  assert(!soundsHappy("joyce is here"));
+  assert(!soundsHappy("I feel low"));
 });

@@ -164,6 +164,9 @@ remaining name/feeling mix-ups are handled in the chat logic instead (step 7):
    is used straight away. Only when a feeling word (Joy, Furaha, Amani...) is
    read as a name in a message that doesn't introduce anyone, such as "I feel
    joy", does the bot ask "Is Joy your name?" first.
+3. If Rasa says "name" but extracts no name, and the message contains a
+   happy word (joy, happy, furaha, amani...), it is read as feeling good.
+   Without this, "I feel joy today" got the fallback reply in testing.
 
 ## Rasa vs Dialogflow
 

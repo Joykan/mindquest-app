@@ -46,6 +46,18 @@ export function introducesName(text: string): boolean {
   return NAME_CUES.test(t);
 }
 
+/** Happy feeling words, in both languages. */
+const HAPPY_WORDS = /\b(joy|joyful|happy|glad|peace|peaceful|furaha|nimefurahi|amani)\b/;
+
+/**
+ * Rule 3: Rasa said "name" but found no name, and the message has a happy
+ * feeling word ("I feel joy today"). Read it as feeling good.
+ */
+export function soundsHappy(text: string): boolean {
+  const t = text.toLowerCase().replace(/['’`]/g, " ").replace(/[^\p{L}\p{N}]+/gu, " ");
+  return HAPPY_WORDS.test(t);
+}
+
 /** Replies after which a yes/no answer means something specific. */
 const OFFERS_BREATHING = new Set(["feel_stressed", "feel_anxious"]);
 
@@ -118,7 +130,10 @@ export function decide(
   if (!parse) {
     return { intent: null, confidence: null, replyKey: "unavailable", text: pick("unavailable", lang, rng) };
   }
-  const r = resolve(parse);
+  let r = resolve(parse);
+  if (r.intent === "fallback" && parse.intent.name === "tell_name" && soundsHappy(text)) {
+    r = { intent: "feel_good", confidence: parse.intent.confidence };
+  }
   const out = (replyKey: string, textKey = replyKey, name?: string): Decision => ({
     intent: r.intent,
     confidence: r.confidence,

@@ -69,7 +69,9 @@ sends `{ "text": "...", "session_id": "..." }` with the user's access token.
      against that offer
    - names: a name only counts if Rasa extracted one. "My name is Joy" or
      "naitwa Furaha" is used straight away; a feeling-word name in a message
-     that doesn't introduce anyone ("I feel joy") is checked first
+     that doesn't introduce anyone ("I feel joy") is checked first; if Rasa
+     says "name" but finds none and the message has a happy word (joy,
+     furaha, amani...), it is read as feeling good
    - if Rasa can't be reached, the user gets a "try again" reply and the
      crisis check still works
 3. **Saved.** Both messages go into `messages`, with the intent and confidence
