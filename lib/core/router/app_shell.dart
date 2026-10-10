@@ -16,7 +16,17 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // The phone's back button: on another tab it returns to Home; on Home it
+    // leaves the app as usual.
+    return PopScope(
+      canPop: shell.currentIndex == 0,
+      onPopInvokedWithResult: (bool didPop, Object? result) {
+        if (!didPop) {
+          ticker.bump();
+          shell.goBranch(0);
+        }
+      },
+      child: Scaffold(
       body: shell,
       bottomNavigationBar: NavigationBar(
         selectedIndex: shell.currentIndex,
@@ -51,24 +61,36 @@ class AppShell extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }
 
 /// Learn and Rewards are built in step 9.
 class ComingSoonScreen extends StatelessWidget {
-  const ComingSoonScreen(
-      {super.key, required this.title, required this.text, required this.icon});
+  const ComingSoonScreen({
+    super.key,
+    required this.title,
+    required this.text,
+    required this.icon,
+    this.onBack,
+  });
 
   final String title;
   final String text;
   final IconData icon;
 
+  /// Shows a back arrow (to Home) when given.
+  final VoidCallback? onBack;
+
   @override
   Widget build(BuildContext context) {
     final ThemeData t = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        leading: onBack == null ? null : BackButton(onPressed: onBack),
+        title: Text(title),
+      ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),

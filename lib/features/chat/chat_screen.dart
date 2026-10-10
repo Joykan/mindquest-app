@@ -9,9 +9,12 @@ import 'crisis_sheet.dart';
 /// Chat (wireframe 05). Sends each message to the chat Edge Function and
 /// shows the reply. A crisis reply opens the crisis support sheet (wireframe 06).
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key, required this.backend});
+  const ChatScreen({super.key, required this.backend, this.onBack});
 
   final ChatBackend backend;
+
+  /// Shows a back arrow (to Home) when given.
+  final VoidCallback? onBack;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -79,6 +82,9 @@ class _ChatScreenState extends State<ChatScreen> {
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     return Scaffold(
       appBar: AppBar(
+        leading: widget.onBack == null
+            ? null
+            : BackButton(onPressed: widget.onBack),
         title: Row(
           children: <Widget>[
             const LogoMark(size: 36),

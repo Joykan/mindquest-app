@@ -78,6 +78,11 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
     }
   }
 
+  void goHome(BuildContext context) {
+    ticker.bump();
+    context.go('/home');
+  }
+
   return GoRouter(
     refreshListenable: session,
     redirect: (context, state) => redirectFor(session, state.matchedLocation),
@@ -133,7 +138,10 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
             StatefulShellBranch(routes: <RouteBase>[
               GoRoute(
                   path: '/chat',
-                  builder: (context, state) => ChatScreen(backend: chat!)),
+                  builder: (context, state) => ChatScreen(
+                        backend: chat!,
+                        onBack: () => goHome(context),
+                      )),
             ]),
             StatefulShellBranch(routes: <RouteBase>[
               GoRoute(
@@ -142,6 +150,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                   repository: progress!,
                   initialMood:
                       int.tryParse(state.uri.queryParameters['mood'] ?? ''),
+                  onBack: () => goHome(context),
                   onSaved: () {
                     // Back to Home, which reloads to show the new XP and streak.
                     ticker.bump();
@@ -153,7 +162,8 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
             StatefulShellBranch(routes: <RouteBase>[
               GoRoute(
                 path: '/learn',
-                builder: (context, state) => const ComingSoonScreen(
+                builder: (context, state) => ComingSoonScreen(
+                  onBack: () => goHome(context),
                   title: 'Learn',
                   icon: Icons.menu_book_outlined,
                   text:
@@ -164,7 +174,8 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
             StatefulShellBranch(routes: <RouteBase>[
               GoRoute(
                 path: '/rewards',
-                builder: (context, state) => const ComingSoonScreen(
+                builder: (context, state) => ComingSoonScreen(
+                  onBack: () => goHome(context),
                   title: 'Rewards',
                   icon: Icons.emoji_events_outlined,
                   text:

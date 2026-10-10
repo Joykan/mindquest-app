@@ -191,4 +191,17 @@ void main() {
 
     expect(theme.value, ThemeMode.dark);
   });
+
+  testWidgets('Mood check-in has a back arrow to Home', (tester) async {
+    usePhoneScreen(tester);
+    bool wentBack = false;
+    final FakeProgress repo =
+        FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0));
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: MoodScreen(repository: repo, onBack: () => wentBack = true),
+    ));
+    await tester.tap(find.byType(BackButton));
+    expect(wentBack, isTrue);
+  });
 }

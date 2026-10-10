@@ -7,8 +7,13 @@ import 'moods.dart';
 /// Mood check-in (wireframe 07, UC-02 Log mood entry).
 /// The first check-in each day earns 10 XP and keeps the streak going.
 class MoodScreen extends StatefulWidget {
-  const MoodScreen(
-      {super.key, required this.repository, this.initialMood, this.onSaved});
+  const MoodScreen({
+    super.key,
+    required this.repository,
+    this.initialMood,
+    this.onSaved,
+    this.onBack,
+  });
 
   final ProgressRepository repository;
 
@@ -17,6 +22,9 @@ class MoodScreen extends StatefulWidget {
 
   /// Called after a successful save (e.g. to refresh Home).
   final VoidCallback? onSaved;
+
+  /// Shows a back arrow (to Home) when given.
+  final VoidCallback? onBack;
 
   @override
   State<MoodScreen> createState() => _MoodScreenState();
@@ -82,7 +90,12 @@ class _MoodScreenState extends State<MoodScreen> {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Mood check-in')),
+      appBar: AppBar(
+        leading: widget.onBack == null
+            ? null
+            : BackButton(onPressed: widget.onBack),
+        title: const Text('Mood check-in'),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
