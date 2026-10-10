@@ -1,0 +1,398 @@
+[
+  {
+    "text": "good day",
+    "lang": "en",
+    "intent": "greet",
+    "predicted": "feel_good",
+    "confidence": 0.805,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "hey hey",
+    "lang": "en",
+    "intent": "greet",
+    "predicted": "greet",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "habari gani",
+    "lang": "sw",
+    "intent": "greet",
+    "predicted": "greet",
+    "confidence": 0.567,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "hali yako je",
+    "lang": "sw",
+    "intent": "greet",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "alright bye",
+    "lang": "en",
+    "intent": "goodbye",
+    "predicted": "goodbye",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "see ya",
+    "lang": "en",
+    "intent": "goodbye",
+    "predicted": "goodbye",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "kwaheri rafiki",
+    "lang": "sw",
+    "intent": "goodbye",
+    "predicted": "goodbye",
+    "confidence": 0.547,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "tutaongea kesho",
+    "lang": "sw",
+    "intent": "goodbye",
+    "predicted": "goodbye",
+    "confidence": 0.544,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "thank u",
+    "lang": "en",
+    "intent": "thank",
+    "predicted": "thank",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "you've been helpful",
+    "lang": "en",
+    "intent": "thank",
+    "predicted": "thank",
+    "confidence": 0.504,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "asante kwa ushauri",
+    "lang": "sw",
+    "intent": "thank",
+    "predicted": "thank",
+    "confidence": 0.715,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "nimefurahi, asante",
+    "lang": "sw",
+    "intent": "thank",
+    "predicted": "thank",
+    "confidence": 0.548,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "yep",
+    "lang": "en",
+    "intent": "affirm",
+    "predicted": "affirm",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "okay let's go",
+    "lang": "en",
+    "intent": "affirm",
+    "predicted": "affirm",
+    "confidence": 0.759,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "eeh",
+    "lang": "sw",
+    "intent": "affirm",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "sawa basi",
+    "lang": "sw",
+    "intent": "affirm",
+    "predicted": "affirm",
+    "confidence": 0.567,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "nah thanks",
+    "lang": "en",
+    "intent": "deny",
+    "predicted": "deny",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "not right now",
+    "lang": "en",
+    "intent": "deny",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "hapana kwa sasa",
+    "lang": "sw",
+    "intent": "deny",
+    "predicted": "deny",
+    "confidence": 0.796,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "si leo",
+    "lang": "sw",
+    "intent": "deny",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "I'm stressed about my exams",
+    "lang": "en",
+    "intent": "feel_stressed",
+    "predicted": "feel_stressed",
+    "confidence": 0.753,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "too much on my plate",
+    "lang": "en",
+    "intent": "feel_stressed",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "nina stress ya mitihani",
+    "lang": "sw",
+    "intent": "feel_stressed",
+    "predicted": "feel_stressed",
+    "confidence": 0.72,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "maisha yamenibana",
+    "lang": "sw",
+    "intent": "feel_stressed",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "I'm really nervous",
+    "lang": "en",
+    "intent": "feel_anxious",
+    "predicted": "feel_anxious",
+    "confidence": 0.663,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "I'm worried all the time",
+    "lang": "en",
+    "intent": "feel_anxious",
+    "predicted": "feel_anxious",
+    "confidence": 0.642,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "nina hofu sana",
+    "lang": "sw",
+    "intent": "feel_anxious",
+    "predicted": "feel_anxious",
+    "confidence": 0.627,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "akili haitulii",
+    "lang": "sw",
+    "intent": "feel_anxious",
+    "predicted": "ask_breathing",
+    "confidence": 0.644,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "I'm so sad",
+    "lang": "en",
+    "intent": "feel_sad",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "I feel down lately",
+    "lang": "en",
+    "intent": "feel_sad",
+    "predicted": "feel_sad",
+    "confidence": 0.68,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "nina huzuni leo",
+    "lang": "sw",
+    "intent": "feel_sad",
+    "predicted": "feel_sad",
+    "confidence": 0.645,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "roho yangu iko chini",
+    "lang": "sw",
+    "intent": "feel_sad",
+    "predicted": "ask_about_bot",
+    "confidence": 0.556,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "I'm feeling awesome",
+    "lang": "en",
+    "intent": "feel_good",
+    "predicted": "feel_good",
+    "confidence": 0.772,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "all good here",
+    "lang": "en",
+    "intent": "feel_good",
+    "predicted": "greet",
+    "confidence": 0.609,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "niko poa sana",
+    "lang": "sw",
+    "intent": "feel_good",
+    "predicted": "feel_good",
+    "confidence": 0.692,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "leo nimefurahi",
+    "lang": "sw",
+    "intent": "feel_good",
+    "predicted": "feel_good",
+    "confidence": 0.625,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "breathing exercise please",
+    "lang": "en",
+    "intent": "ask_breathing",
+    "predicted": "ask_breathing",
+    "confidence": 0.714,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "how do I relax",
+    "lang": "en",
+    "intent": "ask_breathing",
+    "predicted": "ask_breathing",
+    "confidence": 0.677,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "nisaidie nitulie",
+    "lang": "sw",
+    "intent": "ask_breathing",
+    "predicted": "ask_breathing",
+    "confidence": 0.766,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "zoezi la kupumua tafadhali",
+    "lang": "sw",
+    "intent": "ask_breathing",
+    "predicted": "ask_breathing",
+    "confidence": 0.705,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "what are you exactly",
+    "lang": "en",
+    "intent": "ask_about_bot",
+    "predicted": "ask_about_bot",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "is this a bot",
+    "lang": "en",
+    "intent": "ask_about_bot",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "wewe ni AI",
+    "lang": "sw",
+    "intent": "ask_about_bot",
+    "predicted": "ask_about_bot",
+    "confidence": 0.769,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "unanisaidiaje",
+    "lang": "sw",
+    "intent": "ask_about_bot",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  }
+]

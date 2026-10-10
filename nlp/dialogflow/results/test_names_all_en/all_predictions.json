@@ -1,0 +1,110 @@
+[
+  {
+    "text": "hey, I'm Faith",
+    "lang": "en",
+    "intent": "tell_name",
+    "predicted": "tell_name",
+    "confidence": 0.775,
+    "expected_name": "Faith",
+    "predicted_name": "Faith"
+  },
+  {
+    "text": "my name is Amani",
+    "lang": "en",
+    "intent": "tell_name",
+    "predicted": "tell_name",
+    "confidence": 0.766,
+    "expected_name": "Amani",
+    "predicted_name": "Amani"
+  },
+  {
+    "text": "call me Joy",
+    "lang": "en",
+    "intent": "tell_name",
+    "predicted": "tell_name",
+    "confidence": 0.897,
+    "expected_name": "Joy",
+    "predicted_name": "Joy"
+  },
+  {
+    "text": "Hope here",
+    "lang": "en",
+    "intent": "tell_name",
+    "predicted": "tell_name",
+    "confidence": 0.787,
+    "expected_name": "Hope",
+    "predicted_name": "Hope"
+  },
+  {
+    "text": "naitwa Joy",
+    "lang": "sw",
+    "intent": "tell_name",
+    "predicted": "tell_name",
+    "confidence": 0.75,
+    "expected_name": "Joy",
+    "predicted_name": "Joy"
+  },
+  {
+    "text": "jina langu ni Furaha",
+    "lang": "sw",
+    "intent": "tell_name",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "Furaha",
+    "predicted_name": ""
+  },
+  {
+    "text": "mimi ni Grace",
+    "lang": "sw",
+    "intent": "tell_name",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "Grace",
+    "predicted_name": ""
+  },
+  {
+    "text": "niite Imani",
+    "lang": "sw",
+    "intent": "tell_name",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "Imani",
+    "predicted_name": ""
+  },
+  {
+    "text": "I feel joy",
+    "lang": "en",
+    "intent": "feel_good",
+    "predicted": "feel_good",
+    "confidence": 0.615,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "so much joy today",
+    "lang": "en",
+    "intent": "feel_good",
+    "predicted": "tell_name",
+    "confidence": 0.684,
+    "expected_name": "",
+    "predicted_name": "joy today"
+  },
+  {
+    "text": "nina furaha sana leo",
+    "lang": "sw",
+    "intent": "feel_good",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "nimejaa furaha",
+    "lang": "sw",
+    "intent": "feel_good",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  }
+]

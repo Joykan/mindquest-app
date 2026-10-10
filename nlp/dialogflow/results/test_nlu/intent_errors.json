@@ -1,0 +1,119 @@
+[
+  {
+    "text": "good day",
+    "lang": "en",
+    "intent": "greet",
+    "predicted": "feel_good",
+    "confidence": 0.805,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "hali yako je",
+    "lang": "sw",
+    "intent": "greet",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "eeh",
+    "lang": "sw",
+    "intent": "affirm",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "not right now",
+    "lang": "en",
+    "intent": "deny",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "si leo",
+    "lang": "sw",
+    "intent": "deny",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "too much on my plate",
+    "lang": "en",
+    "intent": "feel_stressed",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "maisha yamenibana",
+    "lang": "sw",
+    "intent": "feel_stressed",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "akili haitulii",
+    "lang": "sw",
+    "intent": "feel_anxious",
+    "predicted": "ask_breathing",
+    "confidence": 0.644,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "I'm so sad",
+    "lang": "en",
+    "intent": "feel_sad",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "roho yangu iko chini",
+    "lang": "sw",
+    "intent": "feel_sad",
+    "predicted": "ask_about_bot",
+    "confidence": 0.556,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "all good here",
+    "lang": "en",
+    "intent": "feel_good",
+    "predicted": "greet",
+    "confidence": 0.609,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "is this a bot",
+    "lang": "en",
+    "intent": "ask_about_bot",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "unanisaidiaje",
+    "lang": "sw",
+    "intent": "ask_about_bot",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  }
+]

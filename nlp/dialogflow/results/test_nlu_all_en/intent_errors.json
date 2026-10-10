@@ -1,0 +1,245 @@
+[
+  {
+    "text": "good day",
+    "lang": "en",
+    "intent": "greet",
+    "predicted": "feel_good",
+    "confidence": 0.805,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "habari gani",
+    "lang": "sw",
+    "intent": "greet",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "hali yako je",
+    "lang": "sw",
+    "intent": "greet",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "kwaheri rafiki",
+    "lang": "sw",
+    "intent": "goodbye",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "tutaongea kesho",
+    "lang": "sw",
+    "intent": "goodbye",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "asante kwa ushauri",
+    "lang": "sw",
+    "intent": "thank",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "nimefurahi, asante",
+    "lang": "sw",
+    "intent": "thank",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "eeh",
+    "lang": "sw",
+    "intent": "affirm",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "sawa basi",
+    "lang": "sw",
+    "intent": "affirm",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "not right now",
+    "lang": "en",
+    "intent": "deny",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "hapana kwa sasa",
+    "lang": "sw",
+    "intent": "deny",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "si leo",
+    "lang": "sw",
+    "intent": "deny",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "too much on my plate",
+    "lang": "en",
+    "intent": "feel_stressed",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "maisha yamenibana",
+    "lang": "sw",
+    "intent": "feel_stressed",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "nina hofu sana",
+    "lang": "sw",
+    "intent": "feel_anxious",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "akili haitulii",
+    "lang": "sw",
+    "intent": "feel_anxious",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "I'm so sad",
+    "lang": "en",
+    "intent": "feel_sad",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "nina huzuni leo",
+    "lang": "sw",
+    "intent": "feel_sad",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "roho yangu iko chini",
+    "lang": "sw",
+    "intent": "feel_sad",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "all good here",
+    "lang": "en",
+    "intent": "feel_good",
+    "predicted": "greet",
+    "confidence": 0.609,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "niko poa sana",
+    "lang": "sw",
+    "intent": "feel_good",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "leo nimefurahi",
+    "lang": "sw",
+    "intent": "feel_good",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "nisaidie nitulie",
+    "lang": "sw",
+    "intent": "ask_breathing",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "zoezi la kupumua tafadhali",
+    "lang": "sw",
+    "intent": "ask_breathing",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "is this a bot",
+    "lang": "en",
+    "intent": "ask_about_bot",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "wewe ni AI",
+    "lang": "sw",
+    "intent": "ask_about_bot",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  },
+  {
+    "text": "unanisaidiaje",
+    "lang": "sw",
+    "intent": "ask_about_bot",
+    "predicted": "nlu_fallback",
+    "confidence": 1.0,
+    "expected_name": "",
+    "predicted_name": ""
+  }
+]
