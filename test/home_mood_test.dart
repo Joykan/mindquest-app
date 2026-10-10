@@ -65,7 +65,10 @@ void main() {
   });
 
   testWidgets('Home shows streak, level progress and quests', (tester) async {
-    usePhoneScreen(tester);
+    // A tall screen (360 x 1200) so every card is built without scrolling.
+    tester.view.physicalSize = const Size(1080, 3600);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
     int? tappedMood;
     final FakeProgress repo = FakeProgress(const HomeSummary(
       username: 'Amani',
@@ -96,8 +99,6 @@ void main() {
     await tester.tap(find.byKey(const Key('mood-4')));
     expect(tappedMood, 4);
 
-    await tester.ensureVisible(find.byKey(const Key('helplines')));
-    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('helplines')));
     await tester.pumpAndSettle();
     expect(find.text('Kenya Red Cross'), findsOneWidget);
