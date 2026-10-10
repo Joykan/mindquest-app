@@ -56,9 +56,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     return Scaffold(
       body: SafeArea(
-        child: ListView(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-          children: <Widget>[
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
             Text('Make it yours', style: theme.textTheme.headlineMedium),
             const SizedBox(height: 6),
             Text(
@@ -134,6 +136,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   : const Text("Let's go"),
             ),
           ],
+          ),
         ),
       ),
     );
