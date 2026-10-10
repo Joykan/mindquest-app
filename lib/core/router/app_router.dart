@@ -100,6 +100,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                 builder: (context, state) => HomeScreen(
                   repository: progress!,
                   reloadWhen: ticker,
+                  theme: theme,
                   onMoodTap: (int mood) => context.go('/mood?mood=$mood'),
                   onTalk: () => context.go('/chat'),
                   onProfile: () => context.push('/profile'),

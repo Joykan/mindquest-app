@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/logo_mark.dart';
 import 'chat_backend.dart';
 import 'chat_models.dart';
 import 'crisis_sheet.dart';
@@ -78,16 +79,7 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Row(
           children: <Widget>[
-            Container(
-              width: 36,
-              height: 36,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text('🧠', style: TextStyle(fontSize: 20)),
-            ),
+            const LogoMark(size: 36),
             const SizedBox(width: 10),
             const Text('Chat'),
           ],

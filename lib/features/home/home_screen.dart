@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_controller.dart';
+import '../../core/widgets/logo_mark.dart';
 import '../chat/chat_models.dart';
 import '../chat/crisis_sheet.dart';
 import '../gamification/levels.dart';
@@ -17,7 +19,11 @@ class HomeScreen extends StatefulWidget {
     required this.onTalk,
     required this.onProfile,
     this.reloadWhen,
+    this.theme,
   });
+
+  /// Shows the appearance button (System default / Light / Dark) when given.
+  final ThemeController? theme;
 
   final ProgressRepository repository;
 
@@ -98,6 +104,7 @@ class HomeScreenState extends State<HomeScreen> {
                 onTalk: widget.onTalk,
                 onProfile: widget.onProfile,
                 onHelplines: _showHelplines,
+                theme: widget.theme,
               ),
             );
           },
@@ -123,8 +130,10 @@ class _HomeBody extends StatelessWidget {
     required this.onTalk,
     required this.onProfile,
     required this.onHelplines,
+    this.theme,
   });
 
+  final ThemeController? theme;
   final HomeSummary summary;
   final ValueChanged<int> onMoodTap;
   final VoidCallback onTalk;
@@ -142,18 +151,11 @@ class _HomeBody extends StatelessWidget {
       children: <Widget>[
         Row(
           children: <Widget>[
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text('Hi, ${summary.username}', style: theme.textTheme.headlineSmall),
-                  Text(
-                    _dateLine(nairobiNow()),
-                    style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
-                  ),
-                ],
-              ),
-            ),
+            const LogoMark(size: 36),
+            const SizedBox(width: 10),
+            Expanded(child: Text('MindQuest', style: theme.textTheme.titleMedium)),
+            if (this.theme != null) _AppearanceButton(controller: this.theme!),
+            const SizedBox(width: 4),
             IconButton.filledTonal(
               key: const Key('open-profile'),
               tooltip: 'Profile and settings',
@@ -161,6 +163,12 @@ class _HomeBody extends StatelessWidget {
               icon: const Icon(Icons.person_outline),
             ),
           ],
+        ),
+        const SizedBox(height: 16),
+        Text('Hi, ${summary.username}', style: theme.textTheme.headlineSmall),
+        Text(
+          _dateLine(nairobiNow()),
+          style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
         ),
         const SizedBox(height: 16),
 
@@ -425,6 +433,36 @@ class _Problem extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Quick switch between System default, Light and Dark (also in Profile).
+class _AppearanceButton extends StatelessWidget {
+  const _AppearanceButton({required this.controller});
+
+  final ThemeController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: controller,
+      builder: (BuildContext context, ThemeMode mode, _) => PopupMenuButton<ThemeMode>(
+        key: const Key('appearance-button'),
+        tooltip: 'Appearance',
+        initialValue: mode,
+        onSelected: controller.set,
+        icon: Icon(switch (mode) {
+          ThemeMode.light => Icons.light_mode_outlined,
+          ThemeMode.dark => Icons.dark_mode_outlined,
+          ThemeMode.system => Icons.brightness_auto_outlined,
+        }),
+        itemBuilder: (BuildContext context) => const <PopupMenuEntry<ThemeMode>>[
+          PopupMenuItem<ThemeMode>(value: ThemeMode.system, child: Text('System default')),
+          PopupMenuItem<ThemeMode>(value: ThemeMode.light, child: Text('Light mode')),
+          PopupMenuItem<ThemeMode>(value: ThemeMode.dark, child: Text('Dark mode')),
+        ],
       ),
     );
   }

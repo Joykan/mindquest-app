@@ -84,31 +84,30 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const Divider(height: 1),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              const Icon(Icons.contrast),
-                              const SizedBox(width: 16),
-                              Text('Appearance', style: t.textTheme.bodyLarge),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          SegmentedButton<ThemeMode>(
-                            key: const Key('appearance'),
-                            showSelectedIcon: false,
-                            segments: const <ButtonSegment<ThemeMode>>[
-                              ButtonSegment<ThemeMode>(value: ThemeMode.system, label: Text('Phone')),
-                              ButtonSegment<ThemeMode>(value: ThemeMode.light, label: Text('Light')),
-                              ButtonSegment<ThemeMode>(value: ThemeMode.dark, label: Text('Dark')),
-                            ],
-                            selected: <ThemeMode>{theme.value},
-                            onSelectionChanged: (Set<ThemeMode> s) => theme.set(s.first),
-                          ),
-                        ],
-                      ),
+                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 2),
+                      child: Text('Appearance', style: t.textTheme.titleMedium),
+                    ),
+                    _ThemeOption(
+                      key: const Key('theme-system'),
+                      icon: Icons.brightness_auto_outlined,
+                      label: 'System default',
+                      subtitle: "Follows your phone's setting",
+                      selected: theme.value == ThemeMode.system,
+                      onTap: () => theme.set(ThemeMode.system),
+                    ),
+                    _ThemeOption(
+                      key: const Key('theme-light'),
+                      icon: Icons.light_mode_outlined,
+                      label: 'Light mode',
+                      selected: theme.value == ThemeMode.light,
+                      onTap: () => theme.set(ThemeMode.light),
+                    ),
+                    _ThemeOption(
+                      key: const Key('theme-dark'),
+                      icon: Icons.dark_mode_outlined,
+                      label: 'Dark mode',
+                      selected: theme.value == ThemeMode.dark,
+                      onTap: () => theme.set(ThemeMode.dark),
                     ),
                   ],
                 ),
@@ -135,6 +134,38 @@ class ProfileScreen extends StatelessWidget {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _ThemeOption extends StatelessWidget {
+  const _ThemeOption({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.subtitle,
+  });
+
+  final IconData icon;
+  final String label;
+  final String? subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    return Semantics(
+      selected: selected,
+      child: ListTile(
+        leading: Icon(icon),
+        title: Text(label),
+        subtitle: subtitle == null ? null : Text(subtitle!),
+        trailing: selected ? Icon(Icons.check_circle, color: scheme.primary) : null,
+        onTap: onTap,
       ),
     );
   }

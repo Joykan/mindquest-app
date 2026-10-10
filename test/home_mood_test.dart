@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mindquest/core/theme/app_theme.dart';
+import 'package:mindquest/core/theme/theme_controller.dart';
 import 'package:mindquest/features/chat/chat_models.dart';
 import 'package:mindquest/features/gamification/levels.dart';
 import 'package:mindquest/features/home/home_screen.dart';
@@ -130,5 +131,25 @@ void main() {
     final FakeProgress repo = FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0));
     await tester.pumpWidget(MaterialApp(theme: AppTheme.light(), home: MoodScreen(repository: repo, initialMood: 5)));
     expect(tester.widget<FilledButton>(find.byKey(const Key('save-mood'))).onPressed, isNotNull);
+  });
+
+  testWidgets('Appearance button offers System default, Light and Dark', (tester) async {
+    usePhoneScreen(tester);
+    final ThemeController theme = ThemeController();
+    final FakeProgress repo = FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0));
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: HomeScreen(repository: repo, theme: theme, onMoodTap: (_) {}, onTalk: () {}, onProfile: () {}),
+    ));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('appearance-button')));
+    await tester.pumpAndSettle();
+    expect(find.text('System default'), findsOneWidget);
+    expect(find.text('Light mode'), findsOneWidget);
+    await tester.tap(find.text('Dark mode'));
+    await tester.pumpAndSettle();
+
+    expect(theme.value, ThemeMode.dark);
   });
 }
