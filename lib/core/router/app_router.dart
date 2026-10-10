@@ -12,9 +12,14 @@ import '../../features/chat/chat_screen.dart';
 import '../../features/chat/crisis_sheet.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/home/progress_repository.dart';
+import '../../features/learn/article_screen.dart';
+import '../../features/learn/learn_repository.dart';
+import '../../features/learn/learn_screen.dart';
 import '../../features/mood/mood_history_screen.dart';
 import '../../features/mood/mood_screen.dart';
 import '../../features/profile/profile_screen.dart';
+import '../../features/rewards/rewards_repository.dart';
+import '../../features/rewards/rewards_screen.dart';
 import '../../features/setup/setup_status_screen.dart';
 import '../theme/theme_controller.dart';
 import 'app_shell.dart';
@@ -55,6 +60,9 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
   final ProgressRepository? progress =
       session == null ? null : SupabaseProgressRepository();
   final ChatBackend? chat = session == null ? null : SupabaseChatBackend();
+  final LearnRepository? learn = session == null ? null : SupabaseLearnRepository();
+  final RewardsRepository? rewards = session == null ? null : SupabaseRewardsRepository();
+  String language() => session?.language ?? 'en';
 
   Future<void> showHelplines(BuildContext context) async {
     try {
@@ -178,24 +186,56 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
             StatefulShellBranch(routes: <RouteBase>[
               GoRoute(
                 path: '/learn',
-                builder: (context, state) => ComingSoonScreen(
+                builder: (context, state) => LearnScreen(
+                  repository: learn!,
+                  language: language(),
+                  reloadWhen: ticker,
                   onBack: () => goHome(context),
-                  title: 'Learn',
-                  icon: Icons.menu_book_outlined,
-                  text:
-                      'Short articles on stress, sleep, exams and more are coming in the next update.',
+                  onOpen: (Article a) => context.go('/learn/article/${a.id}', extra: a),
                 ),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'article/:id',
+                    builder: (context, state) {
+                      final Object? extra = state.extra;
+                      final int? id = int.tryParse(state.pathParameters['id'] ?? '');
+                      Widget screen(Article a) => ArticleScreen(
+                            article: a,
+                            repository: learn!,
+                            language: language(),
+                            onRead: ticker.bump,
+                          );
+                      if (extra is Article) return screen(extra);
+                      // Opened without the article (e.g. after a restart): load it.
+                      return FutureBuilder<List<Article>>(
+                        future: learn!.loadArticles(),
+                        builder: (context, snap) {
+                          for (final Article a in snap.data ?? <Article>[]) {
+                            if (a.id == id) return screen(a);
+                          }
+                          return Scaffold(
+                            appBar: AppBar(),
+                            body: Center(
+                              child: snap.hasData || snap.hasError
+                                  ? const Text('Article not found.')
+                                  : const CircularProgressIndicator(),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
               ),
             ]),
             StatefulShellBranch(routes: <RouteBase>[
               GoRoute(
                 path: '/rewards',
-                builder: (context, state) => ComingSoonScreen(
+                builder: (context, state) => RewardsScreen(
+                  repository: rewards!,
+                  language: language(),
+                  reloadWhen: ticker,
                   onBack: () => goHome(context),
-                  title: 'Rewards',
-                  icon: Icons.emoji_events_outlined,
-                  text:
-                      'Your badges and weekly quests will show here in the next update.',
                 ),
               ),
             ]),
