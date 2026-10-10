@@ -5,6 +5,12 @@ import 'package:mindquest/features/gamification/badges.dart';
 import 'package:mindquest/features/learn/article_screen.dart';
 import 'package:mindquest/features/learn/learn_repository.dart';
 import 'package:mindquest/features/learn/learn_screen.dart';
+import 'package:mindquest/features/learn/recommend.dart';
+import 'package:mindquest/features/home/home_screen.dart';
+import 'package:mindquest/features/home/progress_repository.dart';
+import 'package:mindquest/features/mood/mood_insights.dart';
+
+import 'fakes.dart';
 import 'package:mindquest/features/rewards/rewards_repository.dart';
 import 'package:mindquest/features/rewards/rewards_screen.dart';
 
@@ -196,5 +202,73 @@ void main() {
     expect(find.text('Earned 9 Oct'), findsOneWidget);
     expect(find.text('Article read'), findsOneWidget);
     expect(find.text('Ways to earn XP'), findsOneWidget);
+  });
+
+  group('recommendArticles', () {
+    final List<Article> all = <Article>[
+      article(1, 'stress', read: true),
+      article(2, 'stress'),
+      article(3, 'anxiety'),
+      article(4, 'support'),
+      article(5, 'mindfulness'),
+    ];
+
+    test('follows feelings from the chat, unread first', () {
+      final List<Recommendation> r =
+          recommendArticles(all, chatFeelings: <String, int>{'feel_anxious': 1, 'feel_stressed': 3});
+      expect(r.map((Recommendation x) => x.article.id), <int>[2, 3]);
+      expect(r.first.reason, contains('stress'));
+    });
+
+    test('low moods point to support, otherwise mindfulness', () {
+      final DateTime now = DateTime(2026, 10, 10);
+      expect(
+        recommendArticles(all, recentMoods: <MoodEntry>[MoodEntry(id: 'a', mood: 1, at: now)]).first.article.id,
+        4,
+      );
+      expect(recommendArticles(all).first.article.id, 5);
+    });
+  });
+
+  test('tags on low days become an insight', () {
+    final DateTime now = DateTime(2026, 10, 10, 12);
+    final List<MoodInsight> i = buildInsights(<MoodEntry>[
+      MoodEntry(id: 'a', mood: 2, at: now, tags: const <String>['school', 'sleep']),
+      MoodEntry(id: 'b', mood: 4, at: now.subtract(const Duration(days: 1)), tags: const <String>['friends']),
+      MoodEntry(id: 'c', mood: 1, at: now.subtract(const Duration(days: 3)), tags: const <String>['school']),
+      MoodEntry(id: 'd', mood: 5, at: now.subtract(const Duration(days: 4)), tags: const <String>['friends']),
+    ], now: now);
+    expect(i.firstWhere((MoodInsight x) => x.id == 'low_tag').body, contains('school'));
+    expect(i.firstWhere((MoodInsight x) => x.id == 'good_tag').body, contains('friends'));
+  });
+
+  testWidgets('Home recommends articles and shows the week', (tester) async {
+    tester.view.physicalSize = const Size(1080, 6000);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    final FakeProgress progress =
+        FakeProgress(const HomeSummary(username: 'Amani', xp: 60, streak: 1))
+          ..chatFeelings = <String, int>{'feel_stressed': 2}
+          ..history = <MoodEntry>[MoodEntry(id: 'm', mood: 4, at: nairobiNow())];
+    Article? opened;
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: HomeScreen(
+        repository: progress,
+        learn: FakeLearn(<Article>[article(1, 'stress'), article(2, 'mindfulness')]),
+        onOpenArticle: (Article a) => opened = a,
+        onMoodTap: (_) {},
+        onTalk: () {},
+        onProfile: () {},
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Level 2 · 🌱 Sprout'), findsOneWidget);
+    expect(find.text('Recommended for you'), findsOneWidget);
+    expect(find.textContaining('Because stress came up'), findsOneWidget);
+    expect(find.byKey(const Key('week-strip')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('recommended-1')));
+    expect(opened?.id, 1);
   });
 }

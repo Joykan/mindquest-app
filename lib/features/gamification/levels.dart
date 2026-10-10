@@ -29,3 +29,23 @@ class LevelProgress {
   int get needed => next - start;
   double get fraction => needed == 0 ? 0 : earned / needed;
 }
+
+/// Level names on Chipu's growth theme: a seed grows into a forest.
+class LevelTitle {
+  const LevelTitle(this.emoji, this.en, this.sw);
+
+  final String emoji;
+  final String en;
+  final String sw;
+
+  String name(String language) => language == 'sw' ? sw : en;
+}
+
+LevelTitle levelTitle(int level) => switch (level) {
+      <= 1 => const LevelTitle('🌰', 'Seed', 'Mbegu'),
+      2 => const LevelTitle('🌱', 'Sprout', 'Chipukizi'),
+      3 => const LevelTitle('🌿', 'Sapling', 'Mche'),
+      4 => const LevelTitle('🌳', 'Young tree', 'Mti mchanga'),
+      5 => const LevelTitle('🌲', 'Mighty tree', 'Mti imara'),
+      _ => const LevelTitle('🏞️', 'Forest', 'Msitu'),
+    };

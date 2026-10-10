@@ -6,6 +6,8 @@ import '../../core/widgets/logo_mark.dart';
 import '../chat/chat_models.dart';
 import '../chat/crisis_sheet.dart';
 import '../gamification/levels.dart';
+import '../learn/learn_repository.dart';
+import '../learn/recommend.dart';
 import '../mood/moods.dart';
 import 'progress_repository.dart';
 
@@ -20,7 +22,23 @@ class HomeScreen extends StatefulWidget {
     required this.onProfile,
     this.reloadWhen,
     this.theme,
+    this.learn,
+    this.onOpenArticle,
+    this.onSupport,
+    this.onMoodHistory,
+    this.language = 'en',
   });
+
+  /// For "Recommended for you". Without it the section is hidden.
+  final LearnRepository? learn;
+  final ValueChanged<Article>? onOpenArticle;
+
+  /// Opens the Support screen; without it the helplines open in a sheet.
+  final VoidCallback? onSupport;
+
+  /// Opens mood history from the "This week" strip.
+  final VoidCallback? onMoodHistory;
+  final String language;
 
   /// Shows the appearance button (System default / Light / Dark) when given.
   final ThemeController? theme;
@@ -37,8 +55,43 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => HomeScreenState();
 }
 
+/// The week's moods and article picks, loaded next to the summary.
+class HomeExtras {
+  const HomeExtras({this.week = const <MoodEntry>[], this.picks = const <Recommendation>[]});
+
+  final List<MoodEntry> week;
+  final List<Recommendation> picks;
+}
+
 class HomeScreenState extends State<HomeScreen> {
   late Future<HomeSummary> _summary = widget.repository.loadHome();
+  late Future<HomeExtras> _extras = _loadExtras();
+
+  /// Extras are a bonus: if any part fails, Home still shows the rest.
+  Future<HomeExtras> _loadExtras() async {
+    List<MoodEntry> week = const <MoodEntry>[];
+    Map<String, int> feelings = const <String, int>{};
+    List<Recommendation> picks = const <Recommendation>[];
+    try {
+      week = await widget.repository.loadMoodHistory(days: 7);
+    } catch (_) {
+      // Optional: Home works without it.
+    }
+    try {
+      feelings = await widget.repository.loadChatFeelings();
+    } catch (_) {
+      // Optional: Home works without it.
+    }
+    final LearnRepository? learn = widget.learn;
+    if (learn != null) {
+      try {
+        picks = recommendArticles(await learn.loadArticles(), recentMoods: week, chatFeelings: feelings);
+      } catch (_) {
+      // Optional: Home works without it.
+    }
+    }
+    return HomeExtras(week: week, picks: picks);
+  }
 
   @override
   void initState() {
@@ -59,7 +112,10 @@ class HomeScreenState extends State<HomeScreen> {
   /// Reloads the numbers, e.g. after a mood check-in.
   Future<void> reload() async {
     final Future<HomeSummary> next = widget.repository.loadHome();
-    setState(() => _summary = next);
+    setState(() {
+      _summary = next;
+      _extras = _loadExtras();
+    });
     await next;
   }
 
@@ -101,13 +157,20 @@ class HomeScreenState extends State<HomeScreen> {
             }
             return RefreshIndicator(
               onRefresh: reload,
-              child: _HomeBody(
-                summary: snap.data!,
-                onMoodTap: widget.onMoodTap,
-                onTalk: widget.onTalk,
-                onProfile: widget.onProfile,
-                onHelplines: _showHelplines,
-                theme: widget.theme,
+              child: FutureBuilder<HomeExtras>(
+                future: _extras,
+                builder: (BuildContext context, AsyncSnapshot<HomeExtras> extras) => _HomeBody(
+                  summary: snap.data!,
+                  extras: extras.data ?? const HomeExtras(),
+                  onMoodTap: widget.onMoodTap,
+                  onTalk: widget.onTalk,
+                  onProfile: widget.onProfile,
+                  onHelplines: widget.onSupport ?? _showHelplines,
+                  onMoodHistory: widget.onMoodHistory,
+                  onOpenArticle: widget.onOpenArticle,
+                  language: widget.language,
+                  theme: widget.theme,
+                ),
               ),
             );
           },
@@ -147,12 +210,21 @@ String _dateLine(DateTime d) {
 class _HomeBody extends StatelessWidget {
   const _HomeBody({
     required this.summary,
+    required this.extras,
     required this.onMoodTap,
     required this.onTalk,
     required this.onProfile,
     required this.onHelplines,
+    this.onMoodHistory,
+    this.onOpenArticle,
+    this.language = 'en',
     this.theme,
   });
+
+  final HomeExtras extras;
+  final VoidCallback? onMoodHistory;
+  final ValueChanged<Article>? onOpenArticle;
+  final String language;
 
   final ThemeController? theme;
   final HomeSummary summary;
@@ -166,6 +238,7 @@ class _HomeBody extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     final LevelProgress level = LevelProgress(summary.xp);
+    final LevelTitle title = levelTitle(level.level);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -220,7 +293,7 @@ class _HomeBody extends StatelessWidget {
                           color: mq.reward,
                           borderRadius: BorderRadius.circular(12)),
                       child: Text(
-                        'Level ${level.level}',
+                        'Level ${level.level} · ${title.emoji} ${title.name(language)}',
                         style: theme.textTheme.labelSmall
                             ?.copyWith(color: mq.onReward),
                       ),
@@ -280,6 +353,9 @@ class _HomeBody extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
+        _WeekStrip(week: extras.week, onTap: onMoodHistory),
+        const SizedBox(height: 12),
+
         // Quests
         Card(
           child: Padding(
@@ -334,6 +410,24 @@ class _HomeBody extends StatelessWidget {
             ),
           ),
         ),
+        if (extras.picks.isNotEmpty && onOpenArticle != null) ...<Widget>[
+          const SizedBox(height: 16),
+          Text('Recommended for you', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 4),
+          for (final Recommendation r in extras.picks)
+            Card(
+              margin: const EdgeInsets.only(top: 8),
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                key: Key('recommended-${r.article.id}'),
+                leading: Text(categoryEmoji[r.article.category] ?? '📄', style: const TextStyle(fontSize: 26)),
+                title: Text(r.article.title(language), style: theme.textTheme.titleSmall),
+                subtitle: Text('${r.reason} · ${r.article.minutes} min'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => onOpenArticle!(r.article),
+              ),
+            ),
+        ],
         const SizedBox(height: 16),
 
         FilledButton.icon(
@@ -348,8 +442,8 @@ class _HomeBody extends StatelessWidget {
           child: ListTile(
             key: const Key('helplines'),
             leading: Icon(Icons.phone_in_talk_outlined, color: mq.crisis),
-            title: const Text('Need urgent help? View helplines',
-                style: TextStyle(fontWeight: FontWeight.w700)),
+            title: const Text('Need support?', style: TextStyle(fontWeight: FontWeight.w700)),
+            subtitle: const Text('Helplines and calming exercises'),
             trailing: const Icon(Icons.chevron_right),
             onTap: onHelplines,
           ),
@@ -523,6 +617,81 @@ class _AppearanceButton extends StatelessWidget {
           PopupMenuItem<ThemeMode>(
               value: ThemeMode.dark, child: Text('Dark mode')),
         ],
+      ),
+    );
+  }
+}
+
+/// This week (Monday to Sunday): the latest mood face for each day.
+class _WeekStrip extends StatelessWidget {
+  const _WeekStrip({required this.week, this.onTap});
+
+  final List<MoodEntry> week;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final MindQuestColors mq = theme.extension<MindQuestColors>()!;
+    final DateTime n = nairobiNow();
+    final DateTime today = DateTime(n.year, n.month, n.day);
+    final DateTime monday = today.subtract(Duration(days: today.weekday - 1));
+    final Map<String, int> latest = <String, int>{};
+    for (final MoodEntry e in week) {
+      latest.putIfAbsent('${e.at.year}-${e.at.month}-${e.at.day}', () => e.mood);
+    }
+    const List<String> names = <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return Card(
+      key: const Key('week-strip'),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 14),
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(child: Text('This week', style: theme.textTheme.titleMedium)),
+                  if (onTap != null)
+                    Text('History →', style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary)),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: <Widget>[
+                  for (int i = 0; i < 7; i++)
+                    Expanded(
+                      child: Builder(builder: (BuildContext context) {
+                        final DateTime d = monday.add(Duration(days: i));
+                        final int? mood = latest['${d.year}-${d.month}-${d.day}'];
+                        final bool isToday = d == today;
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: isToday ? theme.colorScheme.primary.withValues(alpha: 0.12) : mq.surfaceSoft,
+                            borderRadius: BorderRadius.circular(12),
+                            border: isToday ? Border.all(color: theme.colorScheme.primary, width: 1.5) : null,
+                          ),
+                          child: Column(
+                            children: <Widget>[
+                              Text(
+                                mood == null ? '·' : moodOptions[mood - 1].emoji,
+                                style: TextStyle(fontSize: 20, color: mq.textMuted),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(names[i], style: theme.textTheme.labelSmall?.copyWith(fontSize: 10)),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -4,16 +4,26 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/language_toggle.dart';
 import '../auth/session_controller.dart';
+import '../gamification/levels.dart';
+import '../home/progress_repository.dart';
 
-/// Profile and settings (wireframe 12). Badges, mood history, "save your
-/// progress" and "delete my data" are added in step 9.
+/// Profile and settings (wireframe 12): level, shortcuts to badges, quests
+/// and mood history, language, appearance, support and sign out.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen(
       {super.key,
       required this.session,
       required this.theme,
       this.onHelplines,
-      this.onMoodHistory});
+      this.onMoodHistory,
+      this.onRewards,
+      this.progress});
+
+  /// Opens Rewards (badges and quests).
+  final VoidCallback? onRewards;
+
+  /// Used to show the level name under the user's name.
+  final ProgressRepository? progress;
 
   final SessionController session;
   final ThemeController theme;
@@ -84,12 +94,68 @@ class ProfileScreen extends StatelessWidget {
                           style: t.textTheme.bodySmall
                               ?.copyWith(color: mq.textMuted),
                         ),
+                        if (progress != null)
+                          FutureBuilder<HomeSummary>(
+                            future: progress!.loadHome(),
+                            builder: (BuildContext context, AsyncSnapshot<HomeSummary> snap) {
+                              if (!snap.hasData) return const SizedBox.shrink();
+                              final int level = levelForXp(snap.data!.xp);
+                              final LevelTitle title = levelTitle(level);
+                              return Container(
+                                key: const Key('profile-level'),
+                                margin: const EdgeInsets.only(top: 6),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: mq.reward,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${title.emoji} ${title.name(session.language)} · Level $level · ${snap.data!.xp} XP',
+                                  style: t.textTheme.labelSmall?.copyWith(color: mq.onReward),
+                                ),
+                              );
+                            },
+                          ),
                       ],
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
+              if (onRewards != null || onMoodHistory != null) ...<Widget>[
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: <Widget>[
+                      if (onRewards != null) ...<Widget>[
+                        ListTile(
+                          key: const Key('open-badges'),
+                          leading: const Text('🏅', style: TextStyle(fontSize: 22)),
+                          title: const Text('My badges'),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: onRewards,
+                        ),
+                        ListTile(
+                          key: const Key('open-quests'),
+                          leading: const Text('🎯', style: TextStyle(fontSize: 22)),
+                          title: const Text('My quests'),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: onRewards,
+                        ),
+                      ],
+                      if (onMoodHistory != null)
+                        ListTile(
+                          key: const Key('open-mood-history'),
+                          leading: const Text('📊', style: TextStyle(fontSize: 22)),
+                          title: const Text('Mood history and insights'),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: onMoodHistory,
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               Card(
                 child: Column(
                   children: <Widget>[
@@ -131,26 +197,14 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              if (onMoodHistory != null) ...<Widget>[
-                Card(
-                  clipBehavior: Clip.antiAlias,
-                  child: ListTile(
-                    key: const Key('open-mood-history'),
-                    leading: const Icon(Icons.insights_outlined),
-                    title: const Text('Mood history'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: onMoodHistory,
-                  ),
-                ),
-                const SizedBox(height: 12),
-              ],
               if (onHelplines != null)
                 Card(
                   clipBehavior: Clip.antiAlias,
                   child: ListTile(
                     leading:
                         Icon(Icons.phone_in_talk_outlined, color: mq.crisis),
-                    title: const Text('Crisis helplines'),
+                    title: const Text('Support and helplines'),
+                    subtitle: const Text('Call for help, breathing, grounding'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: onHelplines,
                   ),

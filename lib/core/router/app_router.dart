@@ -7,9 +7,7 @@ import '../../features/auth/session_controller.dart';
 import '../../features/auth/sign_in_screen.dart';
 import '../../features/auth/welcome_screen.dart';
 import '../../features/chat/chat_backend.dart';
-import '../../features/chat/chat_models.dart';
 import '../../features/chat/chat_screen.dart';
-import '../../features/chat/crisis_sheet.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/home/progress_repository.dart';
 import '../../features/learn/article_screen.dart';
@@ -21,6 +19,7 @@ import '../../features/profile/profile_screen.dart';
 import '../../features/rewards/rewards_repository.dart';
 import '../../features/rewards/rewards_screen.dart';
 import '../../features/setup/setup_status_screen.dart';
+import '../../features/support/support_screen.dart';
 import '../theme/theme_controller.dart';
 import 'app_shell.dart';
 
@@ -64,28 +63,8 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
   final RewardsRepository? rewards = session == null ? null : SupabaseRewardsRepository();
   String language() => session?.language ?? 'en';
 
-  Future<void> showHelplines(BuildContext context) async {
-    try {
-      final List<Helpline> lines = await progress!.loadHelplines();
-      if (!context.mounted) return;
-      await showCrisisSheet(
-        context,
-        ChatReply(
-          reply:
-              'If things feel too heavy right now, talking to someone can help. '
-              'These services are free and confidential.',
-          helplines: lines,
-        ),
-      );
-    } catch (_) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text(
-                "Couldn't load helplines. In an emergency call 999 or 112.")),
-      );
-    }
-  }
+  /// Helplines, breathing and grounding.
+  void showHelplines(BuildContext context) => context.push('/support');
 
   void goHome(BuildContext context) {
     ticker.bump();
@@ -124,8 +103,17 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
           builder: (context, state) => ProfileScreen(
             session: session,
             theme: theme,
+            progress: progress,
             onHelplines: () => showHelplines(context),
             onMoodHistory: () => context.go('/mood/history'),
+            onRewards: () => context.go('/rewards'),
+          ),
+        ),
+        GoRoute(
+          path: '/support',
+          builder: (context, state) => SupportScreen(
+            loadHelplines: progress!.loadHelplines,
+            onTalk: () => context.go('/chat'),
           ),
         ),
         StatefulShellRoute.indexedStack(
@@ -137,6 +125,11 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                 path: '/home',
                 builder: (context, state) => HomeScreen(
                   repository: progress!,
+                  learn: learn,
+                  language: language(),
+                  onOpenArticle: (Article a) => context.go('/learn/article/${a.id}', extra: a),
+                  onSupport: () => showHelplines(context),
+                  onMoodHistory: () => context.go('/mood/history'),
                   reloadWhen: ticker,
                   theme: theme,
                   onMoodTap: (int mood) => context.go('/mood?mood=$mood'),
@@ -165,6 +158,9 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                       int.tryParse(state.uri.queryParameters['mood'] ?? ''),
                   onBack: () => goHome(context),
                   onHistory: () => context.go('/mood/history'),
+                  onSupport: () => showHelplines(context),
+                  onTalk: () => context.go('/chat'),
+                  language: language(),
                   onSaved: () {
                     // Back to Home, which reloads to show the new XP and streak.
                     ticker.bump();
