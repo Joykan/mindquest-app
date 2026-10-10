@@ -36,10 +36,33 @@ class MoodSaved {
   final int streak;
 }
 
+/// One past mood check-in.
+class MoodEntry {
+  const MoodEntry({
+    required this.id,
+    required this.mood,
+    required this.at,
+    this.note,
+  });
+
+  final String id;
+  final int mood;
+
+  /// When it was logged, in Nairobi time.
+  final DateTime at;
+  final String? note;
+}
+
 abstract class ProgressRepository {
   Future<HomeSummary> loadHome();
   Future<MoodSaved> logMood({required int mood, String? note});
   Future<List<Helpline>> loadHelplines();
+
+  /// Check-ins from the last [days] days, newest first.
+  Future<List<MoodEntry>> loadMoodHistory({int days = 30});
+
+  /// Deletes one check-in. XP already earned is kept.
+  Future<void> deleteMood(String id);
 }
 
 /// Kenya has no daylight saving, so Nairobi time is always UTC+3. The database
@@ -140,6 +163,33 @@ class SupabaseProgressRepository implements ProgressRepository {
     return MoodSaved(
         xpEarned: before.isEmpty ? 10 : 0,
         streak: profile['streak'] as int? ?? 0);
+  }
+
+  @override
+  Future<List<MoodEntry>> loadMoodHistory({int days = 30}) async {
+    final String since = startOfTodayUtc()
+        .subtract(Duration(days: days - 1))
+        .toIso8601String();
+    final List<dynamic> rows = await _client
+        .from('mood_logs')
+        .select('id, mood, note, created_at')
+        .eq('user_id', _uid)
+        .gte('created_at', since)
+        .order('created_at', ascending: false);
+    return rows.map((dynamic r) {
+      final Map<String, dynamic> m = r as Map<String, dynamic>;
+      return MoodEntry(
+        id: m['id'] as String,
+        mood: m['mood'] as int,
+        note: m['note'] as String?,
+        at: nairobiNow(DateTime.parse(m['created_at'] as String)),
+      );
+    }).toList();
+  }
+
+  @override
+  Future<void> deleteMood(String id) async {
+    await _client.from('mood_logs').delete().eq('id', id).eq('user_id', _uid);
   }
 
   @override

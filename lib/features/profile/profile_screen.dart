@@ -12,11 +12,13 @@ class ProfileScreen extends StatelessWidget {
       {super.key,
       required this.session,
       required this.theme,
-      this.onHelplines});
+      this.onHelplines,
+      this.onMoodHistory});
 
   final SessionController session;
   final ThemeController theme;
   final VoidCallback? onHelplines;
+  final VoidCallback? onMoodHistory;
 
   Future<void> _signOut(BuildContext context) async {
     if (session.account.isAnonymous) {
@@ -129,6 +131,19 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
+              if (onMoodHistory != null) ...<Widget>[
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    key: const Key('open-mood-history'),
+                    leading: const Icon(Icons.insights_outlined),
+                    title: const Text('Mood history'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: onMoodHistory,
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               if (onHelplines != null)
                 Card(
                   clipBehavior: Clip.antiAlias,

@@ -12,6 +12,7 @@ import '../../features/chat/chat_screen.dart';
 import '../../features/chat/crisis_sheet.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/home/progress_repository.dart';
+import '../../features/mood/mood_history_screen.dart';
 import '../../features/mood/mood_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/setup/setup_status_screen.dart';
@@ -116,6 +117,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
             session: session,
             theme: theme,
             onHelplines: () => showHelplines(context),
+            onMoodHistory: () => context.go('/mood/history'),
           ),
         ),
         StatefulShellRoute.indexedStack(
@@ -151,12 +153,20 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                   initialMood:
                       int.tryParse(state.uri.queryParameters['mood'] ?? ''),
                   onBack: () => goHome(context),
+                  onHistory: () => context.go('/mood/history'),
                   onSaved: () {
                     // Back to Home, which reloads to show the new XP and streak.
                     ticker.bump();
                     context.go('/home');
                   },
                 ),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'history',
+                    builder: (context, state) =>
+                        MoodHistoryScreen(repository: progress!),
+                  ),
+                ],
               ),
             ]),
             StatefulShellBranch(routes: <RouteBase>[

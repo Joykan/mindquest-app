@@ -6,6 +6,7 @@ import 'package:mindquest/features/chat/chat_models.dart';
 import 'package:mindquest/features/gamification/levels.dart';
 import 'package:mindquest/features/home/home_screen.dart';
 import 'package:mindquest/features/home/progress_repository.dart';
+import 'package:mindquest/features/mood/mood_history_screen.dart';
 import 'package:mindquest/features/mood/mood_screen.dart';
 
 class FakeProgress implements ProgressRepository {
@@ -14,8 +15,18 @@ class FakeProgress implements ProgressRepository {
   HomeSummary summary;
   final List<(int, String?)> logged = <(int, String?)>[];
 
+  List<MoodEntry> history = <MoodEntry>[];
+  final List<String> deleted = <String>[];
+
   @override
   Future<HomeSummary> loadHome() async => summary;
+
+  @override
+  Future<List<MoodEntry>> loadMoodHistory({int days = 30}) async =>
+      history.where((MoodEntry e) => !deleted.contains(e.id)).toList();
+
+  @override
+  Future<void> deleteMood(String id) async => deleted.add(id);
 
   @override
   Future<MoodSaved> logMood({required int mood, String? note}) async {
@@ -203,5 +214,52 @@ void main() {
     ));
     await tester.tap(find.byType(BackButton));
     expect(wentBack, isTrue);
+  });
+
+  testWidgets('Mood history shows the week, a summary and deletable entries',
+      (tester) async {
+    tester.view.physicalSize = const Size(1080, 3600);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    final DateTime now = nairobiNow();
+    final FakeProgress repo =
+        FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0))
+          ..history = <MoodEntry>[
+            MoodEntry(id: 'a', mood: 4, at: now, note: 'good lecture'),
+            MoodEntry(
+                id: 'b', mood: 2, at: now.subtract(const Duration(days: 1))),
+            MoodEntry(
+                id: 'c', mood: 4, at: now.subtract(const Duration(days: 3))),
+          ];
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: MoodHistoryScreen(repository: repo)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Last 7 days'), findsOneWidget);
+    expect(find.text('3 / 7'), findsOneWidget);
+    expect(find.text('good lecture'), findsOneWidget);
+    expect(find.textContaining('most common mood'), findsOneWidget);
+    expect(find.textContaining('(good)'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('delete-a')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+
+    expect(repo.deleted, <String>['a']);
+    expect(find.text('good lecture'), findsNothing);
+  });
+
+  testWidgets('Mood screen links to the history', (tester) async {
+    usePhoneScreen(tester);
+    bool opened = false;
+    final FakeProgress repo =
+        FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0));
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: MoodScreen(repository: repo, onHistory: () => opened = true),
+    ));
+    await tester.tap(find.byKey(const Key('view-history')));
+    expect(opened, isTrue);
   });
 }

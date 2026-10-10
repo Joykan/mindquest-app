@@ -13,6 +13,7 @@ class MoodScreen extends StatefulWidget {
     this.initialMood,
     this.onSaved,
     this.onBack,
+    this.onHistory,
   });
 
   final ProgressRepository repository;
@@ -25,6 +26,9 @@ class MoodScreen extends StatefulWidget {
 
   /// Shows a back arrow (to Home) when given.
   final VoidCallback? onBack;
+
+  /// Shows a "View history" button when given.
+  final VoidCallback? onHistory;
 
   @override
   State<MoodScreen> createState() => _MoodScreenState();
@@ -155,6 +159,15 @@ class _MoodScreenState extends State<MoodScreen> {
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
               ),
+              if (widget.onHistory != null) ...<Widget>[
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  key: const Key('view-history'),
+                  onPressed: widget.onHistory,
+                  icon: const Icon(Icons.history),
+                  label: const Text('View mood history'),
+                ),
+              ],
             ],
           ),
         ),
