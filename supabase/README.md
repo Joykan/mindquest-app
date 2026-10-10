@@ -85,3 +85,17 @@ Secrets (Dashboard > Edge Functions > Secrets):
 |---|---|
 | `RASA_URL` | Public address of the Rasa server, e.g. the ngrok address |
 | `RASA_TOKEN` | Same token Rasa was started with (`nlp/rasa/.rasa-token`) |
+
+## Helplines shown in the crisis sheet
+
+Only rows with `verified = true` are shown. Numbers were checked against the
+organisations' official listings on 10 Oct 2026.
+
+| Order | Helpline | Number | Note | Source |
+|---|---|---|---|---|
+| 1 | Kenya Red Cross | 1199 | Toll-free, 24 hours | Kenya Red Cross |
+| 2 | Befrienders Kenya | +254 722 178 177 | Emotional support line | [Befrienders Worldwide](https://befrienders.org/find-support-now/befrienders-kenya/) |
+| 3 | Childline Kenya | 116 | For under-18s, toll-free, 24 hours | [Child Helpline International](https://childhelplineinternational.org/kenya-childline-kenya/) |
+
+If no helpline is verified, the chat function falls back to Kenya's emergency
+numbers 999 and 112. Numbers should be re-checked before each release.
