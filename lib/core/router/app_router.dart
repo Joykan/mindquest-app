@@ -142,7 +142,11 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                   repository: progress!,
                   initialMood:
                       int.tryParse(state.uri.queryParameters['mood'] ?? ''),
-                  onSaved: ticker.bump,
+                  onSaved: () {
+                    // Back to Home, which reloads to show the new XP and streak.
+                    ticker.bump();
+                    context.go('/home');
+                  },
                 ),
               ),
             ]),
