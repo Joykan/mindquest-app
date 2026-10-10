@@ -28,6 +28,9 @@ MoodOption _option(int mood) => moodOptions.firstWhere((MoodOption m) => m.value
 class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
   late Future<List<MoodEntry>> _entries = widget.repository.loadMoodHistory();
 
+  /// Deleted entries disappear at once, before the list reloads.
+  final Set<String> _removed = <String>{};
+
   Future<void> _reload() async {
     final Future<List<MoodEntry>> next = widget.repository.loadMoodHistory();
     setState(() => _entries = next);
@@ -49,7 +52,8 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
     if (sure != true) return;
     try {
       await widget.repository.deleteMood(e.id);
-      await _reload();
+      if (!mounted) return;
+      setState(() => _removed.add(e.id));
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -74,7 +78,8 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
             );
           }
           if (!snap.hasData) return const Center(child: CircularProgressIndicator());
-          final List<MoodEntry> entries = snap.data!;
+          final List<MoodEntry> entries =
+              snap.data!.where((MoodEntry e) => !_removed.contains(e.id)).toList();
           if (entries.isEmpty) {
             return const Center(
               child: Padding(
