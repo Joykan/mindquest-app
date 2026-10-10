@@ -41,6 +41,9 @@ abstract class AccountRepository {
   Future<void> signOut();
   Future<Profile?> loadProfile();
   Future<void> completeOnboarding({required String username, required String language});
+
+  /// Changes the language the chatbot replies in ('en' or 'sw').
+  Future<void> updateLanguage(String language);
 }
 
 class SupabaseAccountRepository implements AccountRepository {
@@ -107,4 +110,11 @@ class SupabaseAccountRepository implements AccountRepository {
           params: <String, dynamic>{'p_username': username, 'p_language': language},
         ),
       );
+
+  @override
+  Future<void> updateLanguage(String language) => _guard(() async {
+        final String? id = userId;
+        if (id == null) return;
+        await _client.from('profiles').update(<String, dynamic>{'language': language}).eq('id', id);
+      });
 }

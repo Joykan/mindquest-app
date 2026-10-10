@@ -59,6 +59,13 @@ class SessionController extends ChangeNotifier {
     await refresh();
   }
 
+  Future<void> changeLanguage(String code) async {
+    language = code;
+    notifyListeners();
+    await account.updateLanguage(code);
+    await refresh();
+  }
+
   Future<void> signOut() async {
     await account.signOut();
     await refresh();
