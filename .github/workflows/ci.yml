@@ -58,8 +58,8 @@ jobs:
           code=$?
           cat test-output.txt
           if [ $code -ne 0 ]; then
-            grep -E "\[E\]|Expected:|Actual:|Which:|EXCEPTION CAUGHT|The following|was thrown|overflowed" test-output.txt \
-              | head -40 | sed 's/^/::error::/'
+            grep -A1 -E "\[E\]|Expected:|Actual:|Which:|The following|overflowed|error-causing widget" test-output.txt \
+              | grep -v -E "^--$|^\s*$" | head -60 | sed 's/^/::error::/'
           fi
           exit $code
 
