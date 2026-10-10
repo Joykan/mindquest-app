@@ -7,6 +7,7 @@ class FakeProgress implements ProgressRepository {
 
   HomeSummary summary;
   final List<(int, String?)> logged = <(int, String?)>[];
+  final List<List<String>> loggedTags = <List<String>>[];
 
   List<MoodEntry> history = <MoodEntry>[];
   final List<String> deleted = <String>[];
@@ -27,8 +28,9 @@ class FakeProgress implements ProgressRepository {
   Future<Map<String, int>> loadChatFeelings({int days = 7}) async => chatFeelings;
 
   @override
-  Future<MoodSaved> logMood({required int mood, String? note}) async {
+  Future<MoodSaved> logMood({required int mood, String? note, List<String> tags = const <String>[]}) async {
     logged.add((mood, note));
+    loggedTags.add(tags);
     return MoodSaved(xpEarned: logged.length == 1 ? 10 : 0, streak: 4);
   }
 

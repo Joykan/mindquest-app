@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/mascot.dart';
 import '../home/progress_repository.dart';
 import 'mood_insights.dart';
+import 'mood_tags.dart';
 import 'moods.dart';
 
 /// Mood history (wireframe 08): the last 7 days as a chart, a short summary,
@@ -286,6 +287,17 @@ class _EntryTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(when, style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
+              if (entry.tags.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    <String>[
+                      for (final String id in entry.tags)
+                        if (moodTagById(id) != null) '${moodTagById(id)!.emoji} ${moodTagById(id)!.en}',
+                    ].join('  '),
+                    style: theme.textTheme.labelSmall,
+                  ),
+                ),
               if (entry.note != null && entry.note!.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),

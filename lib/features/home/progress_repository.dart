@@ -43,6 +43,7 @@ class MoodEntry {
     required this.mood,
     required this.at,
     this.note,
+    this.tags = const <String>[],
   });
 
   final String id;
@@ -51,11 +52,14 @@ class MoodEntry {
   /// When it was logged, in Nairobi time.
   final DateTime at;
   final String? note;
+
+  /// What it was about, e.g. school, sleep (see mood_tags.dart).
+  final List<String> tags;
 }
 
 abstract class ProgressRepository {
   Future<HomeSummary> loadHome();
-  Future<MoodSaved> logMood({required int mood, String? note});
+  Future<MoodSaved> logMood({required int mood, String? note, List<String> tags = const <String>[]});
   Future<List<Helpline>> loadHelplines();
 
   /// Check-ins from the last [days] days, newest first.
@@ -148,7 +152,7 @@ class SupabaseProgressRepository implements ProgressRepository {
   }
 
   @override
-  Future<MoodSaved> logMood({required int mood, String? note}) async {
+  Future<MoodSaved> logMood({required int mood, String? note, List<String> tags = const <String>[]}) async {
     final String today = startOfTodayUtc().toIso8601String();
     final List<dynamic> before = await _client
         .from('xp_events')
@@ -161,6 +165,7 @@ class SupabaseProgressRepository implements ProgressRepository {
       'user_id': _uid,
       'mood': mood,
       if (note != null && note.trim().isNotEmpty) 'note': note.trim(),
+      if (tags.isNotEmpty) 'tags': tags,
     });
 
     final Map<String, dynamic> profile =
@@ -177,7 +182,7 @@ class SupabaseProgressRepository implements ProgressRepository {
         .toIso8601String();
     final List<dynamic> rows = await _client
         .from('mood_logs')
-        .select('id, mood, note, created_at')
+        .select('id, mood, note, tags, created_at')
         .eq('user_id', _uid)
         .gte('created_at', since)
         .order('created_at', ascending: false);
@@ -187,6 +192,7 @@ class SupabaseProgressRepository implements ProgressRepository {
         id: m['id'] as String,
         mood: m['mood'] as int,
         note: m['note'] as String?,
+        tags: <String>[for (final dynamic t in m['tags'] as List<dynamic>? ?? <dynamic>[]) t as String],
         at: nairobiNow(DateTime.parse(m['created_at'] as String)),
       );
     }).toList();

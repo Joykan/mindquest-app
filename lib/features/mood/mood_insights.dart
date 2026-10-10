@@ -1,4 +1,5 @@
 import '../home/progress_repository.dart';
+import 'mood_tags.dart';
 
 /// One short, plain-language observation about the user's moods.
 /// Insights describe patterns ("tend to", "often"); they never diagnose.
@@ -170,7 +171,43 @@ List<MoodInsight> buildInsights(
     ));
   }
 
-  // 5. Words that keep coming up in notes on low and on good days.
+  // 5. Tags that keep coming up on low and on good days (2+ check-ins).
+  String? commonTag(bool Function(int mood) which) {
+    final Map<String, int> counts = <String, int>{};
+    for (final MoodEntry e in entries) {
+      if (!which(e.mood)) continue;
+      for (final String t in e.tags.toSet()) {
+        counts[t] = (counts[t] ?? 0) + 1;
+      }
+    }
+    final List<MapEntry<String, int>> top = counts.entries.where((MapEntry<String, int> c) => c.value >= 2).toList()
+      ..sort((MapEntry<String, int> a, MapEntry<String, int> b) => b.value.compareTo(a.value));
+    return top.isEmpty ? null : top.first.key;
+  }
+
+  final String? lowTag = commonTag((int m) => m <= 2);
+  final String? goodTag = commonTag((int m) => m >= 4);
+  final MoodTag? low = lowTag == null ? null : moodTagById(lowTag);
+  final MoodTag? good = goodTag == null ? null : moodTagById(goodTag);
+  if (low != null) {
+    out.add(MoodInsight(
+      id: 'low_tag',
+      emoji: low.emoji,
+      title: '${low.en} weighs on you',
+      body: 'Your low days are often about ${low.en.toLowerCase()}. '
+          'Talking it through with Chipu or someone you trust can help.',
+    ));
+  }
+  if (good != null && goodTag != lowTag) {
+    out.add(MoodInsight(
+      id: 'good_tag',
+      emoji: good.emoji,
+      title: '${good.en} lifts you up',
+      body: 'Your good days are often about ${good.en.toLowerCase()}. Make room for more of it.',
+    ));
+  }
+
+  // 6. Words that keep coming up in notes on low and on good days.
   String? commonWord(bool Function(int mood) which) {
     final Map<String, int> counts = <String, int>{};
     for (final MoodEntry e in entries) {
@@ -192,7 +229,7 @@ List<MoodInsight> buildInsights(
 
   final String? lowWord = commonWord((int m) => m <= 2);
   final String? goodWord = commonWord((int m) => m >= 4);
-  if (lowWord != null) {
+  if (lowWord != null && lowWord != lowTag) {
     out.add(MoodInsight(
       id: 'low_word',
       emoji: '📝',
@@ -201,7 +238,7 @@ List<MoodInsight> buildInsights(
           'Chipu can help you work through it, or try a breathing exercise.',
     ));
   }
-  if (goodWord != null && goodWord != lowWord) {
+  if (goodWord != null && goodWord != lowWord && goodWord != goodTag) {
     out.add(MoodInsight(
       id: 'good_word',
       emoji: '🌱',
@@ -210,7 +247,7 @@ List<MoodInsight> buildInsights(
     ));
   }
 
-  // 6. Feelings that came up in the chat this week.
+  // 7. Feelings that came up in the chat this week.
   final List<MapEntry<String, int>> feelings = chatFeelings.entries
       .where((MapEntry<String, int> f) => chatFeelingNames.containsKey(f.key) && f.value >= 2)
       .toList()
@@ -228,7 +265,7 @@ List<MoodInsight> buildInsights(
     ));
   }
 
-  // 7. Check-in habit over the last 7 days.
+  // 8. Check-in habit over the last 7 days.
   final int daysThisWeek = byDay.keys.where((DateTime day) => !day.isBefore(weekStart)).length;
   if (daysThisWeek >= 5) {
     out.add(MoodInsight(
