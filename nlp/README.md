@@ -162,3 +162,57 @@ remaining name/feeling mix-ups are handled in the chat logic instead (step 7):
    Otherwise the next most likely intent is used.
 2. If the extracted name is also a feeling word (Joy, Furaha, Amani, Hope,
    Peace, Faraja...), the bot asks "Is Joy your name?" before using it.
+
+## Rasa vs Dialogflow
+
+Dialogflow ES was given the same 569 training phrases, the same test phrases
+and the same 0.5 confidence cut-off (see `dialogflow/README.md`). Results are in
+`dialogflow/results/`.
+
+| Same test phrases | Rasa v3 | Dialogflow ES | Dialogflow, all sent as English |
+|---|---|---|---|
+| 44 test phrases: accuracy | **86.4%** | 70.5% | 38.6% |
+| ...answered with an intent | 44 of 44 | 35 of 44 | 19 of 44 |
+| ...correct when it answered | 38 of 44 (86%) | 31 of 35 (89%) | 17 of 19 (89%) |
+| Names test (12): accuracy | 83.3% | **91.7%** | 50.0% |
+| Name extraction F1 | **0.94** | 0.82 | 0.71 |
+
+What the numbers show:
+
+- **Rasa answers more.** Dialogflow gave no intent (fell back) on 9 of the 44
+  phrases, mostly short or idiomatic ones like "si leo", "eeh", "too much on my
+  plate" and "I'm so sad". When it did answer, it was right about as often as
+  Rasa. Rasa answered everything, but its 6 mistakes were all made with high
+  confidence (0.73 to 1.0), so the fallback would not have caught them.
+- **Both miss the same hard cases**: "good day" (read as feel_good), "akili
+  haitulii" (read as ask_breathing) and the idiom "roho yangu iko chini".
+- **Names:** Dialogflow was better at not mistaking "I feel joy" for a name,
+  but worse at pulling the name out. It returned "ni Furaha" instead of "Furaha"
+  and "joy today" from a feelings phrase. Rasa found every name exactly.
+- **Language:** Dialogflow keeps a separate model per language and must be told
+  which one to use. Sent as English, almost every Kiswahili phrase got no
+  answer. Rasa uses one model for both languages and is never told the
+  language, which suits students who mix English, Kiswahili and Sheng in one
+  message.
+
+Fairness: the v2 data was improved after looking at Rasa's v1 test errors, while
+Dialogflow got the data as it is. That favours Rasa slightly on the 44-phrase
+test. Dialogflow has no cross-validation, so only the two test files could be
+compared.
+
+Other differences that matter for MindQuest:
+
+| | Rasa | Dialogflow ES |
+|---|---|---|
+| Where messages are processed | On our own server | On Google's servers |
+| Mixed-language messages | One model handles both | Language must be chosen per message |
+| Control over the model | Full (pipeline, thresholds, entities) | Limited to settings in the console |
+| Setup and hosting | Harder: needs a server to run on | Easier: hosted by Google |
+| Cost | Free, open source (only hosting costs) | Google Cloud pricing per request |
+
+**Decision: Rasa.** It matched or beat Dialogflow on the main test, handles
+mixed languages with one model, and keeps students' messages on infrastructure
+the project controls, which matters for a mental health app (half of the survey
+respondents raised privacy). The cost is that Rasa needs its own server, which
+is planned in step 7. Dialogflow's habit of giving no answer when unsure is a
+useful idea, and MindQuest's fallback reply plays the same role.
