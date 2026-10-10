@@ -13,7 +13,7 @@
 // --auth-token Rasa was started with). SUPABASE_URL and
 // SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
 
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient } from "@supabase/supabase-js";
 import { isCrisis } from "./crisis.ts";
 import { decide, type RasaParse } from "./logic.ts";
 import { type Lang, REPLIES } from "./replies.ts";
