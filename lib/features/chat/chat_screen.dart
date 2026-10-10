@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/theme_controller.dart';
-import '../auth/session_controller.dart';
 import 'chat_backend.dart';
 import 'chat_models.dart';
 import 'crisis_sheet.dart';
@@ -10,15 +8,9 @@ import 'crisis_sheet.dart';
 /// Chat (wireframe 05). Sends each message to the chat Edge Function and
 /// shows the reply. A crisis reply opens the crisis support sheet (wireframe 06).
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key, required this.backend, this.themeController, this.session});
+  const ChatScreen({super.key, required this.backend});
 
   final ChatBackend backend;
-
-  /// Optional: shows the appearance menu until the Profile screen exists.
-  final ThemeController? themeController;
-
-  /// Optional: adds "Sign out" to the menu until the Profile screen exists.
-  final SessionController? session;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -100,10 +92,6 @@ class _ChatScreenState extends State<ChatScreen> {
             const Text('Chat'),
           ],
         ),
-        actions: <Widget>[
-          if (widget.themeController != null || widget.session != null)
-            _ChatMenu(theme: widget.themeController, session: widget.session),
-        ],
       ),
       body: SafeArea(
         child: Column(
@@ -187,69 +175,6 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-enum _MenuAction { system, light, dark, signOut }
-
-/// Appearance and sign out. Both move to the Profile screen later.
-class _ChatMenu extends StatelessWidget {
-  const _ChatMenu({this.theme, this.session});
-
-  final ThemeController? theme;
-  final SessionController? session;
-
-  Future<void> _signOut(BuildContext context) async {
-    final SessionController s = session!;
-    if (s.account.isAnonymous) {
-      final bool? sure = await showDialog<bool>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Sign out?'),
-          content: const Text(
-            "You're using MindQuest without an account. If you sign out, your chats, "
-            'moods and XP on this phone cannot be recovered.',
-          ),
-          actions: <Widget>[
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Stay')),
-            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Sign out')),
-          ],
-        ),
-      );
-      if (sure != true) return;
-    }
-    await s.signOut();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<_MenuAction>(
-      tooltip: 'Menu',
-      icon: const Icon(Icons.more_vert),
-      onSelected: (_MenuAction a) {
-        switch (a) {
-          case _MenuAction.system:
-            theme?.set(ThemeMode.system);
-          case _MenuAction.light:
-            theme?.set(ThemeMode.light);
-          case _MenuAction.dark:
-            theme?.set(ThemeMode.dark);
-          case _MenuAction.signOut:
-            _signOut(context);
-        }
-      },
-      itemBuilder: (BuildContext context) => <PopupMenuEntry<_MenuAction>>[
-        if (theme != null) ...<PopupMenuEntry<_MenuAction>>[
-          const PopupMenuItem<_MenuAction>(value: _MenuAction.system, child: Text('Appearance: same as phone')),
-          const PopupMenuItem<_MenuAction>(value: _MenuAction.light, child: Text('Appearance: light')),
-          const PopupMenuItem<_MenuAction>(value: _MenuAction.dark, child: Text('Appearance: dark')),
-        ],
-        if (session != null) ...<PopupMenuEntry<_MenuAction>>[
-          const PopupMenuDivider(),
-          const PopupMenuItem<_MenuAction>(value: _MenuAction.signOut, child: Text('Sign out')),
-        ],
-      ],
     );
   }
 }
