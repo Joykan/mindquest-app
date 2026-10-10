@@ -21,20 +21,21 @@ Future<void> showCrisisSheet(BuildContext context, ChatReply reply) {
   );
 }
 
+/// Opens the phone dialer with the helpline's number filled in.
+Future<void> callHelpline(BuildContext context, Helpline line) async {
+  final Uri uri = Uri(scheme: 'tel', path: line.phone.replaceAll(' ', ''));
+  final bool opened = await launchUrl(uri);
+  if (!opened && context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please dial ${line.phone}')),
+    );
+  }
+}
+
 class CrisisSheet extends StatelessWidget {
   const CrisisSheet({super.key, required this.reply});
 
   final ChatReply reply;
-
-  Future<void> _call(BuildContext context, Helpline line) async {
-    final Uri uri = Uri(scheme: 'tel', path: line.phone.replaceAll(' ', ''));
-    final bool opened = await launchUrl(uri);
-    if (!opened && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please dial ${line.phone}')),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +77,7 @@ class CrisisSheet extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             for (final Helpline line in reply.helplines)
-              _HelplineRow(line: line, onCall: _call),
+              HelplineRow(line: line),
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -95,8 +96,9 @@ class CrisisSheet extends StatelessWidget {
   }
 }
 
-class _HelplineRow extends StatelessWidget {
-  const _HelplineRow({required this.line, required this.onCall});
+/// One helpline with a red Call button. Also used on the Support screen.
+class HelplineRow extends StatelessWidget {
+  const HelplineRow({super.key, required this.line, this.onCall = callHelpline});
 
   final Helpline line;
   final Future<void> Function(BuildContext, Helpline) onCall;
