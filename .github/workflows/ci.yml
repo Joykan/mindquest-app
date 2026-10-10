@@ -50,7 +50,18 @@ jobs:
           exit $code
 
       - name: Run tests
-        run: flutter test
+        shell: bash
+        run: |
+          # Failures are also turned into annotations so they show on the run page.
+          set +e
+          flutter test --reporter expanded > test-output.txt 2>&1
+          code=$?
+          cat test-output.txt
+          if [ $code -ne 0 ]; then
+            grep -E "\[E\]|Expected:|Actual:|Which:|EXCEPTION CAUGHT|The following|was thrown|overflowed" test-output.txt \
+              | head -40 | sed 's/^/::error::/'
+          fi
+          exit $code
 
       - name: Build web
         run: flutter build web --release
