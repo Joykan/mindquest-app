@@ -6,8 +6,8 @@ export type Lang = "en" | "sw";
 
 export const REPLIES: Record<string, Record<Lang, string[]>> = {
   greet: {
-    en: ["Hi! I'm MindQuest. How are you feeling today?", "Hello! How is your day going?"],
-    sw: ["Habari! Mimi ni MindQuest. Unajisikiaje leo?", "Mambo! Siku yako inaendaje?"],
+    en: ["Hi! I'm Chipu, your MindQuest buddy. How are you feeling today?", "Hello! How is your day going?"],
+    sw: ["Habari! Mimi ni Chipu, rafiki yako wa MindQuest. Unajisikiaje leo?", "Mambo! Siku yako inaendaje?"],
   },
   goodbye: {
     en: ["Take care! Come back any time you want to talk.", "Bye for now. Remember to log your mood today."],
@@ -59,10 +59,10 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
   },
   ask_about_bot: {
     en: [
-      "I'm MindQuest, a chatbot that helps you look after your mental wellbeing with check-ins, tips and breathing exercises. I'm not a therapist and I can't diagnose anything. Your chats are private to you.",
+      "I'm Chipu, MindQuest's chatbot. I help you look after your mental wellbeing with check-ins, tips and breathing exercises. I'm not a therapist and I can't diagnose anything. Your chats are private to you.",
     ],
     sw: [
-      "Mimi ni MindQuest, chatbot inayokusaidia kutunza afya yako ya akili kwa kurekodi hisia, vidokezo na mazoezi ya kupumua. Mimi si mtaalamu wa tiba na siwezi kutambua ugonjwa. Mazungumzo yako ni siri yako.",
+      "Mimi ni Chipu, chatbot ya MindQuest inayokusaidia kutunza afya yako ya akili kwa kurekodi hisia, vidokezo na mazoezi ya kupumua. Mimi si mtaalamu wa tiba na siwezi kutambua ugonjwa. Mazungumzo yako ni siri yako.",
     ],
   },
   breathing: {

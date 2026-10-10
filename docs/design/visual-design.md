@@ -50,9 +50,9 @@ the app (Welcome, Home, Chat). The brain is a bundled image
 phone. Brain graphic: [Twemoji](https://github.com/jdecked/twemoji), licensed
 CC-BY 4.0. Full-size icon: `docs/design/app-icon.png`.
 
-## Mascot
+## Mascot: Chipu
 
-A small green sprout with a face, our own design. It stands for growing a little every day, the idea behind the XP and levels. It is not a person and not a robot, so it doesn't look like a doctor or pretend to be one.
+Chipu (from *chipukizi*, Kiswahili for sprout) is a small green sprout with a face, our own design. Chipu is the chatbot's face and name. It stands for growing a little every day, the idea behind the XP and levels. It is not a person and not a robot, so it doesn't look like a doctor or pretend to be one.
 
 - Poses: `mascot` (idle), `mascot_happy` (arms up, after a good mood), `mascot_wave` (top of the chat), and `mascot_face` (round avatar beside the bot's messages and the "typing" bubble).
 - Sources are SVG in `docs/design/mascot/`; `make_mascot.py` redraws the PNGs in `assets/images/` (needs `pip install cairosvg`).

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 
-/// Poses of the MindQuest mascot, a little sprout (our own design; sources in
-/// docs/design/mascot).
+/// Poses of Chipu, the MindQuest mascot: a little sprout (from "chipukizi",
+/// Kiswahili for sprout). Our own design; sources in docs/design/mascot.
 enum MascotPose { idle, happy, wave }
 
 /// The full mascot.
@@ -21,7 +21,7 @@ class Mascot extends StatelessWidget {
       MascotPose.wave => 'mascot_wave',
     };
     return Semantics(
-      label: 'MindQuest mascot',
+      label: 'Chipu, the MindQuest mascot',
       image: true,
       child: Image.asset('assets/images/$file.png', width: size, height: size),
     );

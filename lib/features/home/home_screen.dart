@@ -305,7 +305,7 @@ class _HomeBody extends StatelessWidget {
                     xp: 10,
                     done: summary.doneToday.contains('mood_checkin')),
                 _Quest(
-                    label: 'Chat with MindQuest',
+                    label: 'Chat with Chipu',
                     xp: 2,
                     done: summary.doneToday.contains('chat_message')),
                 _Quest(
@@ -340,7 +340,7 @@ class _HomeBody extends StatelessWidget {
           key: const Key('talk'),
           onPressed: onTalk,
           icon: const Icon(Icons.chat_bubble_outline),
-          label: const Text('Talk to MindQuest'),
+          label: const Text('Talk to Chipu'),
         ),
         const SizedBox(height: 12),
         Card(
