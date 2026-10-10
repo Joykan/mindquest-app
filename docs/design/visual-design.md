@@ -41,6 +41,15 @@ Primary was darkened from the prototype's `#4A9172` so white text on it reaches
 5.2:1 contrast (the prototype's green gave 3.9:1, below the 4.5:1 guideline).
 Red is kept for crisis support only, so it always means "urgent help".
 
+## Logo and app icon
+
+The brain on a green gradient tile (primary to mint), the same as the old
+prototype's logo. It is used as the phone's app icon, the web icon and inside
+the app (Welcome, Home, Chat). The brain is a bundled image
+(`assets/images/brain.png`) rather than an emoji, so it looks the same on every
+phone. Brain graphic: [Twemoji](https://github.com/jdecked/twemoji), licensed
+CC-BY 4.0. Full-size icon: `docs/design/app-icon.png`.
+
 ## Type
 
 Font: **Nunito** (rounded, friendly, easy to read; free under the SIL Open
