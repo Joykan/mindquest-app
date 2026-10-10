@@ -57,7 +57,7 @@ Put the Supabase URL and publishable key in `config/dev.json`. That file is in
 - [x] Rasa model training and evaluation (with Dialogflow comparison)
 - [x] Chat backend and crisis detection
 - [x] Login, chat and mood screens
-- [ ] Rewards and learning articles
+- [x] Rewards and learning articles
 - [ ] Offline mode and reminders
 - [ ] Admin dashboard
 - [ ] Testing with users
