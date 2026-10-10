@@ -72,9 +72,20 @@ The app follows the phone's setting by default. Users can choose Light, Dark or
 "Same as phone" (for now from the chat screen's menu, later in Profile). The
 choice is saved on the phone.
 
-## Figma
+## Figma (high-fidelity screens)
 
-Colour variables and text styles with these values belong in the Figma file
-next to the wireframes, with high-fidelity versions of Welcome, Home, Chat and
-Crisis support. The Starter plan allows one mode per variable collection, so
-light and dark are two collections: "MindQuest · Light" and "MindQuest · Dark".
+The hi-fi screens are designed by hand in the same Figma file as the
+wireframes, in a section called "Hi-fi" to the right of them, so each screen
+can be compared with its wireframe.
+
+1. Foundations: the 8 text styles above (Nunito) and the colours above. The
+   Starter plan allows one mode per variable collection, so either use two
+   collections (light and dark) or colour styles named `Light/primary`,
+   `Dark/primary` and so on.
+2. Components: primary and secondary button, card, chip, bot and user chat
+   bubbles, bottom navigation bar.
+3. Screens: duplicate each wireframe into the Hi-fi section and restyle it.
+   For screens already built in the app (Welcome, Sign in, Onboarding, Chat,
+   Crisis support), phone screenshots are the reference so design and app
+   match. New screens follow the wireframe layout.
+4. Export each finished frame as PNG so it can be compared with the app.
