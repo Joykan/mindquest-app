@@ -4,17 +4,38 @@ import 'package:mindquest/features/chat/chat_backend.dart';
 import 'package:mindquest/features/chat/chat_models.dart';
 import 'package:mindquest/core/theme/app_theme.dart';
 import 'package:mindquest/features/chat/chat_screen.dart';
+import 'package:mindquest/features/chat/past_chats_screen.dart';
 import 'package:mindquest/features/home/progress_repository.dart';
 import 'package:mindquest/features/mood/mood_week_graph.dart';
 
 import 'fakes.dart';
 
 /// Answers from a fixed list instead of calling Supabase.
-class FakeBackend implements ChatBackend {
-  FakeBackend(this.replies);
+class FakeBackend extends ChatBackend {
+  FakeBackend(this.replies, {this.restored, this.past = const <ChatSessionSummary>[]});
 
   final List<ChatReply> replies;
   final List<String> sent = <String>[];
+  final RestoredChat? restored;
+  final List<ChatSessionSummary> past;
+  int newChats = 0;
+
+  @override
+  Future<void> startNewChat() async {
+    newChats++;
+  }
+
+  @override
+  Future<RestoredChat?> restore() async => restored;
+
+  @override
+  Future<List<ChatSessionSummary>> loadPastChats() async => past;
+
+  @override
+  Future<List<ChatMessage>> loadTranscript(String sessionId) async => const <ChatMessage>[
+        ChatMessage(text: 'old question', fromUser: true),
+        ChatMessage(text: 'old answer', fromUser: false),
+      ];
 
   @override
   Future<ChatReply> send(String text) async {
@@ -23,7 +44,7 @@ class FakeBackend implements ChatBackend {
   }
 }
 
-class FailingBackend implements ChatBackend {
+class FailingBackend extends ChatBackend {
   @override
   Future<ChatReply> send(String text) async => throw Exception('offline');
 }
@@ -221,5 +242,70 @@ void main() {
     expect(find.textContaining('3 hard days in a row'), findsOneWidget);
     await tester.tap(find.byKey(const Key('chat-helplines')));
     expect(opened, 1);
+  });
+
+  testWidgets('New chat clears the screen after asking, and ends the session',
+      (tester) async {
+    final FakeBackend backend =
+        FakeBackend(<ChatReply>[const ChatReply(reply: 'Hello there!')]);
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: ChatScreen(backend: backend)));
+    await sendMessage(tester, 'hi');
+    expect(find.text('Hello there!'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('new-chat')));
+    await tester.pumpAndSettle();
+    expect(find.text('Start a new chat?'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('confirm-new-chat')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Hello there!'), findsNothing);
+    expect(find.text('hi'), findsNothing);
+    expect(backend.newChats, 1);
+  });
+
+  testWidgets('a recent chat is picked up again', (tester) async {
+    final FakeBackend backend = FakeBackend(
+      <ChatReply>[],
+      restored: RestoredChat(
+        startedAt: DateTime(2026, 10, 10, 9, 41),
+        messages: const <ChatMessage>[
+          ChatMessage(text: 'I am stressed', fromUser: true),
+          ChatMessage(text: 'Want to try breathing?', fromUser: false),
+        ],
+      ),
+    );
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: ChatScreen(backend: backend)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Continuing your chat from 09:41'), findsOneWidget);
+    expect(find.text('I am stressed'), findsOneWidget);
+    expect(find.text('Want to try breathing?'), findsOneWidget);
+  });
+
+  testWidgets('past chats list opens a transcript', (tester) async {
+    ChatSessionSummary? opened;
+    final FakeBackend backend = FakeBackend(<ChatReply>[], past: <ChatSessionSummary>[
+      ChatSessionSummary(
+          id: 's1', startedAt: DateTime(2026, 10, 9, 18, 5), preview: 'exams are close', messageCount: 6),
+    ]);
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: PastChatsScreen(backend: backend, onOpen: (ChatSessionSummary c) => opened = c),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.text('exams are close'), findsOneWidget);
+    expect(find.textContaining('Fri 9 Oct · 18:05 · 6 messages'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('past-chat-s1')));
+    expect(opened?.id, 's1');
+
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: ChatTranscriptScreen(backend: backend, chat: opened!),
+    ));
+    await tester.pumpAndSettle();
+    expect(find.text('old question'), findsOneWidget);
+    expect(find.text('old answer'), findsOneWidget);
   });
 }

@@ -8,6 +8,7 @@ import '../../features/auth/sign_in_screen.dart';
 import '../../features/auth/welcome_screen.dart';
 import '../../features/chat/chat_backend.dart';
 import '../../features/chat/chat_screen.dart';
+import '../../features/chat/past_chats_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/home/progress_repository.dart';
 import '../../features/learn/article_screen.dart';
@@ -147,7 +148,33 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                         onBack: () => goHome(context),
                         onHelplines: () => showHelplines(context),
                         onMoodSaved: ticker.bump,
-                      )),
+                        onPastChats: () => context.go('/chat/history'),
+                      ),
+                  routes: <RouteBase>[
+                    GoRoute(
+                      path: 'history',
+                      builder: (context, state) => PastChatsScreen(
+                        backend: chat!,
+                        onOpen: (ChatSessionSummary c) => context.go('/chat/history/${c.id}', extra: c),
+                      ),
+                      routes: <RouteBase>[
+                        GoRoute(
+                          path: ':id',
+                          builder: (context, state) {
+                            final Object? extra = state.extra;
+                            if (extra is ChatSessionSummary) {
+                              return ChatTranscriptScreen(backend: chat!, chat: extra);
+                            }
+                            // Opened without the summary (e.g. after a restart): back to the list.
+                            return PastChatsScreen(
+                              backend: chat!,
+                              onOpen: (ChatSessionSummary c) => context.go('/chat/history/${c.id}', extra: c),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ]),
             ]),
             StatefulShellBranch(routes: <RouteBase>[
               GoRoute(

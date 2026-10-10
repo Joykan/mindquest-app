@@ -11,6 +11,9 @@ enum ChatItemKind {
 
   /// A caring message with a button to the helplines.
   support,
+
+  /// A small centred note, e.g. "Continuing your chat from 09:41".
+  note,
 }
 
 /// One item in the chat list.

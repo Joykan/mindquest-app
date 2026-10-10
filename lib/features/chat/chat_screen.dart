@@ -22,9 +22,13 @@ class ChatScreen extends StatefulWidget {
     this.onBack,
     this.onMoodSaved,
     this.onHelplines,
+    this.onPastChats,
   });
 
   final ChatBackend backend;
+
+  /// Opens the list of past chats.
+  final VoidCallback? onPastChats;
 
   /// Saves mood check-ins made in the chat. Without it there is no picker.
   final ProgressRepository? progress;
@@ -57,15 +61,75 @@ const String _greeting = "Hi, I'm Chipu, your MindQuest buddy. How are you feeli
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _input = TextEditingController();
-  late final List<ChatMessage> _messages = <ChatMessage>[
-    widget.progress == null
-        ? const ChatMessage(
-            text: "Hi, I'm Chipu, your MindQuest buddy. How are you feeling today? "
-                'You can also ask me for a breathing exercise.',
-            fromUser: false,
-          )
-        : const ChatMessage(text: _greeting, fromUser: false, kind: ChatItemKind.moodPicker),
-  ];
+  late final List<ChatMessage> _messages = <ChatMessage>[_firstMessage()];
+
+  ChatMessage _firstMessage() => widget.progress == null
+      ? const ChatMessage(
+          text: "Hi, I'm Chipu, your MindQuest buddy. How are you feeling today? "
+              'You can also ask me for a breathing exercise.',
+          fromUser: false,
+        )
+      : const ChatMessage(text: _greeting, fromUser: false, kind: ChatItemKind.moodPicker);
+
+  @override
+  void initState() {
+    super.initState();
+    _restore();
+  }
+
+  /// Picks up the last conversation if it was recent.
+  Future<void> _restore() async {
+    try {
+      final RestoredChat? chat = await widget.backend.restore();
+      // Only if the user hasn't started typing in the meantime.
+      if (chat == null || !mounted || _messages.length > 1 || _sending) return;
+      final DateTime t = chat.startedAt;
+      final String time = '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+      setState(() {
+        _messages
+          ..clear()
+          ..add(ChatMessage(text: 'Continuing your chat from $time', fromUser: false, kind: ChatItemKind.note))
+          ..addAll(chat.messages);
+        _picked.clear();
+      });
+    } catch (_) {
+      // Start fresh if the old chat can't be loaded.
+    }
+  }
+
+  Future<void> _newChat() async {
+    if (_sending) return;
+    final bool talked = _messages.any((ChatMessage m) => m.fromUser);
+    if (talked) {
+      final bool? sure = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Start a new chat?'),
+          content: const Text('This conversation is saved. You can read it again in Past chats.'),
+          actions: <Widget>[
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+            TextButton(
+              key: const Key('confirm-new-chat'),
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('New chat'),
+            ),
+          ],
+        ),
+      );
+      if (sure != true || !mounted) return;
+    }
+    setState(() {
+      _messages
+        ..clear()
+        ..add(_firstMessage());
+      _picked.clear();
+    });
+    try {
+      await widget.backend.startNewChat();
+    } catch (_) {
+      // The next message starts a new chat anyway.
+    }
+  }
 
   /// Mood picked in each picker (by its index in [_messages]).
   final Map<int, int> _picked = <int, int>{};
@@ -208,6 +272,21 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
+        actions: <Widget>[
+          if (widget.onPastChats != null)
+            IconButton(
+              key: const Key('past-chats'),
+              tooltip: 'Past chats',
+              onPressed: widget.onPastChats,
+              icon: const Icon(Icons.history),
+            ),
+          IconButton(
+            key: const Key('new-chat'),
+            tooltip: 'New chat',
+            onPressed: _sending ? null : _newChat,
+            icon: const Icon(Icons.add_comment_outlined),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -309,8 +388,20 @@ class _ChatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (message.fromUser) return _Bubble(message: message);
+    if (message.kind == ChatItemKind.note) {
+      final ThemeData theme = Theme.of(context);
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Center(
+          child: Text(
+            message.text,
+            style: theme.textTheme.labelSmall?.copyWith(color: theme.extension<MindQuestColors>()!.textMuted),
+          ),
+        ),
+      );
+    }
     final Widget content = switch (message.kind) {
-      ChatItemKind.text => _Bubble(message: message),
+      ChatItemKind.text || ChatItemKind.note => _Bubble(message: message),
       ChatItemKind.moodPicker => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
