@@ -62,8 +62,8 @@ void main() {
   });
 
   testWidgets('Home shows streak, level progress and quests', (tester) async {
-    // A tall screen (360 x 1200) so every card is built without scrolling.
-    tester.view.physicalSize = const Size(1080, 3600);
+    // A tall screen (360 x 2000) so every card is built without scrolling.
+    tester.view.physicalSize = const Size(1080, 6000);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
     int? tappedMood;
