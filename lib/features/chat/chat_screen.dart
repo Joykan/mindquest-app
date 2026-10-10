@@ -181,15 +181,20 @@ class _ChatScreenState extends State<ChatScreen> {
           children: <Widget>[
             const MascotAvatar(size: 36),
             const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text('Chat'),
-                Text(
-                  'AI companion · not a therapist',
-                  style: theme.textTheme.labelSmall?.copyWith(color: mq.textMuted),
-                ),
-              ],
+            // Expanded + ellipsis so big system text sizes can't overflow.
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text('Chat', maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(
+                    'AI companion · not a therapist',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(color: mq.textMuted),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
