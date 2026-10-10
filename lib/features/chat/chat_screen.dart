@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/theme_controller.dart';
 import 'chat_backend.dart';
 import 'chat_models.dart';
 import 'crisis_sheet.dart';
 
 /// Chat (wireframe 05). Sends each message to the chat Edge Function and
-/// shows the reply. A crisis reply opens the crisis support sheet.
+/// shows the reply. A crisis reply opens the crisis support sheet (wireframe 06).
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key, required this.backend});
+  const ChatScreen({super.key, required this.backend, this.themeController});
 
   final ChatBackend backend;
+
+  /// Optional: shows the appearance menu until the Profile screen exists.
+  final ThemeController? themeController;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
+
+/// Suggested replies that match what the model understands well.
+const List<String> quickReplies = <String>[
+  "I'm stressed",
+  "I'm feeling anxious",
+  'Help me breathe',
+  "I'm doing great",
+];
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _input = TextEditingController();
@@ -32,8 +45,8 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  Future<void> _send() async {
-    final String text = _input.text.trim();
+  Future<void> _send([String? preset]) async {
+    final String text = (preset ?? _input.text).trim();
     if (text.isEmpty || _sending) return;
 
     setState(() {
@@ -64,40 +77,80 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     return Scaffold(
-      appBar: AppBar(title: const Text('MindQuest')),
+      appBar: AppBar(
+        title: Row(
+          children: <Widget>[
+            Container(
+              width: 36,
+              height: 36,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Text('🧠', style: TextStyle(fontSize: 20)),
+            ),
+            const SizedBox(width: 10),
+            const Text('Chat'),
+          ],
+        ),
+        actions: <Widget>[
+          if (widget.themeController != null) _AppearanceMenu(controller: widget.themeController!),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              color: theme.colorScheme.surfaceContainerHighest,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                'MindQuest is not a therapist. In an emergency, call 999 or 112.',
-                style: theme.textTheme.bodySmall,
-                textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: mq.surfaceSoft,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(Icons.info_outline, size: 14, color: mq.textMuted),
+                    const SizedBox(width: 6),
+                    Text(
+                      'AI companion · not a therapist',
+                      style: theme.textTheme.labelSmall?.copyWith(color: mq.textMuted),
+                    ),
+                  ],
+                ),
               ),
             ),
             Expanded(
               child: ListView.builder(
                 reverse: true,
-                padding: const EdgeInsets.all(12),
-                itemCount: _messages.length,
-                itemBuilder: (BuildContext context, int i) =>
-                    _Bubble(message: _messages[_messages.length - 1 - i]),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                itemCount: _messages.length + (_sending ? 1 : 0),
+                itemBuilder: (BuildContext context, int i) {
+                  if (_sending && i == 0) return const _TypingBubble();
+                  final int index = _messages.length - 1 - (i - (_sending ? 1 : 0));
+                  return _Bubble(message: _messages[index]);
+                },
               ),
             ),
-            if (_sending)
-              Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 4),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('MindQuest is typing...', style: theme.textTheme.bodySmall),
+            SizedBox(
+              height: 44,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: quickReplies.length,
+                separatorBuilder: (BuildContext context, int i) => const SizedBox(width: 8),
+                itemBuilder: (BuildContext context, int i) => ActionChip(
+                  label: Text(quickReplies[i]),
+                  onPressed: _sending ? null : () => _send(quickReplies[i]),
                 ),
               ),
+            ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 4, 8, 12),
+              padding: const EdgeInsets.fromLTRB(16, 8, 12, 12),
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -110,8 +163,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _send(),
                       decoration: const InputDecoration(
-                        hintText: 'Type how you feel...',
-                        border: OutlineInputBorder(),
+                        hintText: 'Type a message...',
                         counterText: '',
                       ),
                     ),
@@ -120,8 +172,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   IconButton.filled(
                     key: const Key('chat-send'),
                     onPressed: _sending ? null : _send,
-                    icon: const Icon(Icons.send),
+                    icon: const Icon(Icons.send_rounded),
                     tooltip: 'Send',
+                    style: IconButton.styleFrom(minimumSize: const Size(48, 48)),
                   ),
                 ],
               ),
@@ -133,6 +186,27 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
+class _AppearanceMenu extends StatelessWidget {
+  const _AppearanceMenu({required this.controller});
+
+  final ThemeController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<ThemeMode>(
+      tooltip: 'Appearance',
+      icon: const Icon(Icons.contrast),
+      initialValue: controller.value,
+      onSelected: controller.set,
+      itemBuilder: (BuildContext context) => const <PopupMenuEntry<ThemeMode>>[
+        PopupMenuItem<ThemeMode>(value: ThemeMode.system, child: Text('Same as phone')),
+        PopupMenuItem<ThemeMode>(value: ThemeMode.light, child: Text('Light')),
+        PopupMenuItem<ThemeMode>(value: ThemeMode.dark, child: Text('Dark')),
+      ],
+    );
+  }
+}
+
 class _Bubble extends StatelessWidget {
   const _Bubble({required this.message});
 
@@ -140,7 +214,8 @@ class _Bubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
+    final ThemeData theme = Theme.of(context);
+    final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     final bool mine = message.fromUser;
     return Align(
       alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
@@ -149,13 +224,39 @@ class _Bubble extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: mine ? colors.primary : colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(16),
+          color: mine ? theme.colorScheme.primary : mq.surfaceSoft,
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(18),
+            topRight: const Radius.circular(18),
+            bottomLeft: Radius.circular(mine ? 18 : 4),
+            bottomRight: Radius.circular(mine ? 4 : 18),
+          ),
         ),
         child: Text(
           message.text,
-          style: TextStyle(color: mine ? colors.onPrimary : colors.onSurface),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: mine ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _TypingBubble extends StatelessWidget {
+  const _TypingBubble();
+
+  @override
+  Widget build(BuildContext context) {
+    final MindQuestColors mq = Theme.of(context).extension<MindQuestColors>()!;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        key: const Key('typing'),
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(color: mq.surfaceSoft, borderRadius: BorderRadius.circular(18)),
+        child: Text('•••', style: TextStyle(color: mq.textMuted, letterSpacing: 2)),
       ),
     );
   }

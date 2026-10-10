@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/theme/app_colors.dart';
 import 'chat_models.dart';
 
 /// Crisis support (wireframe 06).
 ///
 /// Opens over the chat as soon as a crisis message is detected. Each helpline
 /// has a Call button that opens the phone dialer with the number filled in.
-/// It can only be closed with "I'm safe for now", not by tapping outside or
-/// swiping down, so it isn't dismissed by accident.
+/// It can only be closed with "I'm safe, continue chatting", not by tapping
+/// outside, swiping down or pressing back, so it isn't dismissed by accident.
 Future<void> showCrisisSheet(BuildContext context, ChatReply reply) {
   return showModalBottomSheet<void>(
     context: context,
@@ -38,54 +39,102 @@ class CrisisSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     return PopScope(
       canPop: false,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Icon(Icons.favorite, size: 40, color: theme.colorScheme.error),
-            const SizedBox(height: 12),
-            Text(
-              "You're not alone",
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall,
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: mq.crisisSurface,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Icon(Icons.favorite, color: mq.crisis),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          "You don't have to go through this alone",
+                          style: theme.textTheme.titleMedium,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(reply.reply, style: theme.textTheme.bodyMedium),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
-            Text(reply.reply, textAlign: TextAlign.center),
-            const SizedBox(height: 20),
-            for (final Helpline line in reply.helplines)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Text(line.name, style: theme.textTheme.titleMedium),
-                        if (line.description != null && line.description!.isNotEmpty)
-                          Text(line.description!, style: theme.textTheme.bodySmall),
-                        const SizedBox(height: 8),
-                        FilledButton.icon(
-                          onPressed: () => _call(context, line),
-                          icon: const Icon(Icons.call),
-                          label: Text('Call ${line.phone}'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            const SizedBox(height: 8),
-            OutlinedButton(
+            for (final Helpline line in reply.helplines) _HelplineRow(line: line, onCall: _call),
+            const SizedBox(height: 12),
+            TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text("I'm safe for now"),
+              style: TextButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+              child: Text(
+                "I'm safe, continue chatting",
+                style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onSurface),
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _HelplineRow extends StatelessWidget {
+  const _HelplineRow({required this.line, required this.onCall});
+
+  final Helpline line;
+  final Future<void> Function(BuildContext, Helpline) onCall;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final MindQuestColors mq = theme.extension<MindQuestColors>()!;
+    final String details = <String>[
+      line.phone,
+      if (line.description != null && line.description!.isNotEmpty) line.description!,
+    ].join(' · ');
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: theme.colorScheme.outline)),
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(line.name, style: theme.textTheme.titleMedium),
+                const SizedBox(height: 2),
+                Text(details, style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          FilledButton.icon(
+            onPressed: () => onCall(context, line),
+            icon: const Icon(Icons.call, size: 18),
+            label: const Text('Call'),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(96, 44),
+              backgroundColor: mq.crisis,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }

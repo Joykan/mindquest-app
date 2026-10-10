@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mindquest/features/chat/chat_backend.dart';
 import 'package:mindquest/features/chat/chat_models.dart';
+import 'package:mindquest/core/theme/app_theme.dart';
 import 'package:mindquest/features/chat/chat_screen.dart';
 
 /// Answers from a fixed list instead of calling Supabase.
@@ -34,7 +35,7 @@ void main() {
     final FakeBackend backend = FakeBackend(<ChatReply>[
       const ChatReply(reply: 'Nice to meet you, Joy! How are you feeling today?', sessionId: 's1'),
     ]);
-    await tester.pumpWidget(MaterialApp(home: ChatScreen(backend: backend)));
+    await tester.pumpWidget(MaterialApp(theme: AppTheme.light(), home: ChatScreen(backend: backend)));
 
     await sendMessage(tester, 'my name is Joy');
 
@@ -54,26 +55,44 @@ void main() {
         ],
       ),
     ]);
-    await tester.pumpWidget(MaterialApp(home: ChatScreen(backend: backend)));
+    await tester.pumpWidget(MaterialApp(theme: AppTheme.light(), home: ChatScreen(backend: backend)));
 
     await sendMessage(tester, 'I want to end it all');
 
-    expect(find.text("You're not alone"), findsOneWidget);
-    expect(find.text('Call 999'), findsOneWidget);
-    expect(find.text('Call 112'), findsOneWidget);
+    const String title = "You don't have to go through this alone";
+    expect(find.text(title), findsOneWidget);
+    expect(find.text('Call'), findsNWidgets(2));
+    expect(find.textContaining('999'), findsOneWidget);
+    expect(find.textContaining('112'), findsOneWidget);
 
     // Tapping outside does not close it; the button does.
     await tester.tapAt(const Offset(10, 10));
     await tester.pumpAndSettle();
-    expect(find.text("You're not alone"), findsOneWidget);
+    expect(find.text(title), findsOneWidget);
 
-    await tester.tap(find.text("I'm safe for now"));
+    await tester.tap(find.text("I'm safe, continue chatting"));
     await tester.pumpAndSettle();
-    expect(find.text("You're not alone"), findsNothing);
+    expect(find.text(title), findsNothing);
+  });
+
+  testWidgets('a quick reply chip sends its text', (tester) async {
+    final FakeBackend backend = FakeBackend(<ChatReply>[const ChatReply(reply: 'Breathing exercise...')]);
+    await tester.pumpWidget(MaterialApp(theme: AppTheme.light(), home: ChatScreen(backend: backend)));
+
+    await tester.tap(find.text('Help me breathe'));
+    await tester.pumpAndSettle();
+
+    expect(backend.sent, <String>['Help me breathe']);
+    expect(find.text('Breathing exercise...'), findsOneWidget);
+  });
+
+  testWidgets('dark theme builds the chat screen', (tester) async {
+    await tester.pumpWidget(MaterialApp(theme: AppTheme.dark(), home: ChatScreen(backend: FakeBackend(<ChatReply>[]))));
+    expect(find.text('Chat'), findsOneWidget);
   });
 
   testWidgets('shows an error if the message cannot be sent', (tester) async {
-    await tester.pumpWidget(MaterialApp(home: ChatScreen(backend: FailingBackend())));
+    await tester.pumpWidget(MaterialApp(theme: AppTheme.light(), home: ChatScreen(backend: FailingBackend())));
 
     await sendMessage(tester, 'hi');
 
