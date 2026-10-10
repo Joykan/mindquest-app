@@ -142,7 +142,9 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                   path: '/chat',
                   builder: (context, state) => ChatScreen(
                         backend: chat!,
+                        progress: progress,
                         onBack: () => goHome(context),
+                        onMoodSaved: ticker.bump,
                       )),
             ]),
             StatefulShellBranch(routes: <RouteBase>[

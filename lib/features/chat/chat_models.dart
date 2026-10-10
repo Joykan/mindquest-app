@@ -1,9 +1,26 @@
-/// One bubble in the chat list.
+/// What a chat item shows.
+enum ChatItemKind {
+  /// A plain text bubble.
+  text,
+
+  /// A bot question with five mood faces to tap.
+  moodPicker,
+
+  /// The week's moods drawn as a graph.
+  moodGraph,
+}
+
+/// One item in the chat list.
 class ChatMessage {
-  const ChatMessage({required this.text, required this.fromUser});
+  const ChatMessage({
+    required this.text,
+    required this.fromUser,
+    this.kind = ChatItemKind.text,
+  });
 
   final String text;
   final bool fromUser;
+  final ChatItemKind kind;
 }
 
 /// A helpline shown when a crisis message is detected.

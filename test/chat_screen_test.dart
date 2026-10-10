@@ -4,6 +4,10 @@ import 'package:mindquest/features/chat/chat_backend.dart';
 import 'package:mindquest/features/chat/chat_models.dart';
 import 'package:mindquest/core/theme/app_theme.dart';
 import 'package:mindquest/features/chat/chat_screen.dart';
+import 'package:mindquest/features/home/progress_repository.dart';
+import 'package:mindquest/features/mood/mood_week_graph.dart';
+
+import 'fakes.dart';
 
 /// Answers from a fixed list instead of calling Supabase.
 class FakeBackend implements ChatBackend {
@@ -108,5 +112,84 @@ void main() {
     await sendMessage(tester, 'hi');
 
     expect(find.textContaining("Couldn't send your message"), findsOneWidget);
+  });
+
+  testWidgets('the bot asks for a mood, saves it and draws the week',
+      (tester) async {
+    tester.view.physicalSize = const Size(1080, 3600);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    final FakeProgress progress =
+        FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0));
+    progress.history = <MoodEntry>[
+      MoodEntry(id: 'old', mood: 2, at: nairobiNow().subtract(const Duration(days: 2))),
+    ];
+    int saved = 0;
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: ChatScreen(
+        backend: FakeBackend(<ChatReply>[]),
+        progress: progress,
+        onMoodSaved: () => saved++,
+      ),
+    ));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Hi, I'm MindQuest. How are you feeling right now?"),
+        findsOneWidget);
+    await tester.tap(find.byKey(const Key('chat-mood-5')));
+    await tester.pumpAndSettle();
+
+    expect(progress.logged, <(int, String?)>[(5, null)]);
+    expect(saved, 1);
+    expect(find.text('😄 Great'), findsOneWidget);
+    expect(find.text("That's wonderful! I'm so glad to hear it."), findsOneWidget);
+    expect(find.text("I've added that to your graph. +10 XP"), findsOneWidget);
+    expect(find.byKey(const Key('chat-mood-graph')), findsOneWidget);
+
+    // The answered picker can't be used again.
+    await tester.tap(find.byKey(const Key('chat-mood-1')).first);
+    await tester.pumpAndSettle();
+    expect(progress.logged.length, 1);
+  });
+
+  testWidgets('the check-in chip asks again, and the bot sees no text',
+      (tester) async {
+    tester.view.physicalSize = const Size(1080, 3600);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    final FakeBackend backend = FakeBackend(<ChatReply>[]);
+    final FakeProgress progress =
+        FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0));
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: ChatScreen(backend: backend, progress: progress),
+    ));
+    await tester.tap(find.text(checkInChip));
+    await tester.pumpAndSettle();
+
+    expect(find.text('How are you feeling right now?'), findsOneWidget);
+    expect(find.byKey(const Key('chat-mood-3')), findsNWidgets(2));
+    expect(backend.sent, isEmpty, reason: 'mood check-ins are not sent to the chatbot');
+  });
+
+  testWidgets('week graph shows a face per check-in day', (tester) async {
+    final DateTime now = DateTime(2026, 10, 10, 12);
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: Scaffold(
+        body: MoodWeekGraph(now: now, entries: <MoodEntry>[
+          MoodEntry(id: 'a', mood: 5, at: now),
+          MoodEntry(id: 'b', mood: 1, at: now.subtract(const Duration(hours: 2))),
+          MoodEntry(id: 'c', mood: 3, at: now.subtract(const Duration(days: 3))),
+        ]),
+      ),
+    ));
+    // Only the latest check-in of a day is drawn.
+    expect(find.text('😄'), findsOneWidget);
+    expect(find.text('😢'), findsNothing);
+    expect(find.text('😐'), findsOneWidget);
+    expect(find.text('Today'), findsOneWidget);
+    expect(find.text('Wed'), findsOneWidget);
   });
 }

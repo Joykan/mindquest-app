@@ -50,6 +50,18 @@ the app (Welcome, Home, Chat). The brain is a bundled image
 phone. Brain graphic: [Twemoji](https://github.com/jdecked/twemoji), licensed
 CC-BY 4.0. Full-size icon: `docs/design/app-icon.png`.
 
+## Mascot
+
+A small green sprout with a face, our own design. It stands for growing a little every day, the idea behind the XP and levels. It is not a person and not a robot, so it doesn't look like a doctor or pretend to be one.
+
+- Poses: `mascot` (idle), `mascot_happy` (arms up, after a good mood), `mascot_wave` (top of the chat), and `mascot_face` (round avatar beside the bot's messages and the "typing" bubble).
+- Sources are SVG in `docs/design/mascot/`; `make_mascot.py` redraws the PNGs in `assets/images/` (needs `pip install cairosvg`).
+- Colours come from the palette: mint body, green leaves, forest eyes.
+
+## Welcome background
+
+A glowing network of dots shaped like a brain, on the forest green, drawn by `docs/design/welcome/make_welcome_bg.py` (Pillow). It replaces a stock photo idea: no licence needed, it matches our colours, and it doesn't show someone in distress on the first screen. The bottom is darkened so the white text and buttons keep their contrast.
+
 ## Type
 
 Font: **Nunito** (rounded, friendly, easy to read; free under the SIL Open
