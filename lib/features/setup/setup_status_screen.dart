@@ -36,9 +36,7 @@ class SetupStatusScreen extends StatelessWidget {
                     Icon(ready ? Icons.check_circle : Icons.info_outline),
                     const SizedBox(width: 8),
                     Text(
-                      ready
-                          ? 'Supabase connected'
-                          : 'Supabase keys not set',
+                      ready ? 'Supabase connected' : 'Supabase keys not set',
                       key: const Key('supabase-status'),
                     ),
                   ],

@@ -44,23 +44,27 @@ abstract class ProgressRepository {
 
 /// Kenya has no daylight saving, so Nairobi time is always UTC+3. The database
 /// uses the same day boundary (public.local_date).
-DateTime nairobiNow([DateTime? now]) => (now ?? DateTime.now()).toUtc().add(const Duration(hours: 3));
+DateTime nairobiNow([DateTime? now]) =>
+    (now ?? DateTime.now()).toUtc().add(const Duration(hours: 3));
 
 /// Start of today in Nairobi, as a UTC instant.
 DateTime startOfTodayUtc([DateTime? now]) {
   final DateTime n = nairobiNow(now);
-  return DateTime.utc(n.year, n.month, n.day).subtract(const Duration(hours: 3));
+  return DateTime.utc(n.year, n.month, n.day)
+      .subtract(const Duration(hours: 3));
 }
 
 /// Start of this Monday-to-Sunday week in Nairobi, as a UTC instant.
 DateTime startOfWeekUtc([DateTime? now]) {
   final DateTime n = nairobiNow(now);
-  final DateTime monday = DateTime.utc(n.year, n.month, n.day).subtract(Duration(days: n.weekday - 1));
+  final DateTime monday = DateTime.utc(n.year, n.month, n.day)
+      .subtract(Duration(days: n.weekday - 1));
   return monday.subtract(const Duration(hours: 3));
 }
 
 class SupabaseProgressRepository implements ProgressRepository {
-  SupabaseProgressRepository([SupabaseClient? client]) : _client = client ?? Supabase.instance.client;
+  SupabaseProgressRepository([SupabaseClient? client])
+      : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
 
@@ -72,8 +76,16 @@ class SupabaseProgressRepository implements ProgressRepository {
     final String week = startOfWeekUtc().toIso8601String();
 
     final List<dynamic> results = await Future.wait<dynamic>(<Future<dynamic>>[
-      _client.from('profiles').select('username, xp, streak').eq('id', _uid).single(),
-      _client.from('xp_events').select('reason').eq('user_id', _uid).gte('created_at', today),
+      _client
+          .from('profiles')
+          .select('username, xp, streak')
+          .eq('id', _uid)
+          .single(),
+      _client
+          .from('xp_events')
+          .select('reason')
+          .eq('user_id', _uid)
+          .gte('created_at', today),
       _client
           .from('mood_logs')
           .select('mood, created_at')
@@ -93,7 +105,8 @@ class SupabaseProgressRepository implements ProgressRepository {
       final DateTime at = DateTime.parse(m['created_at'] as String).toUtc();
       final DateTime local = at.add(const Duration(hours: 3));
       days.add('${local.year}-${local.month}-${local.day}');
-      if (todayMood == null && !at.isBefore(todayStart)) todayMood = m['mood'] as int;
+      if (todayMood == null && !at.isBefore(todayStart))
+        todayMood = m['mood'] as int;
     }
 
     return HomeSummary(
@@ -109,8 +122,12 @@ class SupabaseProgressRepository implements ProgressRepository {
   @override
   Future<MoodSaved> logMood({required int mood, String? note}) async {
     final String today = startOfTodayUtc().toIso8601String();
-    final List<dynamic> before =
-        await _client.from('xp_events').select('id').eq('user_id', _uid).eq('reason', 'mood_checkin').gte('created_at', today);
+    final List<dynamic> before = await _client
+        .from('xp_events')
+        .select('id')
+        .eq('user_id', _uid)
+        .eq('reason', 'mood_checkin')
+        .gte('created_at', today);
 
     await _client.from('mood_logs').insert(<String, dynamic>{
       'user_id': _uid,
@@ -120,13 +137,19 @@ class SupabaseProgressRepository implements ProgressRepository {
 
     final Map<String, dynamic> profile =
         await _client.from('profiles').select('streak').eq('id', _uid).single();
-    return MoodSaved(xpEarned: before.isEmpty ? 10 : 0, streak: profile['streak'] as int? ?? 0);
+    return MoodSaved(
+        xpEarned: before.isEmpty ? 10 : 0,
+        streak: profile['streak'] as int? ?? 0);
   }
 
   @override
   Future<List<Helpline>> loadHelplines() async {
-    final List<dynamic> rows =
-        await _client.from('helplines').select('name, phone, description').order('sort_order');
-    return rows.map((dynamic r) => Helpline.fromJson(r as Map<String, dynamic>)).toList();
+    final List<dynamic> rows = await _client
+        .from('helplines')
+        .select('name, phone, description')
+        .order('sort_order');
+    return rows
+        .map((dynamic r) => Helpline.fromJson(r as Map<String, dynamic>))
+        .toList();
   }
 }

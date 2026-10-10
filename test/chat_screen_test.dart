@@ -33,18 +33,23 @@ Future<void> sendMessage(WidgetTester tester, String text) async {
 void main() {
   testWidgets('sends a message and shows the reply', (tester) async {
     final FakeBackend backend = FakeBackend(<ChatReply>[
-      const ChatReply(reply: 'Nice to meet you, Joy! How are you feeling today?', sessionId: 's1'),
+      const ChatReply(
+          reply: 'Nice to meet you, Joy! How are you feeling today?',
+          sessionId: 's1'),
     ]);
-    await tester.pumpWidget(MaterialApp(theme: AppTheme.light(), home: ChatScreen(backend: backend)));
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: ChatScreen(backend: backend)));
 
     await sendMessage(tester, 'my name is Joy');
 
     expect(backend.sent, <String>['my name is Joy']);
     expect(find.text('my name is Joy'), findsOneWidget);
-    expect(find.text('Nice to meet you, Joy! How are you feeling today?'), findsOneWidget);
+    expect(find.text('Nice to meet you, Joy! How are you feeling today?'),
+        findsOneWidget);
   });
 
-  testWidgets('a crisis reply opens the support sheet with call buttons', (tester) async {
+  testWidgets('a crisis reply opens the support sheet with call buttons',
+      (tester) async {
     final FakeBackend backend = FakeBackend(<ChatReply>[
       const ChatReply(
         reply: "It sounds like you're going through something really painful.",
@@ -55,7 +60,8 @@ void main() {
         ],
       ),
     ]);
-    await tester.pumpWidget(MaterialApp(theme: AppTheme.light(), home: ChatScreen(backend: backend)));
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: ChatScreen(backend: backend)));
 
     await sendMessage(tester, 'I want to end it all');
 
@@ -76,8 +82,10 @@ void main() {
   });
 
   testWidgets('a quick reply chip sends its text', (tester) async {
-    final FakeBackend backend = FakeBackend(<ChatReply>[const ChatReply(reply: 'Breathing exercise...')]);
-    await tester.pumpWidget(MaterialApp(theme: AppTheme.light(), home: ChatScreen(backend: backend)));
+    final FakeBackend backend = FakeBackend(
+        <ChatReply>[const ChatReply(reply: 'Breathing exercise...')]);
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: ChatScreen(backend: backend)));
 
     await tester.tap(find.text('Help me breathe'));
     await tester.pumpAndSettle();
@@ -87,12 +95,15 @@ void main() {
   });
 
   testWidgets('dark theme builds the chat screen', (tester) async {
-    await tester.pumpWidget(MaterialApp(theme: AppTheme.dark(), home: ChatScreen(backend: FakeBackend(<ChatReply>[]))));
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.dark(),
+        home: ChatScreen(backend: FakeBackend(<ChatReply>[]))));
     expect(find.text('Chat'), findsOneWidget);
   });
 
   testWidgets('shows an error if the message cannot be sent', (tester) async {
-    await tester.pumpWidget(MaterialApp(theme: AppTheme.light(), home: ChatScreen(backend: FailingBackend())));
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: ChatScreen(backend: FailingBackend())));
 
     await sendMessage(tester, 'hi');
 

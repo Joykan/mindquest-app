@@ -26,7 +26,8 @@ class LoadingScreen extends StatelessWidget {
               if (!session.failed)
                 const CircularProgressIndicator(color: AppPalette.mint)
               else ...<Widget>[
-                const Text("Couldn't load your profile.", style: TextStyle(color: Colors.white)),
+                const Text("Couldn't load your profile.",
+                    style: TextStyle(color: Colors.white)),
                 const SizedBox(height: 12),
                 FilledButton(
                   onPressed: session.refresh,
@@ -39,7 +40,8 @@ class LoadingScreen extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: session.signOut,
-                  child: const Text('Back to start', style: TextStyle(color: Colors.white70)),
+                  child: const Text('Back to start',
+                      style: TextStyle(color: Colors.white70)),
                 ),
               ],
             ],

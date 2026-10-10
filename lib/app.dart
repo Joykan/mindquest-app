@@ -20,7 +20,8 @@ class MindQuestApp extends StatefulWidget {
 }
 
 class _MindQuestAppState extends State<MindQuestApp> {
-  late final ThemeController _theme = widget.themeController ?? ThemeController();
+  late final ThemeController _theme =
+      widget.themeController ?? ThemeController();
   late final GoRouter _router = createRouter(_theme, widget.session);
 
   @override

@@ -67,7 +67,8 @@ class AppTheme {
   }) {
     final RoundedRectangleBorder rounded =
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
-    const TextStyle label = TextStyle(fontWeight: FontWeight.w700, fontSize: 15);
+    const TextStyle label =
+        TextStyle(fontWeight: FontWeight.w700, fontSize: 15);
 
     return ThemeData(
       useMaterial3: true,
@@ -77,14 +78,18 @@ class AppTheme {
       scaffoldBackgroundColor: background,
       extensions: <ThemeExtension<dynamic>>[extension],
       textTheme: const TextTheme(
-        headlineMedium: TextStyle(fontSize: 28, height: 34 / 28, fontWeight: FontWeight.w800),
-        headlineSmall: TextStyle(fontSize: 22, height: 28 / 22, fontWeight: FontWeight.w700),
-        titleMedium: TextStyle(fontSize: 17, height: 22 / 17, fontWeight: FontWeight.w700),
+        headlineMedium: TextStyle(
+            fontSize: 28, height: 34 / 28, fontWeight: FontWeight.w800),
+        headlineSmall: TextStyle(
+            fontSize: 22, height: 28 / 22, fontWeight: FontWeight.w700),
+        titleMedium: TextStyle(
+            fontSize: 17, height: 22 / 17, fontWeight: FontWeight.w700),
         bodyLarge: TextStyle(fontSize: 15, height: 21 / 15),
         bodyMedium: TextStyle(fontSize: 15, height: 21 / 15),
         bodySmall: TextStyle(fontSize: 13, height: 18 / 13),
         labelLarge: label,
-        labelSmall: TextStyle(fontSize: 12, height: 16 / 12, fontWeight: FontWeight.w600),
+        labelSmall: TextStyle(
+            fontSize: 12, height: 16 / 12, fontWeight: FontWeight.w600),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: background,
@@ -128,12 +133,14 @@ class AppTheme {
         backgroundColor: scheme.surface,
         side: BorderSide(color: scheme.outline),
         shape: const StadiumBorder(),
-        labelStyle: TextStyle(fontWeight: FontWeight.w600, color: scheme.onSurface),
+        labelStyle:
+            TextStyle(fontWeight: FontWeight.w600, color: scheme.onSurface),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: scheme.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(24),
           borderSide: BorderSide(color: scheme.outline),
@@ -147,7 +154,8 @@ class AppTheme {
           borderSide: BorderSide(color: scheme.primary, width: 2),
         ),
       ),
-      snackBarTheme: const SnackBarThemeData(behavior: SnackBarBehavior.floating),
+      snackBarTheme:
+          const SnackBarThemeData(behavior: SnackBarBehavior.floating),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: scheme.surface,
         shape: const RoundedRectangleBorder(

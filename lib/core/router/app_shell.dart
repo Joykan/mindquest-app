@@ -25,7 +25,10 @@ class AppShell extends StatelessWidget {
           shell.goBranch(i, initialLocation: i == shell.currentIndex);
         },
         destinations: const <NavigationDestination>[
-          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home),
+              label: 'Home'),
           NavigationDestination(
             icon: Icon(Icons.chat_bubble_outline),
             selectedIcon: Icon(Icons.chat_bubble),
@@ -54,7 +57,8 @@ class AppShell extends StatelessWidget {
 
 /// Learn and Rewards are built in step 9.
 class ComingSoonScreen extends StatelessWidget {
-  const ComingSoonScreen({super.key, required this.title, required this.text, required this.icon});
+  const ComingSoonScreen(
+      {super.key, required this.title, required this.text, required this.icon});
 
   final String title;
   final String text;
@@ -73,7 +77,8 @@ class ComingSoonScreen extends StatelessWidget {
             children: <Widget>[
               Icon(icon, size: 48, color: t.colorScheme.primary),
               const SizedBox(height: 12),
-              Text(text, textAlign: TextAlign.center, style: t.textTheme.bodyLarge),
+              Text(text,
+                  textAlign: TextAlign.center, style: t.textTheme.bodyLarge),
             ],
           ),
         ),

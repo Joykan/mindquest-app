@@ -8,7 +8,8 @@ import 'session_controller.dart';
 /// Sign in (wireframe 02). The same screen creates an account when
 /// [createAccount] is true.
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key, required this.session, this.createAccount = false});
+  const SignInScreen(
+      {super.key, required this.session, this.createAccount = false});
 
   final SessionController session;
   final bool createAccount;
@@ -36,14 +37,16 @@ class _SignInScreenState extends State<SignInScreen> {
   static String? validateEmail(String? v) {
     final String value = (v ?? '').trim();
     if (value.isEmpty) return 'Enter your email';
-    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value)) return "That email doesn't look right";
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value))
+      return "That email doesn't look right";
     return null;
   }
 
   String? _validatePassword(String? v) {
     final String value = v ?? '';
     if (value.isEmpty) return 'Enter your password';
-    if (widget.createAccount && value.length < 8) return 'Use at least 8 characters';
+    if (widget.createAccount && value.length < 8)
+      return 'Use at least 8 characters';
     return null;
   }
 
@@ -56,14 +59,16 @@ class _SignInScreenState extends State<SignInScreen> {
     });
     try {
       if (widget.createAccount) {
-        final bool signedIn =
-            await widget.session.account.signUp(email: _email.text, password: _password.text);
+        final bool signedIn = await widget.session.account
+            .signUp(email: _email.text, password: _password.text);
         if (!signedIn && mounted) {
-          setState(() => _notice = 'Almost there! We sent a link to ${_email.text.trim()}. '
-              'Open it to confirm your email, then sign in.');
+          setState(() => _notice =
+              'Almost there! We sent a link to ${_email.text.trim()}. '
+                  'Open it to confirm your email, then sign in.');
         }
       } else {
-        await widget.session.account.signIn(email: _email.text, password: _password.text);
+        await widget.session.account
+            .signIn(email: _email.text, password: _password.text);
       }
       await widget.session.refresh();
     } on AccountException catch (e) {
@@ -86,7 +91,8 @@ class _SignInScreenState extends State<SignInScreen> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
             children: <Widget>[
-              Text(create ? 'Create your account' : 'Welcome back', style: theme.textTheme.headlineMedium),
+              Text(create ? 'Create your account' : 'Welcome back',
+                  style: theme.textTheme.headlineMedium),
               const SizedBox(height: 6),
               Text(
                 create
@@ -112,7 +118,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 key: const Key('password'),
                 controller: _password,
                 obscureText: _hidePassword,
-                autofillHints: <String>[create ? AutofillHints.newPassword : AutofillHints.password],
+                autofillHints: <String>[
+                  create ? AutofillHints.newPassword : AutofillHints.password
+                ],
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _submit(),
                 validator: _validatePassword,
@@ -122,8 +130,11 @@ class _SignInScreenState extends State<SignInScreen> {
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     tooltip: _hidePassword ? 'Show password' : 'Hide password',
-                    icon: Icon(_hidePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                    onPressed: () => setState(() => _hidePassword = !_hidePassword),
+                    icon: Icon(_hidePassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined),
+                    onPressed: () =>
+                        setState(() => _hidePassword = !_hidePassword),
                   ),
                 ),
               ),
@@ -147,7 +158,10 @@ class _SignInScreenState extends State<SignInScreen> {
                 key: const Key('submit'),
                 onPressed: _busy ? null : _submit,
                 child: _busy
-                    ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2.5))
                     : Text(create ? 'Create account' : 'Sign in'),
               ),
               const SizedBox(height: 16),
@@ -156,7 +170,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 children: <Widget>[
                   Text(create ? 'Already have an account?' : 'New here?'),
                   TextButton(
-                    onPressed: () => context.pushReplacement(create ? '/sign-in' : '/sign-up'),
+                    onPressed: () => context
+                        .pushReplacement(create ? '/sign-in' : '/sign-up'),
                     child: Text(create ? 'Sign in' : 'Create an account'),
                   ),
                 ],
@@ -169,7 +184,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   Expanded(
                     child: Text(
                       'Your email is only used to sign in. It is never shown to anyone.',
-                      style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(color: mq.textMuted),
                     ),
                   ),
                 ],

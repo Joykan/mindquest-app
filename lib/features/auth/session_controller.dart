@@ -54,7 +54,8 @@ class SessionController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> completeOnboarding({required String username, required String language}) async {
+  Future<void> completeOnboarding(
+      {required String username, required String language}) async {
     await account.completeOnboarding(username: username, language: language);
     await refresh();
   }

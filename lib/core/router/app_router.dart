@@ -18,7 +18,11 @@ import '../../features/setup/setup_status_screen.dart';
 import '../theme/theme_controller.dart';
 import 'app_shell.dart';
 
-const Set<String> _signedOutPages = <String>{'/welcome', '/sign-in', '/sign-up'};
+const Set<String> _signedOutPages = <String>{
+  '/welcome',
+  '/sign-in',
+  '/sign-up'
+};
 
 /// Decides which screen the user may see.
 ///
@@ -29,9 +33,11 @@ const Set<String> _signedOutPages = <String>{'/welcome', '/sign-in', '/sign-up'}
 /// - Otherwise: the app, starting at Home.
 String? redirectFor(SessionController? session, String location) {
   if (session == null) return location == '/setup' ? null : '/setup';
-  if (!session.signedIn) return _signedOutPages.contains(location) ? null : '/welcome';
+  if (!session.signedIn)
+    return _signedOutPages.contains(location) ? null : '/welcome';
   if (session.loading) return location == '/loading' ? null : '/loading';
-  if (!session.onboarded) return location == '/onboarding' ? null : '/onboarding';
+  if (!session.onboarded)
+    return location == '/onboarding' ? null : '/onboarding';
   if (_signedOutPages.contains(location) ||
       location == '/onboarding' ||
       location == '/loading' ||
@@ -45,7 +51,8 @@ String? redirectFor(SessionController? session, String location) {
 /// [session] is null when the app was built without Supabase keys.
 GoRouter createRouter(ThemeController theme, SessionController? session) {
   final ProgressTicker ticker = ProgressTicker();
-  final ProgressRepository? progress = session == null ? null : SupabaseProgressRepository();
+  final ProgressRepository? progress =
+      session == null ? null : SupabaseProgressRepository();
   final ChatBackend? chat = session == null ? null : SupabaseChatBackend();
 
   Future<void> showHelplines(BuildContext context) async {
@@ -55,7 +62,8 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
       await showCrisisSheet(
         context,
         ChatReply(
-          reply: 'If things feel too heavy right now, talking to someone can help. '
+          reply:
+              'If things feel too heavy right now, talking to someone can help. '
               'These services are free and confidential.',
           helplines: lines,
         ),
@@ -63,7 +71,9 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
     } catch (_) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Couldn't load helplines. In an emergency call 999 or 112.")),
+        const SnackBar(
+            content: Text(
+                "Couldn't load helplines. In an emergency call 999 or 112.")),
       );
     }
   }
@@ -72,17 +82,29 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
     refreshListenable: session,
     redirect: (context, state) => redirectFor(session, state.matchedLocation),
     routes: <RouteBase>[
-      GoRoute(path: '/', builder: (context, state) => const SetupStatusScreen()),
-      GoRoute(path: '/setup', builder: (context, state) => const SetupStatusScreen()),
+      GoRoute(
+          path: '/', builder: (context, state) => const SetupStatusScreen()),
+      GoRoute(
+          path: '/setup',
+          builder: (context, state) => const SetupStatusScreen()),
       if (session != null) ...<RouteBase>[
-        GoRoute(path: '/welcome', builder: (context, state) => WelcomeScreen(session: session)),
-        GoRoute(path: '/sign-in', builder: (context, state) => SignInScreen(session: session)),
+        GoRoute(
+            path: '/welcome',
+            builder: (context, state) => WelcomeScreen(session: session)),
+        GoRoute(
+            path: '/sign-in',
+            builder: (context, state) => SignInScreen(session: session)),
         GoRoute(
           path: '/sign-up',
-          builder: (context, state) => SignInScreen(session: session, createAccount: true),
+          builder: (context, state) =>
+              SignInScreen(session: session, createAccount: true),
         ),
-        GoRoute(path: '/loading', builder: (context, state) => LoadingScreen(session: session)),
-        GoRoute(path: '/onboarding', builder: (context, state) => OnboardingScreen(session: session)),
+        GoRoute(
+            path: '/loading',
+            builder: (context, state) => LoadingScreen(session: session)),
+        GoRoute(
+            path: '/onboarding',
+            builder: (context, state) => OnboardingScreen(session: session)),
         GoRoute(
           path: '/profile',
           builder: (context, state) => ProfileScreen(
@@ -92,7 +114,8 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
           ),
         ),
         StatefulShellRoute.indexedStack(
-          builder: (context, state, shell) => AppShell(shell: shell, ticker: ticker),
+          builder: (context, state, shell) =>
+              AppShell(shell: shell, ticker: ticker),
           branches: <StatefulShellBranch>[
             StatefulShellBranch(routes: <RouteBase>[
               GoRoute(
@@ -108,14 +131,17 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
               ),
             ]),
             StatefulShellBranch(routes: <RouteBase>[
-              GoRoute(path: '/chat', builder: (context, state) => ChatScreen(backend: chat!)),
+              GoRoute(
+                  path: '/chat',
+                  builder: (context, state) => ChatScreen(backend: chat!)),
             ]),
             StatefulShellBranch(routes: <RouteBase>[
               GoRoute(
                 path: '/mood',
                 builder: (context, state) => MoodScreen(
                   repository: progress!,
-                  initialMood: int.tryParse(state.uri.queryParameters['mood'] ?? ''),
+                  initialMood:
+                      int.tryParse(state.uri.queryParameters['mood'] ?? ''),
                   onSaved: ticker.bump,
                 ),
               ),
@@ -126,7 +152,8 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                 builder: (context, state) => const ComingSoonScreen(
                   title: 'Learn',
                   icon: Icons.menu_book_outlined,
-                  text: 'Short articles on stress, sleep, exams and more are coming in the next update.',
+                  text:
+                      'Short articles on stress, sleep, exams and more are coming in the next update.',
                 ),
               ),
             ]),
@@ -136,7 +163,8 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                 builder: (context, state) => const ComingSoonScreen(
                   title: 'Rewards',
                   icon: Icons.emoji_events_outlined,
-                  text: 'Your badges and weekly quests will show here in the next update.',
+                  text:
+                      'Your badges and weekly quests will show here in the next update.',
                 ),
               ),
             ]),

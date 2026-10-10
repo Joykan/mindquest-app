@@ -32,18 +32,22 @@ class FakeAccount implements AccountRepository {
   Future<void> signInAnonymously() async {
     _userId = 'anon-1';
     _anonymous = true;
-    profile = const Profile(username: 'Friend', language: 'en', onboarded: false);
+    profile =
+        const Profile(username: 'Friend', language: 'en', onboarded: false);
   }
 
   @override
   Future<void> signIn({required String email, required String password}) async {
-    if (password != 'correct-horse') throw const AccountException('Invalid login credentials');
+    if (password != 'correct-horse')
+      throw const AccountException('Invalid login credentials');
     _userId = 'user-1';
     profile = const Profile(username: 'Amani', language: 'sw', onboarded: true);
   }
 
   @override
-  Future<bool> signUp({required String email, required String password}) async => false;
+  Future<bool> signUp(
+          {required String email, required String password}) async =>
+      false;
 
   @override
   Future<void> signOut() async => _userId = null;
@@ -52,7 +56,8 @@ class FakeAccount implements AccountRepository {
   Future<Profile?> loadProfile() async => _userId == null ? null : profile;
 
   @override
-  Future<void> completeOnboarding({required String username, required String language}) async {
+  Future<void> completeOnboarding(
+      {required String username, required String language}) async {
     onboardedName = username;
     onboardedLanguage = language;
     profile = Profile(username: username, language: language, onboarded: true);
@@ -61,7 +66,9 @@ class FakeAccount implements AccountRepository {
   @override
   Future<void> updateLanguage(String language) async {
     final Profile? p = profile;
-    if (p != null) profile = Profile(username: p.username, language: language, onboarded: p.onboarded);
+    if (p != null)
+      profile = Profile(
+          username: p.username, language: language, onboarded: p.onboarded);
   }
 }
 
@@ -117,14 +124,16 @@ void main() {
     expect(s.onboarded, isFalse);
   });
 
-  testWidgets('Onboarding needs a nickname and consent, then saves them', (tester) async {
+  testWidgets('Onboarding needs a nickname and consent, then saves them',
+      (tester) async {
     final FakeAccount account = FakeAccount();
     await account.signInAnonymously();
     final SessionController s = SessionController(account);
     await s.refresh();
     await tester.pumpWidget(wrap(OnboardingScreen(session: s)));
 
-    FilledButton finish() => tester.widget<FilledButton>(find.byKey(const Key('finish-onboarding')));
+    FilledButton finish() =>
+        tester.widget<FilledButton>(find.byKey(const Key('finish-onboarding')));
     expect(finish().onPressed, isNull);
 
     await tester.enterText(find.byKey(const Key('nickname')), '  Wanjiru ');
@@ -146,7 +155,8 @@ void main() {
     expect(s.onboarded, isTrue);
   });
 
-  testWidgets('Sign in checks the email and shows wrong-password errors', (tester) async {
+  testWidgets('Sign in checks the email and shows wrong-password errors',
+      (tester) async {
     final SessionController s = SessionController(FakeAccount());
     await tester.pumpWidget(wrap(SignInScreen(session: s)));
 
@@ -166,9 +176,12 @@ void main() {
     expect(find.text('Invalid login credentials'), findsOneWidget);
   });
 
-  testWidgets('Create account asks for 8+ characters and explains email confirmation', (tester) async {
+  testWidgets(
+      'Create account asks for 8+ characters and explains email confirmation',
+      (tester) async {
     final SessionController s = SessionController(FakeAccount());
-    await tester.pumpWidget(wrap(SignInScreen(session: s, createAccount: true)));
+    await tester
+        .pumpWidget(wrap(SignInScreen(session: s, createAccount: true)));
 
     await tester.enterText(find.byKey(const Key('email')), 'amani@example.com');
     await tester.enterText(find.byKey(const Key('password')), 'short');
@@ -179,6 +192,7 @@ void main() {
     await tester.enterText(find.byKey(const Key('password')), 'long-enough-1');
     await tester.tap(find.byKey(const Key('submit')));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Open it to confirm your email'), findsOneWidget);
+    expect(
+        find.textContaining('Open it to confirm your email'), findsOneWidget);
   });
 }

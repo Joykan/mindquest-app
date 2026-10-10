@@ -20,7 +20,8 @@ class LanguageToggle extends StatelessWidget {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final Color border = onDark ? Colors.white54 : scheme.outline;
     final Color selectedBg = onDark ? Colors.white : scheme.primary;
-    final Color selectedFg = onDark ? const Color(0xFF1C2B25) : scheme.onPrimary;
+    final Color selectedFg =
+        onDark ? const Color(0xFF1C2B25) : scheme.onPrimary;
     final Color idleFg = onDark ? Colors.white : scheme.onSurface;
 
     Widget option(String code, String label) {
@@ -42,7 +43,9 @@ class LanguageToggle extends StatelessWidget {
             ),
             child: Text(
               label,
-              style: TextStyle(fontWeight: FontWeight.w700, color: selected ? selectedFg : idleFg),
+              style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  color: selected ? selectedFg : idleFg),
             ),
           ),
         ),

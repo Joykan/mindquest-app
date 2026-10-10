@@ -8,7 +8,11 @@ import '../auth/session_controller.dart';
 /// Profile and settings (wireframe 12). Badges, mood history, "save your
 /// progress" and "delete my data" are added in step 9.
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key, required this.session, required this.theme, this.onHelplines});
+  const ProfileScreen(
+      {super.key,
+      required this.session,
+      required this.theme,
+      this.onHelplines});
 
   final SessionController session;
   final ThemeController theme;
@@ -25,8 +29,12 @@ class ProfileScreen extends StatelessWidget {
             'moods and XP on this phone cannot be recovered.',
           ),
           actions: <Widget>[
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Stay')),
-            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Sign out')),
+            TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Stay')),
+            TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Sign out')),
           ],
         ),
       );
@@ -55,7 +63,10 @@ class ProfileScreen extends StatelessWidget {
                     backgroundColor: t.colorScheme.primary,
                     child: Text(
                       name.isEmpty ? '?' : name[0].toUpperCase(),
-                      style: TextStyle(color: t.colorScheme.onPrimary, fontSize: 24, fontWeight: FontWeight.w800),
+                      style: TextStyle(
+                          color: t.colorScheme.onPrimary,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -65,8 +76,11 @@ class ProfileScreen extends StatelessWidget {
                       children: <Widget>[
                         Text(name, style: t.textTheme.headlineSmall),
                         Text(
-                          session.account.isAnonymous ? 'Anonymous account' : 'Signed in with email',
-                          style: t.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+                          session.account.isAnonymous
+                              ? 'Anonymous account'
+                              : 'Signed in with email',
+                          style: t.textTheme.bodySmall
+                              ?.copyWith(color: mq.textMuted),
                         ),
                       ],
                     ),
@@ -80,7 +94,9 @@ class ProfileScreen extends StatelessWidget {
                     ListTile(
                       leading: const Icon(Icons.translate),
                       title: const Text('Chatbot language'),
-                      trailing: LanguageToggle(value: session.language, onChanged: session.changeLanguage),
+                      trailing: LanguageToggle(
+                          value: session.language,
+                          onChanged: session.changeLanguage),
                     ),
                     const Divider(height: 1),
                     Padding(
@@ -117,7 +133,8 @@ class ProfileScreen extends StatelessWidget {
                 Card(
                   clipBehavior: Clip.antiAlias,
                   child: ListTile(
-                    leading: Icon(Icons.phone_in_talk_outlined, color: mq.crisis),
+                    leading:
+                        Icon(Icons.phone_in_talk_outlined, color: mq.crisis),
                     title: const Text('Crisis helplines'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: onHelplines,
@@ -129,7 +146,8 @@ class ProfileScreen extends StatelessWidget {
                 onPressed: () => _signOut(context),
                 icon: Icon(Icons.logout, color: mq.crisis),
                 label: Text('Sign out', style: TextStyle(color: mq.crisis)),
-                style: OutlinedButton.styleFrom(side: BorderSide(color: mq.crisis)),
+                style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: mq.crisis)),
               ),
             ],
           );
@@ -164,7 +182,8 @@ class _ThemeOption extends StatelessWidget {
         leading: Icon(icon),
         title: Text(label),
         subtitle: subtitle == null ? null : Text(subtitle!),
-        trailing: selected ? Icon(Icons.check_circle, color: scheme.primary) : null,
+        trailing:
+            selected ? Icon(Icons.check_circle, color: scheme.primary) : null,
         onTap: onTap,
       ),
     );

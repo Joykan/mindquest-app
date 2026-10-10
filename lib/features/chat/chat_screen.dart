@@ -55,7 +55,8 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       final ChatReply reply = await widget.backend.send(text);
       if (!mounted) return;
-      setState(() => _messages.add(ChatMessage(text: reply.reply, fromUser: false)));
+      setState(
+          () => _messages.add(ChatMessage(text: reply.reply, fromUser: false)));
       if (reply.crisis) {
         await showCrisisSheet(context, reply);
       }
@@ -63,7 +64,8 @@ class _ChatScreenState extends State<ChatScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Couldn't send your message. Check your connection and try again."),
+          content: Text(
+              "Couldn't send your message. Check your connection and try again."),
         ),
       );
     } finally {
@@ -91,7 +93,8 @@ class _ChatScreenState extends State<ChatScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: mq.surfaceSoft,
                   borderRadius: BorderRadius.circular(20),
@@ -103,7 +106,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     const SizedBox(width: 6),
                     Text(
                       'AI companion · not a therapist',
-                      style: theme.textTheme.labelSmall?.copyWith(color: mq.textMuted),
+                      style: theme.textTheme.labelSmall
+                          ?.copyWith(color: mq.textMuted),
                     ),
                   ],
                 ),
@@ -116,7 +120,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 itemCount: _messages.length + (_sending ? 1 : 0),
                 itemBuilder: (BuildContext context, int i) {
                   if (_sending && i == 0) return const _TypingBubble();
-                  final int index = _messages.length - 1 - (i - (_sending ? 1 : 0));
+                  final int index =
+                      _messages.length - 1 - (i - (_sending ? 1 : 0));
                   return _Bubble(message: _messages[index]);
                 },
               ),
@@ -127,7 +132,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: quickReplies.length,
-                separatorBuilder: (BuildContext context, int i) => const SizedBox(width: 8),
+                separatorBuilder: (BuildContext context, int i) =>
+                    const SizedBox(width: 8),
                 itemBuilder: (BuildContext context, int i) => ActionChip(
                   label: Text(quickReplies[i]),
                   onPressed: _sending ? null : () => _send(quickReplies[i]),
@@ -159,7 +165,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     onPressed: _sending ? null : _send,
                     icon: const Icon(Icons.send_rounded),
                     tooltip: 'Send',
-                    style: IconButton.styleFrom(minimumSize: const Size(48, 48)),
+                    style:
+                        IconButton.styleFrom(minimumSize: const Size(48, 48)),
                   ),
                 ],
               ),
@@ -184,7 +191,8 @@ class _Bubble extends StatelessWidget {
     return Align(
       alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.78),
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.78),
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
@@ -199,7 +207,9 @@ class _Bubble extends StatelessWidget {
         child: Text(
           message.text,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: mine ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
+            color: mine
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.onSurface,
           ),
         ),
       ),
@@ -219,8 +229,10 @@ class _TypingBubble extends StatelessWidget {
         key: const Key('typing'),
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(color: mq.surfaceSoft, borderRadius: BorderRadius.circular(18)),
-        child: Text('•••', style: TextStyle(color: mq.textMuted, letterSpacing: 2)),
+        decoration: BoxDecoration(
+            color: mq.surfaceSoft, borderRadius: BorderRadius.circular(18)),
+        child: Text('•••',
+            style: TextStyle(color: mq.textMuted, letterSpacing: 2)),
       ),
     );
   }

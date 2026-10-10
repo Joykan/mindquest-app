@@ -2,7 +2,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// The parts of the profile the app needs to decide where to go.
 class Profile {
-  const Profile({required this.username, required this.language, required this.onboarded});
+  const Profile(
+      {required this.username,
+      required this.language,
+      required this.onboarded});
 
   final String username;
   final String language;
@@ -40,14 +43,16 @@ abstract class AccountRepository {
 
   Future<void> signOut();
   Future<Profile?> loadProfile();
-  Future<void> completeOnboarding({required String username, required String language});
+  Future<void> completeOnboarding(
+      {required String username, required String language});
 
   /// Changes the language the chatbot replies in ('en' or 'sw').
   Future<void> updateLanguage(String language);
 }
 
 class SupabaseAccountRepository implements AccountRepository {
-  SupabaseAccountRepository([SupabaseClient? client]) : _client = client ?? Supabase.instance.client;
+  SupabaseAccountRepository([SupabaseClient? client])
+      : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
 
@@ -58,7 +63,8 @@ class SupabaseAccountRepository implements AccountRepository {
   bool get isAnonymous => _client.auth.currentUser?.isAnonymous ?? false;
 
   @override
-  Stream<void> get changes => _client.auth.onAuthStateChange.map((AuthState _) {});
+  Stream<void> get changes =>
+      _client.auth.onAuthStateChange.map((AuthState _) {});
 
   Future<T> _guard<T>(Future<T> Function() action) async {
     try {
@@ -66,20 +72,25 @@ class SupabaseAccountRepository implements AccountRepository {
     } on AuthException catch (e) {
       throw AccountException(e.message);
     } catch (_) {
-      throw const AccountException('Something went wrong. Check your connection and try again.');
+      throw const AccountException(
+          'Something went wrong. Check your connection and try again.');
     }
   }
 
   @override
-  Future<void> signInAnonymously() => _guard(() => _client.auth.signInAnonymously());
+  Future<void> signInAnonymously() =>
+      _guard(() => _client.auth.signInAnonymously());
 
   @override
   Future<void> signIn({required String email, required String password}) =>
-      _guard(() => _client.auth.signInWithPassword(email: email.trim(), password: password));
+      _guard(() => _client.auth
+          .signInWithPassword(email: email.trim(), password: password));
 
   @override
-  Future<bool> signUp({required String email, required String password}) => _guard(() async {
-        final AuthResponse res = await _client.auth.signUp(email: email.trim(), password: password);
+  Future<bool> signUp({required String email, required String password}) =>
+      _guard(() async {
+        final AuthResponse res =
+            await _client.auth.signUp(email: email.trim(), password: password);
         return res.session != null;
       });
 
@@ -104,10 +115,15 @@ class SupabaseAccountRepository implements AccountRepository {
       });
 
   @override
-  Future<void> completeOnboarding({required String username, required String language}) => _guard(
+  Future<void> completeOnboarding(
+          {required String username, required String language}) =>
+      _guard(
         () => _client.rpc<void>(
           'complete_onboarding',
-          params: <String, dynamic>{'p_username': username, 'p_language': language},
+          params: <String, dynamic>{
+            'p_username': username,
+            'p_language': language
+          },
         ),
       );
 
@@ -115,6 +131,8 @@ class SupabaseAccountRepository implements AccountRepository {
   Future<void> updateLanguage(String language) => _guard(() async {
         final String? id = userId;
         if (id == null) return;
-        await _client.from('profiles').update(<String, dynamic>{'language': language}).eq('id', id);
+        await _client
+            .from('profiles')
+            .update(<String, dynamic>{'language': language}).eq('id', id);
       });
 }

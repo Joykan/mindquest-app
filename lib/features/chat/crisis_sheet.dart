@@ -75,14 +75,17 @@ class CrisisSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            for (final Helpline line in reply.helplines) _HelplineRow(line: line, onCall: _call),
+            for (final Helpline line in reply.helplines)
+              _HelplineRow(line: line, onCall: _call),
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              style: TextButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+              style:
+                  TextButton.styleFrom(minimumSize: const Size.fromHeight(48)),
               child: Text(
                 "I'm safe, continue chatting",
-                style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onSurface),
+                style: theme.textTheme.labelLarge
+                    ?.copyWith(color: theme.colorScheme.onSurface),
               ),
             ),
           ],
@@ -104,7 +107,8 @@ class _HelplineRow extends StatelessWidget {
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     final String details = <String>[
       line.phone,
-      if (line.description != null && line.description!.isNotEmpty) line.description!,
+      if (line.description != null && line.description!.isNotEmpty)
+        line.description!,
     ].join(' · ');
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -119,7 +123,9 @@ class _HelplineRow extends StatelessWidget {
               children: <Widget>[
                 Text(line.name, style: theme.textTheme.titleMedium),
                 const SizedBox(height: 2),
-                Text(details, style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
+                Text(details,
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: mq.textMuted)),
               ],
             ),
           ),

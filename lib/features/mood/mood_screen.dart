@@ -7,7 +7,8 @@ import 'moods.dart';
 /// Mood check-in (wireframe 07, UC-02 Log mood entry).
 /// The first check-in each day earns 10 XP and keeps the streak going.
 class MoodScreen extends StatefulWidget {
-  const MoodScreen({super.key, required this.repository, this.initialMood, this.onSaved});
+  const MoodScreen(
+      {super.key, required this.repository, this.initialMood, this.onSaved});
 
   final ProgressRepository repository;
 
@@ -45,13 +46,17 @@ class _MoodScreenState extends State<MoodScreen> {
     if (mood == null) return;
     setState(() => _saving = true);
     try {
-      final MoodSaved saved = await widget.repository.logMood(mood: mood, note: _note.text);
+      final MoodSaved saved =
+          await widget.repository.logMood(mood: mood, note: _note.text);
       if (!mounted) return;
-      final String streak = saved.streak == 1 ? '1-day streak' : '${saved.streak}-day streak';
+      final String streak =
+          saved.streak == 1 ? '1-day streak' : '${saved.streak}-day streak';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            saved.xpEarned > 0 ? 'Check-in saved. +${saved.xpEarned} XP · $streak 🔥' : 'Check-in saved · $streak 🔥',
+            saved.xpEarned > 0
+                ? 'Check-in saved. +${saved.xpEarned} XP · $streak 🔥'
+                : 'Check-in saved · $streak 🔥',
           ),
         ),
       );
@@ -63,7 +68,9 @@ class _MoodScreenState extends State<MoodScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Couldn't save. Check your connection and try again.")),
+        const SnackBar(
+            content:
+                Text("Couldn't save. Check your connection and try again.")),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -82,7 +89,8 @@ class _MoodScreenState extends State<MoodScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Text('How are you feeling right now?', style: theme.textTheme.titleMedium),
+              Text('How are you feeling right now?',
+                  style: theme.textTheme.titleMedium),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -111,8 +119,10 @@ class _MoodScreenState extends State<MoodScreen> {
                 maxLength: 200,
                 decoration: const InputDecoration(
                   hintText: "What's on your mind?",
-                  border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(16))),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(16))),
                 ),
               ),
               const SizedBox(height: 16),
@@ -120,7 +130,10 @@ class _MoodScreenState extends State<MoodScreen> {
                 key: const Key('save-mood'),
                 onPressed: _mood == null || _saving ? null : _save,
                 child: _saving
-                    ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2.5))
                     : const Text('Save check-in'),
               ),
               const SizedBox(height: 8),
@@ -138,7 +151,8 @@ class _MoodScreenState extends State<MoodScreen> {
 }
 
 class _MoodChoice extends StatelessWidget {
-  const _MoodChoice({required this.option, required this.selected, required this.onTap});
+  const _MoodChoice(
+      {required this.option, required this.selected, required this.onTap});
 
   final MoodOption option;
   final bool selected;
@@ -160,10 +174,14 @@ class _MoodChoice extends StatelessWidget {
           width: 60,
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: selected ? theme.colorScheme.primary.withValues(alpha: 0.15) : theme.colorScheme.surface,
+            color: selected
+                ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                : theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: selected ? theme.colorScheme.primary : theme.colorScheme.outline,
+              color: selected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outline,
               width: selected ? 2 : 1,
             ),
           ),
@@ -171,7 +189,9 @@ class _MoodChoice extends StatelessWidget {
             children: <Widget>[
               Text(option.emoji, style: const TextStyle(fontSize: 28)),
               const SizedBox(height: 4),
-              Text(option.label, style: theme.textTheme.labelSmall, textAlign: TextAlign.center),
+              Text(option.label,
+                  style: theme.textTheme.labelSmall,
+                  textAlign: TextAlign.center),
             ],
           ),
         ),

@@ -70,7 +70,8 @@ class HomeScreenState extends State<HomeScreen> {
       await showCrisisSheet(
         context,
         ChatReply(
-          reply: 'If things feel too heavy right now, talking to someone can help. '
+          reply:
+              'If things feel too heavy right now, talking to someone can help. '
               'These services are free and confidential.',
           helplines: lines,
         ),
@@ -78,7 +79,9 @@ class HomeScreenState extends State<HomeScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Couldn't load helplines. In an emergency call 999 or 112.")),
+        const SnackBar(
+            content: Text(
+                "Couldn't load helplines. In an emergency call 999 or 112.")),
       );
     }
   }
@@ -115,10 +118,28 @@ class HomeScreenState extends State<HomeScreen> {
 }
 
 String _dateLine(DateTime d) {
-  const List<String> days = <String>['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const List<String> days = <String>[
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ];
   const List<String> months = <String>[
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
   return '${days[d.weekday - 1]}, ${d.day} ${months[d.month - 1]}';
 }
@@ -153,7 +174,8 @@ class _HomeBody extends StatelessWidget {
           children: <Widget>[
             const LogoMark(size: 36),
             const SizedBox(width: 10),
-            Expanded(child: Text('MindQuest', style: theme.textTheme.titleMedium)),
+            Expanded(
+                child: Text('MindQuest', style: theme.textTheme.titleMedium)),
             if (this.theme != null) _AppearanceButton(controller: this.theme!),
             const SizedBox(width: 4),
             IconButton.filledTonal(
@@ -185,16 +207,22 @@ class _HomeBody extends StatelessWidget {
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        summary.streak == 1 ? '1-day streak' : '${summary.streak}-day streak',
+                        summary.streak == 1
+                            ? '1-day streak'
+                            : '${summary.streak}-day streak',
                         style: theme.textTheme.titleMedium,
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(color: mq.reward, borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                          color: mq.reward,
+                          borderRadius: BorderRadius.circular(12)),
                       child: Text(
                         'Level ${level.level}',
-                        style: theme.textTheme.labelSmall?.copyWith(color: mq.onReward),
+                        style: theme.textTheme.labelSmall
+                            ?.copyWith(color: mq.onReward),
                       ),
                     ),
                   ],
@@ -212,7 +240,8 @@ class _HomeBody extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   '${level.earned} / ${level.needed} XP to Level ${level.level + 1}',
-                  style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+                  style:
+                      theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
                 ),
               ],
             ),
@@ -228,7 +257,9 @@ class _HomeBody extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  summary.todayMood == null ? 'How are you feeling today?' : 'Today you felt',
+                  summary.todayMood == null
+                      ? 'How are you feeling today?'
+                      : 'Today you felt',
                   style: theme.textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
@@ -258,17 +289,29 @@ class _HomeBody extends StatelessWidget {
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    Expanded(child: Text("Today's quests", style: theme.textTheme.titleMedium)),
+                    Expanded(
+                        child: Text("Today's quests",
+                            style: theme.textTheme.titleMedium)),
                     Text(
                       '${_questsDone(summary)} / 3',
-                      style: theme.textTheme.labelLarge?.copyWith(color: mq.textMuted),
+                      style: theme.textTheme.labelLarge
+                          ?.copyWith(color: mq.textMuted),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                _Quest(label: 'Log your mood', xp: 10, done: summary.doneToday.contains('mood_checkin')),
-                _Quest(label: 'Chat with MindQuest', xp: 2, done: summary.doneToday.contains('chat_message')),
-                _Quest(label: 'Read one article', xp: 5, done: summary.doneToday.contains('article_read')),
+                _Quest(
+                    label: 'Log your mood',
+                    xp: 10,
+                    done: summary.doneToday.contains('mood_checkin')),
+                _Quest(
+                    label: 'Chat with MindQuest',
+                    xp: 2,
+                    done: summary.doneToday.contains('chat_message')),
+                _Quest(
+                    label: 'Read one article',
+                    xp: 5,
+                    done: summary.doneToday.contains('article_read')),
                 const Divider(height: 20),
                 Row(
                   children: <Widget>[
@@ -305,7 +348,8 @@ class _HomeBody extends StatelessWidget {
           child: ListTile(
             key: const Key('helplines'),
             leading: Icon(Icons.phone_in_talk_outlined, color: mq.crisis),
-            title: const Text('Need urgent help? View helplines', style: TextStyle(fontWeight: FontWeight.w700)),
+            title: const Text('Need urgent help? View helplines',
+                style: TextStyle(fontWeight: FontWeight.w700)),
             trailing: const Icon(Icons.chevron_right),
             onTap: onHelplines,
           ),
@@ -314,12 +358,16 @@ class _HomeBody extends StatelessWidget {
     );
   }
 
-  static int _questsDone(HomeSummary s) =>
-      <String>['mood_checkin', 'chat_message', 'article_read'].where(s.doneToday.contains).length;
+  static int _questsDone(HomeSummary s) => <String>[
+        'mood_checkin',
+        'chat_message',
+        'article_read'
+      ].where(s.doneToday.contains).length;
 }
 
 class _MoodFace extends StatelessWidget {
-  const _MoodFace({required this.option, required this.selected, required this.onTap});
+  const _MoodFace(
+      {required this.option, required this.selected, required this.onTap});
 
   final MoodOption option;
   final bool selected;
@@ -343,9 +391,13 @@ class _MoodFace extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: selected ? theme.colorScheme.primary.withValues(alpha: 0.15) : Colors.transparent,
+            color: selected
+                ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                : Colors.transparent,
             border: Border.all(
-              color: selected ? theme.colorScheme.primary : theme.colorScheme.outline,
+              color: selected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.outline,
               width: selected ? 2 : 1,
             ),
           ),
@@ -400,7 +452,9 @@ class _XpChip extends StatelessWidget {
     final MindQuestColors mq = Theme.of(context).extension<MindQuestColors>()!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(color: mq.reward.withValues(alpha: 0.25), borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+          color: mq.reward.withValues(alpha: 0.25),
+          borderRadius: BorderRadius.circular(10)),
       child: Text(
         '+$xp XP',
         style: Theme.of(context).textTheme.labelSmall,
@@ -424,7 +478,8 @@ class _Problem extends StatelessWidget {
           children: <Widget>[
             const Icon(Icons.cloud_off, size: 40),
             const SizedBox(height: 12),
-            const Text("Couldn't load your progress. Check your connection.", textAlign: TextAlign.center),
+            const Text("Couldn't load your progress. Check your connection.",
+                textAlign: TextAlign.center),
             const SizedBox(height: 12),
             OutlinedButton(
               style: OutlinedButton.styleFrom(minimumSize: const Size(140, 48)),
@@ -448,7 +503,8 @@ class _AppearanceButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: controller,
-      builder: (BuildContext context, ThemeMode mode, _) => PopupMenuButton<ThemeMode>(
+      builder: (BuildContext context, ThemeMode mode, _) =>
+          PopupMenuButton<ThemeMode>(
         key: const Key('appearance-button'),
         tooltip: 'Appearance',
         initialValue: mode,
@@ -458,10 +514,14 @@ class _AppearanceButton extends StatelessWidget {
           ThemeMode.dark => Icons.dark_mode_outlined,
           ThemeMode.system => Icons.brightness_auto_outlined,
         }),
-        itemBuilder: (BuildContext context) => const <PopupMenuEntry<ThemeMode>>[
-          PopupMenuItem<ThemeMode>(value: ThemeMode.system, child: Text('System default')),
-          PopupMenuItem<ThemeMode>(value: ThemeMode.light, child: Text('Light mode')),
-          PopupMenuItem<ThemeMode>(value: ThemeMode.dark, child: Text('Dark mode')),
+        itemBuilder: (BuildContext context) =>
+            const <PopupMenuEntry<ThemeMode>>[
+          PopupMenuItem<ThemeMode>(
+              value: ThemeMode.system, child: Text('System default')),
+          PopupMenuItem<ThemeMode>(
+              value: ThemeMode.light, child: Text('Light mode')),
+          PopupMenuItem<ThemeMode>(
+              value: ThemeMode.dark, child: Text('Dark mode')),
         ],
       ),
     );
