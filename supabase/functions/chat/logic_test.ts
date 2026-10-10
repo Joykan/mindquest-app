@@ -1,6 +1,6 @@
 import { deepStrictEqual as assertEquals, ok as assert } from "node:assert";
 import { isCrisis, normalize } from "./crisis.ts";
-import { cleanName, decide, type RasaParse, resolve } from "./logic.ts";
+import { cleanName, decide, introducesName, type RasaParse, resolve } from "./logic.ts";
 
 const first = () => 0; // always pick the first reply variant
 
@@ -69,15 +69,30 @@ Deno.test("rule 1: tell_name without a name and no strong second intent falls ba
   assertEquals(resolve(p).intent, "fallback");
 });
 
-Deno.test("rule 2: a name that is a feeling word is confirmed before use", () => {
-  const d = decide(
-    parse("tell_name", 0.95, { entities: [{ entity: "name", value: "joy" }] }),
-    null,
-    "en",
-    first,
-  );
+Deno.test("rule 2: an introduced name is used straight away, even Joy", () => {
+  const joy = parse("tell_name", 0.95, { entities: [{ entity: "name", value: "joy" }] });
+  for (
+    const t of ["my name is Joy", "I'm Joy", "naitwa Joy", "jina langu ni Joy", "call me joy", "Joy here"]
+  ) {
+    const d = decide(joy, null, "en", first, t);
+    assertEquals(d.text, "Nice to meet you, Joy! How are you feeling today?", t);
+  }
+});
+
+Deno.test("rule 2: a feeling word read as a name without an introduction is checked first", () => {
+  const joy = parse("tell_name", 0.8, { entities: [{ entity: "name", value: "joy" }] });
+  const d = decide(joy, null, "en", first, "I feel joy");
   assertEquals(d.replyKey, "confirm_name:Joy");
   assertEquals(d.text, "Just to check: is Joy your name?");
+});
+
+Deno.test("introducesName spots introductions in both languages", () => {
+  for (const t of ["My name's Faith", "im hope", "mimi ni Grace", "niite Imani", "ni Faraja hapa"]) {
+    assert(introducesName(t), t);
+  }
+  for (const t of ["I feel joy", "so much joy today", "nimejaa furaha", "nina amani"]) {
+    assert(!introducesName(t), t);
+  }
 });
 
 Deno.test("yes after a name check greets by name; no asks again", () => {

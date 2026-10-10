@@ -67,8 +67,9 @@ sends `{ "text": "...", "session_id": "..." }` with the user's access token.
    - below 0.5 confidence, or `nlu_fallback`, gives the fallback reply
    - stress and anxiety offer a breathing exercise; the next "yes"/"no" is read
      against that offer
-   - names: a name only counts if Rasa extracted one, and names that are also
-     feeling words (Joy, Furaha, Amani...) are confirmed first
+   - names: a name only counts if Rasa extracted one. "My name is Joy" or
+     "naitwa Furaha" is used straight away; a feeling-word name in a message
+     that doesn't introduce anyone ("I feel joy") is checked first
    - if Rasa can't be reached, the user gets a "try again" reply and the
      crisis check still works
 3. **Saved.** Both messages go into `messages`, with the intent and confidence

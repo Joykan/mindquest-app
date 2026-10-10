@@ -160,8 +160,10 @@ remaining name/feeling mix-ups are handled in the chat logic instead (step 7):
 
 1. A message only counts as tell_name if a name was actually extracted.
    Otherwise the next most likely intent is used.
-2. If the extracted name is also a feeling word (Joy, Furaha, Amani, Hope,
-   Peace, Faraja...), the bot asks "Is Joy your name?" before using it.
+2. A name in an introduction ("my name is Joy", "naitwa Furaha", "I'm Hope")
+   is used straight away. Only when a feeling word (Joy, Furaha, Amani...) is
+   read as a name in a message that doesn't introduce anyone, such as "I feel
+   joy", does the bot ask "Is Joy your name?" first.
 
 ## Rasa vs Dialogflow
 

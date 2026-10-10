@@ -143,7 +143,7 @@ Deno.serve(async (req) => {
   const { data: last } = await db.from("messages").select("reply_key")
     .eq("session_id", sessionId).eq("sender", "bot")
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
-  const decision = decide(await askRasa(text), last?.reply_key ?? null, lang);
+  const decision = decide(await askRasa(text), last?.reply_key ?? null, lang, Math.random, text);
 
   // 3. Save both messages (two inserts so the user's comes first).
   const { error: e1 } = await db.from("messages").insert({

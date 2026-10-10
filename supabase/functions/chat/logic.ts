@@ -6,7 +6,7 @@ import { type Lang, REPLIES } from "./replies.ts";
 /** Same cut-off as the FallbackClassifier in nlp/rasa/config.yml. */
 export const THRESHOLD = 0.5;
 
-/** Names that are also feeling words. The bot checks before using them. */
+/** Names that are also feeling words. Checked first only if the message doesn't introduce a name. */
 export const EMOTION_NAMES = new Set([
   "joy",
   "hope",
@@ -32,6 +32,19 @@ export const EMOTION_NAMES = new Set([
   "wema",
   "upendo",
 ]);
+
+/**
+ * Words that show the user is introducing themselves ("my name is", "naitwa",
+ * "call me", "I'm"...). With one of these, a name is used straight away.
+ */
+const NAME_CUES =
+  /\b(name|names|named|called|call me|go by|i m|im|i am|this is|here|naitwa|jina|niite|kuniita|wananiita|mimi ni|ni mimi|hapa)\b/;
+
+/** True if the message reads like an introduction rather than a feeling. */
+export function introducesName(text: string): boolean {
+  const t = text.toLowerCase().replace(/['’`]/g, " ").replace(/[^\p{L}\p{N}]+/gu, " ");
+  return NAME_CUES.test(t);
+}
 
 /** Replies after which a yes/no answer means something specific. */
 const OFFERS_BREATHING = new Set(["feel_stressed", "feel_anxious"]);
@@ -100,6 +113,7 @@ export function decide(
   previousReplyKey: string | null,
   lang: Lang,
   rng: () => number = Math.random,
+  text = "",
 ): Decision {
   if (!parse) {
     return { intent: null, confidence: null, replyKey: "unavailable", text: pick("unavailable", lang, rng) };
@@ -125,8 +139,9 @@ export function decide(
 
   switch (r.intent) {
     case "tell_name":
-      // Rule 2: a name that is also a feeling word is confirmed first.
-      if (EMOTION_NAMES.has(r.name!.toLowerCase())) {
+      // Rule 2: "my name is Joy" is used straight away. Only a feeling-word
+      // name in a message that doesn't introduce anyone ("I feel joy") is checked.
+      if (EMOTION_NAMES.has(r.name!.toLowerCase()) && !introducesName(text)) {
         return out(`confirm_name:${r.name}`, "confirm_name", r.name);
       }
       return out("nice_to_meet", "nice_to_meet", r.name);
