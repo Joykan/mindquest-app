@@ -16,8 +16,11 @@ never told the language.
 ## Setup (once)
 
 1. Go to https://dialogflow.cloud.google.com and sign in with your Google account.
-2. Create agent: name `MindQuest`, default language English, time zone
-   Africa/Nairobi, and let it create a new Google project.
+2. Create a new agent (agent dropdown > Create new agent): name `MindQuestNLU`,
+   default language English, time zone Africa/Nairobi, and let it create a new
+   Google project. Use a new, empty agent. An agent that already has other
+   intents (for example from an older app) would compete with these intents, and
+   `build_agent.py` refuses to run on one.
 3. Open the agent settings (gear icon) > Languages > add Swahili > Save.
 4. Note the Project ID shown on the General tab of the settings.
 5. In https://console.cloud.google.com, with that project selected:

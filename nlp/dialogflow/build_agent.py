@@ -66,9 +66,18 @@ def main():
     names = sorted({r["intent"] for r in rows})
     intents = df.IntentsClient()
 
+    existing = list(intents.list_intents(request={"parent": agent_path}))
+    defaults = {"Default Welcome Intent", "Default Fallback Intent"}
+    others = [it.display_name for it in existing
+              if it.display_name not in names and it.display_name not in defaults]
+    if others:
+        sys.exit("This agent already has other intents (" + ", ".join(sorted(others)) + ").\n"
+                 "They would compete with the MindQuest intents and spoil the comparison.\n"
+                 "Use a new, empty agent for this test.")
+
     # Remove intents from an earlier run, and the built-in welcome intent,
     # which would compete with greet ("hi", "hello"). The fallback intent stays.
-    for it in intents.list_intents(request={"parent": agent_path}):
+    for it in existing:
         if it.display_name in names or it.display_name == "Default Welcome Intent":
             intents.delete_intent(name=it.name)
             print("removed", it.display_name)
