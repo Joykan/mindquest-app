@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/mascot.dart';
 import '../home/progress_repository.dart';
+import '../mood/mood_insights.dart';
 import '../mood/mood_week_graph.dart';
 import '../mood/moods.dart';
 import 'chat_backend.dart';
@@ -20,6 +21,7 @@ class ChatScreen extends StatefulWidget {
     this.progress,
     this.onBack,
     this.onMoodSaved,
+    this.onHelplines,
   });
 
   final ChatBackend backend;
@@ -32,6 +34,9 @@ class ChatScreen extends StatefulWidget {
 
   /// Called after a mood is saved from the chat (e.g. to refresh Home).
   final VoidCallback? onMoodSaved;
+
+  /// Opens the helplines (offered after a run of hard days).
+  final VoidCallback? onHelplines;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -48,14 +53,14 @@ const List<String> quickReplies = <String>[
 /// Chip that asks for a mood check-in in the chat.
 const String checkInChip = 'Check in my mood';
 
-const String _greeting = "Hi, I'm MindQuest. How are you feeling right now?";
+const String _greeting = "Hi, I'm Chipu, your MindQuest buddy. How are you feeling right now?";
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _input = TextEditingController();
   late final List<ChatMessage> _messages = <ChatMessage>[
     widget.progress == null
         ? const ChatMessage(
-            text: "Hi, I'm MindQuest. How are you feeling today? "
+            text: "Hi, I'm Chipu, your MindQuest buddy. How are you feeling today? "
                 'You can also ask me for a breathing exercise.',
             fromUser: false,
           )
@@ -124,11 +129,14 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       final MoodSaved saved = await progress.logMood(mood: mood);
       List<MoodEntry> week = _week;
+      Map<String, int> feelings = const <String, int>{};
       try {
-        week = await progress.loadMoodHistory(days: 7);
+        week = await progress.loadMoodHistory();
+        feelings = await progress.loadChatFeelings();
       } catch (_) {
-        // The graph is a bonus; the check-in is already saved.
+        // The graph and insight are a bonus; the check-in is already saved.
       }
+      final List<MoodInsight> insights = buildInsights(week, chatFeelings: feelings);
       if (!mounted) return;
       widget.onMoodSaved?.call();
       setState(() {
@@ -140,6 +148,15 @@ class _ChatScreenState extends State<ChatScreen> {
               : "I've added that to your graph.",
           ChatItemKind.moodGraph,
         );
+        // Share the most important thing Chipu noticed, if anything.
+        if (insights.isNotEmpty) {
+          final MoodInsight top = insights.first;
+          if (top.needsSupport) {
+            _addBot('${top.title}. ${top.body}', ChatItemKind.support);
+          } else {
+            _addBot('Something I noticed: ${top.body}');
+          }
+        }
       });
     } catch (_) {
       if (!mounted) return;
@@ -186,7 +203,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text('Chat', maxLines: 1, overflow: TextOverflow.ellipsis),
+                  const Text('Chipu', maxLines: 1, overflow: TextOverflow.ellipsis),
                   Text(
                     'AI companion · not a therapist',
                     maxLines: 1,
@@ -222,6 +239,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     picked: _picked[index],
                     onPick: _sending ? null : (int mood) => _pickMood(index, mood),
                     week: _week,
+                    onHelplines: widget.onHelplines,
                   );
                 },
               ),
@@ -285,9 +303,11 @@ class _ChatItem extends StatelessWidget {
     required this.picked,
     required this.onPick,
     required this.week,
+    this.onHelplines,
   });
 
   final ChatMessage message;
+  final VoidCallback? onHelplines;
   final bool showAvatar;
   final int? picked;
   final ValueChanged<int>? onPick;
@@ -310,6 +330,23 @@ class _ChatItem extends StatelessWidget {
           children: <Widget>[
             _Bubble(message: message),
             _GraphCard(week: week),
+          ],
+        ),
+      ChatItemKind.support => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _Bubble(message: message),
+            if (onHelplines != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 2, bottom: 6),
+                child: FilledButton.tonalIcon(
+                  key: const Key('chat-helplines'),
+                  onPressed: onHelplines,
+                  style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
+                  icon: const Icon(Icons.phone_in_talk_outlined),
+                  label: const Text('See helplines'),
+                ),
+              ),
           ],
         ),
     };
@@ -482,7 +519,7 @@ class _TypingBubbleState extends State<_TypingBubble> with SingleTickerProviderS
   Widget build(BuildContext context) {
     final MindQuestColors mq = Theme.of(context).extension<MindQuestColors>()!;
     return Semantics(
-      label: 'MindQuest is typing',
+      label: 'Chipu is typing',
       child: Row(
         key: const Key('typing'),
         crossAxisAlignment: CrossAxisAlignment.end,

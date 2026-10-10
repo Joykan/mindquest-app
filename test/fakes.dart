@@ -21,6 +21,11 @@ class FakeProgress implements ProgressRepository {
   @override
   Future<void> deleteMood(String id) async => deleted.add(id);
 
+  Map<String, int> chatFeelings = <String, int>{};
+
+  @override
+  Future<Map<String, int>> loadChatFeelings({int days = 7}) async => chatFeelings;
+
   @override
   Future<MoodSaved> logMood({required int mood, String? note}) async {
     logged.add((mood, note));

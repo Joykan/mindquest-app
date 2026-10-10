@@ -8,6 +8,9 @@ enum ChatItemKind {
 
   /// The week's moods drawn as a graph.
   moodGraph,
+
+  /// A caring message with a button to the helplines.
+  support,
 }
 
 /// One item in the chat list.

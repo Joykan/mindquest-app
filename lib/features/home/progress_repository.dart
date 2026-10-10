@@ -63,6 +63,11 @@ abstract class ProgressRepository {
 
   /// Deletes one check-in. XP already earned is kept.
   Future<void> deleteMood(String id);
+
+  /// How often each feeling (feel_stressed, feel_anxious, feel_sad,
+  /// feel_good) was detected in the user's chat messages in the last [days]
+  /// days. Only the intent labels are read, never the message text.
+  Future<Map<String, int>> loadChatFeelings({int days = 7});
 }
 
 /// Kenya has no daylight saving, so Nairobi time is always UTC+3. The database
@@ -190,6 +195,26 @@ class SupabaseProgressRepository implements ProgressRepository {
   @override
   Future<void> deleteMood(String id) async {
     await _client.from('mood_logs').delete().eq('id', id).eq('user_id', _uid);
+  }
+
+  @override
+  Future<Map<String, int>> loadChatFeelings({int days = 7}) async {
+    final String since = startOfTodayUtc()
+        .subtract(Duration(days: days - 1))
+        .toIso8601String();
+    // Row-level security returns only this user's messages.
+    final List<dynamic> rows = await _client
+        .from('messages')
+        .select('intent')
+        .eq('sender', 'user')
+        .inFilter('intent', <String>['feel_stressed', 'feel_anxious', 'feel_sad', 'feel_good'])
+        .gte('created_at', since);
+    final Map<String, int> counts = <String, int>{};
+    for (final dynamic r in rows) {
+      final String intent = (r as Map<String, dynamic>)['intent'] as String;
+      counts[intent] = (counts[intent] ?? 0) + 1;
+    }
+    return counts;
   }
 
   @override

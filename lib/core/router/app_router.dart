@@ -144,6 +144,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                         backend: chat!,
                         progress: progress,
                         onBack: () => goHome(context),
+                        onHelplines: () => showHelplines(context),
                         onMoodSaved: ticker.bump,
                       )),
             ]),
@@ -166,7 +167,10 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                   GoRoute(
                     path: 'history',
                     builder: (context, state) =>
-                        MoodHistoryScreen(repository: progress!),
+                        MoodHistoryScreen(
+                      repository: progress!,
+                      onHelplines: () => showHelplines(context),
+                    ),
                   ),
                 ],
               ),

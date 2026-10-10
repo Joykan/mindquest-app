@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/mascot.dart';
 import '../home/progress_repository.dart';
+import 'mood_insights.dart';
 import 'moods.dart';
 
-/// Mood history (wireframe 08): the last 7 days as a chart, a short summary
-/// and every check-in from the last 30 days, with notes. Entries can be
-/// deleted; XP already earned stays.
+/// Mood history (wireframe 08): the last 7 days as a chart, a short summary,
+/// insights, and every check-in from the last 30 days, with notes. Entries can
+/// be deleted; XP already earned stays.
 class MoodHistoryScreen extends StatefulWidget {
-  const MoodHistoryScreen({super.key, required this.repository});
+  const MoodHistoryScreen({super.key, required this.repository, this.onHelplines});
 
   final ProgressRepository repository;
+
+  /// Opens the helplines (shown with the "hard days" insight).
+  final VoidCallback? onHelplines;
 
   @override
   State<MoodHistoryScreen> createState() => _MoodHistoryScreenState();
@@ -27,13 +32,26 @@ MoodOption _option(int mood) => moodOptions.firstWhere((MoodOption m) => m.value
 
 class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
   late Future<List<MoodEntry>> _entries = widget.repository.loadMoodHistory();
+  late Future<Map<String, int>> _feelings = _loadFeelings();
+
+  /// Chat feelings are extra; the screen still works without them.
+  Future<Map<String, int>> _loadFeelings() async {
+    try {
+      return await widget.repository.loadChatFeelings();
+    } catch (_) {
+      return const <String, int>{};
+    }
+  }
 
   /// Deleted entries disappear at once, before the list reloads.
   final Set<String> _removed = <String>{};
 
   Future<void> _reload() async {
     final Future<List<MoodEntry>> next = widget.repository.loadMoodHistory();
-    setState(() => _entries = next);
+    setState(() {
+      _entries = next;
+      _feelings = _loadFeelings();
+    });
     await next;
   }
 
@@ -99,6 +117,18 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
                 _WeekChart(entries: entries),
                 const SizedBox(height: 12),
                 _Summary(entries: entries),
+                const SizedBox(height: 20),
+                Text('Insights', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                FutureBuilder<Map<String, int>>(
+                  future: _feelings,
+                  builder: (BuildContext context, AsyncSnapshot<Map<String, int>> f) =>
+                      _Insights(
+                    entries: entries,
+                    chatFeelings: f.data ?? const <String, int>{},
+                    onHelplines: widget.onHelplines,
+                  ),
+                ),
                 const SizedBox(height: 20),
                 Text('Last 30 days', style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 8),
@@ -271,6 +301,105 @@ class _EntryTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _Insights extends StatelessWidget {
+  const _Insights({required this.entries, required this.chatFeelings, this.onHelplines});
+
+  final List<MoodEntry> entries;
+  final Map<String, int> chatFeelings;
+  final VoidCallback? onHelplines;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final MindQuestColors mq = theme.extension<MindQuestColors>()!;
+    if (entries.length < insightMinimumCheckIns) {
+      return Card(
+        key: const Key('insights-locked'),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: <Widget>[
+              const Mascot(size: 56),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Check in $insightMinimumCheckIns times and Chipu will start spotting '
+                  'patterns in your moods (${entries.length}/$insightMinimumCheckIns).',
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    final List<MoodInsight> insights = buildInsights(entries, chatFeelings: chatFeelings);
+    if (insights.isEmpty) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Text(
+            'No clear patterns yet. Keep checking in and Chipu will spot them.',
+            style: theme.textTheme.bodyMedium?.copyWith(color: mq.textMuted),
+          ),
+        ),
+      );
+    }
+    return Column(
+      children: <Widget>[
+        for (final MoodInsight i in insights)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Card(
+              key: Key('insight-${i.id}'),
+              color: i.needsSupport ? mq.surfaceSoft : null,
+              shape: i.needsSupport
+                  ? RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: theme.colorScheme.primary, width: 1.5),
+                    )
+                  : null,
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(i.emoji, style: const TextStyle(fontSize: 26)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(i.title, style: theme.textTheme.titleSmall),
+                          const SizedBox(height: 2),
+                          Text(i.body, style: theme.textTheme.bodyMedium),
+                          if (i.needsSupport && onHelplines != null) ...<Widget>[
+                            const SizedBox(height: 10),
+                            FilledButton.tonalIcon(
+                              key: const Key('insight-helplines'),
+                              onPressed: onHelplines,
+                              style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
+                              icon: const Icon(Icons.phone_in_talk_outlined),
+                              label: const Text('See helplines'),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        Text(
+          'Insights are patterns in what you logged, not a diagnosis.',
+          style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+        ),
+      ],
     );
   }
 }

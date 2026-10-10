@@ -102,7 +102,7 @@ void main() {
     await tester.pumpWidget(MaterialApp(
         theme: AppTheme.dark(),
         home: ChatScreen(backend: FakeBackend(<ChatReply>[]))));
-    expect(find.text('Chat'), findsOneWidget);
+    expect(find.text('Chipu'), findsOneWidget);
   });
 
   testWidgets('shows an error if the message cannot be sent', (tester) async {
@@ -135,7 +135,7 @@ void main() {
     ));
     await tester.pumpAndSettle();
 
-    expect(find.text("Hi, I'm MindQuest. How are you feeling right now?"),
+    expect(find.text("Hi, I'm Chipu, your MindQuest buddy. How are you feeling right now?"),
         findsOneWidget);
     await tester.tap(find.byKey(const Key('chat-mood-5')));
     await tester.pumpAndSettle();
@@ -191,5 +191,35 @@ void main() {
     expect(find.text('😐'), findsOneWidget);
     expect(find.text('Today'), findsOneWidget);
     expect(find.text('Wed'), findsOneWidget);
+  });
+
+  testWidgets('after a run of hard days Chipu offers the helplines',
+      (tester) async {
+    tester.view.physicalSize = const Size(1080, 3600);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    final DateTime n = nairobiNow();
+    final FakeProgress progress =
+        FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0))
+          ..history = <MoodEntry>[
+            MoodEntry(id: 'a', mood: 1, at: n),
+            MoodEntry(id: 'b', mood: 2, at: n.subtract(const Duration(days: 1))),
+            MoodEntry(id: 'c', mood: 2, at: n.subtract(const Duration(days: 2))),
+          ];
+    int opened = 0;
+    await tester.pumpWidget(MaterialApp(
+      theme: AppTheme.light(),
+      home: ChatScreen(
+        backend: FakeBackend(<ChatReply>[]),
+        progress: progress,
+        onHelplines: () => opened++,
+      ),
+    ));
+    await tester.tap(find.byKey(const Key('chat-mood-1')));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('3 hard days in a row'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('chat-helplines')));
+    expect(opened, 1);
   });
 }
