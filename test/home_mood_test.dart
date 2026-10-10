@@ -96,7 +96,8 @@ void main() {
     await tester.tap(find.byKey(const Key('mood-4')));
     expect(tappedMood, 4);
 
-    await tester.scrollUntilVisible(find.byKey(const Key('helplines')), 100);
+    await tester.ensureVisible(find.byKey(const Key('helplines')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('helplines')));
     await tester.pumpAndSettle();
     expect(find.text('Kenya Red Cross'), findsOneWidget);
