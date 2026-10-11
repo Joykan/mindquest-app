@@ -277,5 +277,119 @@ List<MoodInsight> buildInsights(
     ));
   }
 
+  // 9. The overall mix of moods, so there is always something to show.
+  final int good = entries.where((MoodEntry e) => e.mood >= 4).length;
+  final int okay = entries.where((MoodEntry e) => e.mood == 3).length;
+  final int low = entries.where((MoodEntry e) => e.mood <= 2).length;
+  final int total = entries.length;
+  out.add(MoodInsight(
+    id: 'mood_mix',
+    emoji: good * 2 > total ? '🌤️' : (low * 2 > total ? '🌧️' : '⛅'),
+    title: good * 2 > total
+        ? 'Mostly good days'
+        : low * 2 > total
+            ? 'A lot of low days lately'
+            : 'A mix of ups and downs',
+    body: good * 2 > total
+        ? '$good of your last $total check-ins were good or great.'
+        : low * 2 > total
+            ? '$low of your last $total check-ins were low. Chipu is here to talk, and the helplines are always on Home.'
+            : 'Of your last $total check-ins, $good were good, $okay okay and $low low. Ups and downs are normal.',
+  ));
+
   return out;
 }
+
+/// Insights about the check-in just saved: how it compares with the user's
+/// usual mood, big changes during the day, and what its tags usually mean.
+/// [history] is newest first and already includes the new check-in.
+List<MoodInsight> checkInInsights(int mood, List<String> tags, List<MoodEntry> history, {DateTime? now}) {
+  final List<MoodInsight> out = <MoodInsight>[];
+  final List<MoodEntry> before = history.length > 1 ? history.sublist(1) : const <MoodEntry>[];
+  final String face = moodFace(mood);
+
+  // Compared with the user's usual mood (needs 2+ earlier check-ins).
+  if (before.length >= 2) {
+    final double usual = _average(before.map((MoodEntry e) => e.mood));
+    final String avg = usual.toStringAsFixed(1);
+    if (mood - usual >= 1) {
+      out.add(MoodInsight(
+        id: 'above_usual',
+        emoji: '📈',
+        title: 'Brighter than usual',
+        body: 'Today $face is higher than your usual mood ($avg out of 5). Notice what helped today.',
+      ));
+    } else if (usual - mood >= 1) {
+      out.add(MoodInsight(
+        id: 'below_usual',
+        emoji: '📉',
+        title: 'Harder than usual',
+        body: 'Today $face is lower than your usual mood ($avg out of 5). Be gentle with yourself.',
+      ));
+    } else {
+      out.add(MoodInsight(
+        id: 'near_usual',
+        emoji: '⚖️',
+        title: 'About your usual',
+        body: 'Today $face is close to your usual mood ($avg out of 5).',
+      ));
+    }
+  }
+
+  // Big changes within today.
+  final DateTime t = _day(now ?? nairobiNow());
+  final List<int> today = <int>[
+    for (final MoodEntry e in history)
+      if (_day(e.at) == t) e.mood,
+  ];
+  if (today.length >= 2) {
+    final int lo = today.reduce((int a, int b) => a < b ? a : b);
+    final int hi = today.reduce((int a, int b) => a > b ? a : b);
+    if (hi - lo >= 2) {
+      out.add(MoodInsight(
+        id: 'day_swing',
+        emoji: '🎢',
+        title: 'Ups and downs today',
+        body: 'Today your mood went from ${moodFace(lo)} to ${moodFace(hi)}. '
+            'Moods can change a lot in one day, and that is normal.',
+      ));
+    }
+  }
+
+  // What the chosen tags usually go with.
+  for (final String id in tags) {
+    final MoodTag? tag = moodTagById(id);
+    if (tag == null) continue;
+    final List<int> withTag = <int>[
+      for (final MoodEntry e in before)
+        if (e.tags.contains(id)) e.mood,
+    ];
+    final String name = tag.en.toLowerCase();
+    if (withTag.isEmpty) {
+      out.add(MoodInsight(
+        id: 'tag_first_$id',
+        emoji: tag.emoji,
+        title: 'First time you tagged ${tag.en}',
+        body: 'Keep tagging your check-ins and Chipu will show you how $name affects your mood.',
+      ));
+    } else {
+      final double withAvg = _average(withTag);
+      final double overall = _average(before.map((MoodEntry e) => e.mood));
+      final String how = withAvg - overall >= 0.5
+          ? 'better than usual'
+          : overall - withAvg >= 0.5
+              ? 'lower than usual'
+              : 'about the same as usual';
+      out.add(MoodInsight(
+        id: 'tag_$id',
+        emoji: tag.emoji,
+        title: '${tag.en} and your mood',
+        body: 'You tagged ${tag.en} ${withTag.length + 1} times. '
+            'On those check-ins your mood is $how (${withAvg.toStringAsFixed(1)} vs ${overall.toStringAsFixed(1)}).',
+      ));
+    }
+  }
+  return out;
+}
+
+String moodFace(int mood) => const <String>['😢', '😕', '😐', '🙂', '😄'][(mood - 1).clamp(0, 4)];

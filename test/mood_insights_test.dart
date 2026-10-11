@@ -166,4 +166,39 @@ void main() {
       expect(opened, 1);
     });
   });
+
+  group('checkInInsights (about the mood just saved)', () {
+    test('compares with the usual mood and explains tags', () {
+      final List<MoodInsight> i = checkInInsights(
+        2,
+        const <String>['money'],
+        sorted(<MoodEntry>[
+          at(0, 2, hour: 18),
+          at(1, 4),
+          at(2, 5),
+          at(3, 4),
+        ]),
+        now: now,
+      );
+      expect(i.first.id, 'below_usual');
+      expect(i.first.body, contains('4.3 out of 5'));
+      expect(i.map((MoodInsight x) => x.id), contains('tag_first_money'));
+    });
+
+    test('notices big changes within a day', () {
+      final List<MoodInsight> i = checkInInsights(
+        5,
+        const <String>[],
+        sorted(<MoodEntry>[at(0, 5, hour: 18), at(0, 2, hour: 9), at(2, 3)]),
+        now: now,
+      );
+      expect(i.map((MoodInsight x) => x.id), contains('day_swing'));
+    });
+
+    test('mood mix is always there once insights unlock', () {
+      final List<MoodInsight> i = buildInsights(sorted(<MoodEntry>[at(0, 5), at(1, 5), at(1, 3)]), now: now);
+      expect(i.last.id, 'mood_mix');
+      expect(i.last.title, 'Mostly good days');
+    });
+  });
 }

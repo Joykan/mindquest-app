@@ -77,7 +77,7 @@ class _CheckInSummaryState extends State<CheckInSummary> {
       // Insights are a bonus; the check-in is already saved.
     }
     await wait;
-    return (history, buildInsights(history, chatFeelings: feelings));
+    return (history, pickSummaryInsights(widget.mood, widget.tags, history, feelings));
   }
 
   String get _title => switch (widget.mood) {
@@ -149,18 +149,17 @@ class _CheckInSummaryState extends State<CheckInSummary> {
               const SizedBox(height: 18),
               Text('What Chipu noticed', style: theme.textTheme.titleMedium),
               const SizedBox(height: 8),
+              for (final MoodInsight i in insights)
+                _NoteCard(key: Key('summary-insight-${i.id}'), emoji: i.emoji, title: i.title, text: i.body),
               if (history.length < insightMinimumCheckIns)
                 _NoteCard(
                   emoji: '🔒',
                   text: 'Check in ${insightMinimumCheckIns - history.length} more '
                       '${insightMinimumCheckIns - history.length == 1 ? 'time' : 'times'} '
-                      'and Chipu will start spotting patterns in your moods.',
+                      'and Chipu will start spotting patterns across your days.',
                 )
               else if (insights.isEmpty)
-                const _NoteCard(emoji: '🔍', text: 'No clear patterns yet. Keep checking in and Chipu will spot them.')
-              else
-                for (final MoodInsight i in insights.take(2))
-                  _NoteCard(key: Key('summary-insight-${i.id}'), emoji: i.emoji, title: i.title, text: i.body),
+                const _NoteCard(emoji: '🔍', text: 'No clear patterns yet. Keep checking in and Chipu will spot them.'),
               const SizedBox(height: 16),
               if (low && widget.canOpenSupport)
                 FilledButton.icon(
@@ -239,4 +238,27 @@ class _NoteCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Up to three insights for the check-in summary: a run of hard days first,
+/// then what this check-in shows (compared with usual, ups and downs today,
+/// its tags), then patterns across days. The general mood mix is used only
+/// if nothing else fits.
+List<MoodInsight> pickSummaryInsights(
+  int mood,
+  List<String> tags,
+  List<MoodEntry> history,
+  Map<String, int> chatFeelings,
+) {
+  final List<MoodInsight> patterns = buildInsights(history, chatFeelings: chatFeelings);
+  final List<MoodInsight> out = <MoodInsight>[
+    ...patterns.where((MoodInsight i) => i.needsSupport),
+    ...checkInInsights(mood, tags, history).take(2),
+  ];
+  for (final MoodInsight i in patterns) {
+    if (out.length >= 3) break;
+    if (!i.needsSupport && i.id != 'mood_mix') out.add(i);
+  }
+  if (out.isEmpty) out.addAll(patterns.where((MoodInsight i) => i.id == 'mood_mix'));
+  return out.take(3).toList();
 }
