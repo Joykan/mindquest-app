@@ -140,6 +140,8 @@ void main() {
     expect(find.textContaining('Chipu will start spotting patterns'), findsOneWidget);
     expect(savedCalls, 0, reason: 'goes Home only after Done');
 
+    expect(find.byKey(const Key('summary-insight-tag_first_school')), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('summary-done')));
     await tester.tap(find.byKey(const Key('summary-done')));
     await tester.pumpAndSettle();
     expect(savedCalls, 1);
