@@ -82,8 +82,10 @@ Font License, files in `assets/fonts/`).
 
 - Buttons: 52 px tall, 16 px corner radius.
 - Cards: white surface, 1 px border, 16 px radius, no shadow.
-- Chat bubbles: 18 px radius with a 4 px corner on the sender's side.
-- Text input: pill shaped (24 px radius).
+- Chat bubbles: 22 px radius with a 6 px corner on the sender's side; Chipu's
+  face (32 px circle) beside the bot's last bubble.
+- Text inputs: 24 px radius; the chat message box is a pill (28 px) with a
+  round 44 px send button inside it.
 - Bottom sheets: 24 px top corners.
 - Screen padding 16 px; space between cards 12 px.
 
