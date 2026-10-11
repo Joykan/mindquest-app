@@ -98,7 +98,8 @@ class CrisisSheet extends StatelessWidget {
 
 /// One helpline with a red Call button. Also used on the Support screen.
 class HelplineRow extends StatelessWidget {
-  const HelplineRow({super.key, required this.line, this.onCall = callHelpline});
+  const HelplineRow(
+      {super.key, required this.line, this.onCall = callHelpline});
 
   final Helpline line;
   final Future<void> Function(BuildContext, Helpline) onCall;

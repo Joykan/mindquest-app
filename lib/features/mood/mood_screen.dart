@@ -76,12 +76,15 @@ class _MoodScreenState extends State<MoodScreen> {
     setState(() => _saving = true);
     final MoodSaved saved;
     try {
-      saved = await widget.repository.logMood(mood: mood, note: _note.text, tags: tags);
+      saved = await widget.repository
+          .logMood(mood: mood, note: _note.text, tags: tags);
     } catch (_) {
       if (mounted) {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Couldn't save. Check your connection and try again.")),
+          const SnackBar(
+              content:
+                  Text("Couldn't save. Check your connection and try again.")),
         );
       }
       return;
@@ -120,9 +123,8 @@ class _MoodScreenState extends State<MoodScreen> {
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     return Scaffold(
       appBar: AppBar(
-        leading: widget.onBack == null
-            ? null
-            : BackButton(onPressed: widget.onBack),
+        leading:
+            widget.onBack == null ? null : BackButton(onPressed: widget.onBack),
         title: const Text('Mood check-in'),
       ),
       body: SafeArea(
@@ -162,7 +164,8 @@ class _MoodScreenState extends State<MoodScreen> {
                       key: Key('tag-${t.id}'),
                       label: Text('${t.emoji} ${t.label(widget.language)}'),
                       selected: _tags.contains(t.id),
-                      onSelected: (bool on) => setState(() => on ? _tags.add(t.id) : _tags.remove(t.id)),
+                      onSelected: (bool on) => setState(
+                          () => on ? _tags.add(t.id) : _tags.remove(t.id)),
                     ),
                 ],
               ),

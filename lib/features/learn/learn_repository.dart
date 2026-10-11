@@ -3,7 +3,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../gamification/badges.dart';
 
 /// Article categories (public.resources.category), in display order.
-const List<String> articleCategories = <String>['stress', 'anxiety', 'mindfulness', 'support'];
+const List<String> articleCategories = <String>[
+  'stress',
+  'anxiety',
+  'mindfulness',
+  'support'
+];
 
 String categoryName(String category, String language) {
   const Map<String, (String, String)> names = <String, (String, String)>{
@@ -37,7 +42,8 @@ class Article {
     this.read = false,
   });
 
-  factory Article.fromJson(Map<String, dynamic> json, {bool read = false}) => Article(
+  factory Article.fromJson(Map<String, dynamic> json, {bool read = false}) =>
+      Article(
         id: json['id'] as int,
         category: json['category'] as String,
         titleEn: json['title_en'] as String,
@@ -81,7 +87,8 @@ class Article {
 
 /// What reading an article earned.
 class ReadResult {
-  const ReadResult({required this.xpEarned, this.newBadges = const <RewardBadge>[]});
+  const ReadResult(
+      {required this.xpEarned, this.newBadges = const <RewardBadge>[]});
 
   final int xpEarned;
   final List<RewardBadge> newBadges;
@@ -96,7 +103,8 @@ abstract class LearnRepository {
 }
 
 class SupabaseLearnRepository implements LearnRepository {
-  SupabaseLearnRepository([SupabaseClient? client]) : _client = client ?? Supabase.instance.client;
+  SupabaseLearnRepository([SupabaseClient? client])
+      : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
 
@@ -107,23 +115,32 @@ class SupabaseLearnRepository implements LearnRepository {
     final List<dynamic> results = await Future.wait<dynamic>(<Future<dynamic>>[
       _client
           .from('resources')
-          .select('id, category, title_en, title_sw, body_en, body_sw, read_minutes')
+          .select(
+              'id, category, title_en, title_sw, body_en, body_sw, read_minutes')
           .eq('published', true)
           .order('id'),
       _client.from('resource_reads').select('resource_id').eq('user_id', _uid),
     ]);
     final Set<int> read = <int>{
-      for (final dynamic r in results[1] as List<dynamic>) (r as Map<String, dynamic>)['resource_id'] as int,
+      for (final dynamic r in results[1] as List<dynamic>)
+        (r as Map<String, dynamic>)['resource_id'] as int,
     };
     return <Article>[
       for (final dynamic a in results[0] as List<dynamic>)
-        Article.fromJson(a as Map<String, dynamic>, read: read.contains(a['id'])),
+        Article.fromJson(a as Map<String, dynamic>,
+            read: read.contains(a['id'])),
     ];
   }
 
   Future<Set<String>> _earnedBadgeIds() async {
-    final List<dynamic> rows = await _client.from('user_badges').select('badge_id').eq('user_id', _uid);
-    return <String>{for (final dynamic r in rows) (r as Map<String, dynamic>)['badge_id'] as String};
+    final List<dynamic> rows = await _client
+        .from('user_badges')
+        .select('badge_id')
+        .eq('user_id', _uid);
+    return <String>{
+      for (final dynamic r in rows)
+        (r as Map<String, dynamic>)['badge_id'] as String
+    };
   }
 
   @override
@@ -143,12 +160,15 @@ class SupabaseLearnRepository implements LearnRepository {
     });
     final Set<String> fresh = (await _earnedBadgeIds()).difference(before);
     if (fresh.isEmpty) return const ReadResult(xpEarned: 5);
-    final List<dynamic> badges =
-        await _client.from('badges').select('id, name, name_sw, description').inFilter('id', fresh.toList());
+    final List<dynamic> badges = await _client
+        .from('badges')
+        .select('id, name, name_sw, description')
+        .inFilter('id', fresh.toList());
     return ReadResult(
       xpEarned: 5,
       newBadges: <RewardBadge>[
-        for (final dynamic b in badges) RewardBadge.fromJson(b as Map<String, dynamic>),
+        for (final dynamic b in badges)
+          RewardBadge.fromJson(b as Map<String, dynamic>),
       ],
     );
   }

@@ -27,7 +27,10 @@ void main() {
       theme: AppTheme.light(),
       home: SupportScreen(
         loadHelplines: () async => const <Helpline>[
-          Helpline(name: 'Kenya Red Cross', phone: '1199', description: 'Toll-free, 24 hours'),
+          Helpline(
+              name: 'Kenya Red Cross',
+              phone: '1199',
+              description: 'Toll-free, 24 hours'),
         ],
       ),
     ));
@@ -38,11 +41,13 @@ void main() {
     expect(find.byKey(const Key('grounding')), findsOneWidget);
   });
 
-  testWidgets('Support falls back to 999 and 112 if helplines fail', (tester) async {
+  testWidgets('Support falls back to 999 and 112 if helplines fail',
+      (tester) async {
     tallScreen(tester);
     await tester.pumpWidget(MaterialApp(
       theme: AppTheme.light(),
-      home: SupportScreen(loadHelplines: () async => throw Exception('offline')),
+      home:
+          SupportScreen(loadHelplines: () async => throw Exception('offline')),
     ));
     await tester.pumpAndSettle();
     expect(find.textContaining('999'), findsWidgets);
@@ -53,7 +58,8 @@ void main() {
     tallScreen(tester);
     await tester.pumpWidget(MaterialApp(
       theme: AppTheme.light(),
-      home: const Scaffold(body: SingleChildScrollView(child: BoxBreathingCard())),
+      home: const Scaffold(
+          body: SingleChildScrollView(child: BoxBreathingCard())),
     ));
     await tester.tap(find.byKey(const Key('breathing-button')));
     await tester.pump();

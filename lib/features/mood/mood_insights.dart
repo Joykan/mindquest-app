@@ -26,7 +26,13 @@ class MoodInsight {
 const int insightMinimumCheckIns = 3;
 
 const List<String> _weekdayNames = <String>[
-  'Mondays', 'Tuesdays', 'Wednesdays', 'Thursdays', 'Fridays', 'Saturdays', 'Sundays',
+  'Mondays',
+  'Tuesdays',
+  'Wednesdays',
+  'Thursdays',
+  'Fridays',
+  'Saturdays',
+  'Sundays',
 ];
 
 /// Chat intents that are feelings, and how to name them in an insight.
@@ -39,13 +45,91 @@ const Map<String, String> chatFeelingNames = <String, String>{
 
 /// Common words left out of note-word insights (English and Kiswahili).
 const Set<String> _stopWords = <String>{
-  'the', 'and', 'but', 'for', 'with', 'that', 'this', 'was', 'were', 'are', 'have', 'has',
-  'had', 'not', 'just', 'been', 'from', 'about', 'feel', 'feeling', 'felt', 'today', 'really',
-  'very', 'too', 'all', 'so', 'my', 'me', 'it', 'its', 'im', 'i', 'a', 'an', 'to', 'of', 'in',
-  'on', 'at', 'is', 'be', 'got', 'get', 'day', 'bit', 'some', 'lot', 'more', 'much', 'what',
-  'when', 'then', 'than', 'they', 'them', 'out', 'still', 'again', 'because', 'cause', 'coz',
-  'leo', 'na', 'ya', 'wa', 'za', 'la', 'kwa', 'ni', 'nime', 'sana', 'tu', 'lakini', 'pia',
-  'hii', 'hiyo', 'kuna', 'siku', 'mimi', 'yangu', 'wangu', 'kwenye', 'baada', 'kabla',
+  'the',
+  'and',
+  'but',
+  'for',
+  'with',
+  'that',
+  'this',
+  'was',
+  'were',
+  'are',
+  'have',
+  'has',
+  'had',
+  'not',
+  'just',
+  'been',
+  'from',
+  'about',
+  'feel',
+  'feeling',
+  'felt',
+  'today',
+  'really',
+  'very',
+  'too',
+  'all',
+  'so',
+  'my',
+  'me',
+  'it',
+  'its',
+  'im',
+  'i',
+  'a',
+  'an',
+  'to',
+  'of',
+  'in',
+  'on',
+  'at',
+  'is',
+  'be',
+  'got',
+  'get',
+  'day',
+  'bit',
+  'some',
+  'lot',
+  'more',
+  'much',
+  'what',
+  'when',
+  'then',
+  'than',
+  'they',
+  'them',
+  'out',
+  'still',
+  'again',
+  'because',
+  'cause',
+  'coz',
+  'leo',
+  'na',
+  'ya',
+  'wa',
+  'za',
+  'la',
+  'kwa',
+  'ni',
+  'nime',
+  'sana',
+  'tu',
+  'lakini',
+  'pia',
+  'hii',
+  'hiyo',
+  'kuna',
+  'siku',
+  'mimi',
+  'yangu',
+  'wangu',
+  'kwenye',
+  'baada',
+  'kabla',
 };
 
 double _average(Iterable<int> values) =>
@@ -75,7 +159,9 @@ List<MoodInsight> buildInsights(
 
   // 1. Three or more hard days in a row, up to today or yesterday.
   int hardRun = 0;
-  DateTime d = byDay.containsKey(today) ? today : today.subtract(const Duration(days: 1));
+  DateTime d = byDay.containsKey(today)
+      ? today
+      : today.subtract(const Duration(days: 1));
   while (byDay.containsKey(d) && dayAverage(d) <= 2) {
     hardRun++;
     d = d.subtract(const Duration(days: 1));
@@ -85,7 +171,8 @@ List<MoodInsight> buildInsights(
       id: 'hard_days',
       emoji: '💚',
       title: "You've had $hardRun hard days in a row",
-      body: "That's a lot to carry on your own. Talking to someone you trust, or to a "
+      body:
+          "That's a lot to carry on your own. Talking to someone you trust, or to a "
           'counsellor, can really help. Free helplines are one tap away.',
       needsSupport: true,
     ));
@@ -100,7 +187,8 @@ List<MoodInsight> buildInsights(
   ];
   final List<int> lastWeek = <int>[
     for (final MoodEntry e in entries)
-      if (!_day(e.at).isBefore(lastWeekStart) && _day(e.at).isBefore(weekStart)) e.mood,
+      if (!_day(e.at).isBefore(lastWeekStart) && _day(e.at).isBefore(weekStart))
+        e.mood,
   ];
   if (thisWeek.length >= 2 && lastWeek.length >= 2) {
     final double change = _average(thisWeek) - _average(lastWeek);
@@ -109,14 +197,16 @@ List<MoodInsight> buildInsights(
         id: 'trend_up',
         emoji: '📈',
         title: 'Brighter than last week',
-        body: 'Your moods this week are higher than last week. Notice what has been helping.',
+        body:
+            'Your moods this week are higher than last week. Notice what has been helping.',
       ));
     } else if (change <= -0.5) {
       out.add(const MoodInsight(
         id: 'trend_down',
         emoji: '🌧️',
         title: 'A harder week than last',
-        body: 'Your moods this week are lower than last week. Be gentle with yourself, '
+        body:
+            'Your moods this week are lower than last week. Be gentle with yourself, '
             'and remember Chipu is here to talk.',
       ));
     } else {
@@ -137,7 +227,8 @@ List<MoodInsight> buildInsights(
   final List<MapEntry<int, double>> weekdays = <MapEntry<int, double>>[
     for (final MapEntry<int, List<int>> w in byWeekday.entries)
       if (w.value.length >= 2) MapEntry<int, double>(w.key, _average(w.value)),
-  ]..sort((MapEntry<int, double> a, MapEntry<int, double> b) => b.value.compareTo(a.value));
+  ]..sort((MapEntry<int, double> a, MapEntry<int, double> b) =>
+      b.value.compareTo(a.value));
   if (weekdays.length >= 2 && weekdays.first.value - weekdays.last.value >= 1) {
     out.add(MoodInsight(
       id: 'weekday',
@@ -160,14 +251,19 @@ List<MoodInsight> buildInsights(
   }
   final List<MapEntry<String, double>> parts = <MapEntry<String, double>>[
     for (final MapEntry<String, List<int>> p in byPart.entries)
-      if (p.value.length >= 2) MapEntry<String, double>(p.key, _average(p.value)),
-  ]..sort((MapEntry<String, double> a, MapEntry<String, double> b) => b.value.compareTo(a.value));
+      if (p.value.length >= 2)
+        MapEntry<String, double>(p.key, _average(p.value)),
+  ]..sort((MapEntry<String, double> a, MapEntry<String, double> b) =>
+      b.value.compareTo(a.value));
   if (parts.length >= 2 && parts.first.value - parts.last.value >= 0.75) {
     out.add(MoodInsight(
       id: 'time_of_day',
-      emoji: parts.first.key == 'mornings' ? '🌅' : (parts.first.key == 'evenings' ? '🌙' : '☀️'),
+      emoji: parts.first.key == 'mornings'
+          ? '🌅'
+          : (parts.first.key == 'evenings' ? '🌙' : '☀️'),
       title: 'Your ${parts.first.key} feel better',
-      body: 'You usually feel better in the ${parts.first.key} than in the ${parts.last.key}.',
+      body:
+          'You usually feel better in the ${parts.first.key} than in the ${parts.last.key}.',
     ));
   }
 
@@ -180,8 +276,11 @@ List<MoodInsight> buildInsights(
         counts[t] = (counts[t] ?? 0) + 1;
       }
     }
-    final List<MapEntry<String, int>> top = counts.entries.where((MapEntry<String, int> c) => c.value >= 2).toList()
-      ..sort((MapEntry<String, int> a, MapEntry<String, int> b) => b.value.compareTo(a.value));
+    final List<MapEntry<String, int>> top = counts.entries
+        .where((MapEntry<String, int> c) => c.value >= 2)
+        .toList()
+      ..sort((MapEntry<String, int> a, MapEntry<String, int> b) =>
+          b.value.compareTo(a.value));
     return top.isEmpty ? null : top.first.key;
   }
 
@@ -203,7 +302,8 @@ List<MoodInsight> buildInsights(
       id: 'good_tag',
       emoji: good.emoji,
       title: '${good.en} lifts you up',
-      body: 'Your good days are often about ${good.en.toLowerCase()}. Make room for more of it.',
+      body:
+          'Your good days are often about ${good.en.toLowerCase()}. Make room for more of it.',
     ));
   }
 
@@ -222,8 +322,11 @@ List<MoodInsight> buildInsights(
         counts[w] = (counts[w] ?? 0) + 1;
       }
     }
-    final List<MapEntry<String, int>> top = counts.entries.where((MapEntry<String, int> c) => c.value >= 2).toList()
-      ..sort((MapEntry<String, int> a, MapEntry<String, int> b) => b.value.compareTo(a.value));
+    final List<MapEntry<String, int>> top = counts.entries
+        .where((MapEntry<String, int> c) => c.value >= 2)
+        .toList()
+      ..sort((MapEntry<String, int> a, MapEntry<String, int> b) =>
+          b.value.compareTo(a.value));
     return top.isEmpty ? null : top.first.key;
   }
 
@@ -243,15 +346,18 @@ List<MoodInsight> buildInsights(
       id: 'good_word',
       emoji: '🌱',
       title: 'Something that lifts you',
-      body: 'Your notes on good days often mention "$goodWord". Make room for more of it.',
+      body:
+          'Your notes on good days often mention "$goodWord". Make room for more of it.',
     ));
   }
 
   // 7. Feelings that came up in the chat this week.
   final List<MapEntry<String, int>> feelings = chatFeelings.entries
-      .where((MapEntry<String, int> f) => chatFeelingNames.containsKey(f.key) && f.value >= 2)
+      .where((MapEntry<String, int> f) =>
+          chatFeelingNames.containsKey(f.key) && f.value >= 2)
       .toList()
-    ..sort((MapEntry<String, int> a, MapEntry<String, int> b) => b.value.compareTo(a.value));
+    ..sort((MapEntry<String, int> a, MapEntry<String, int> b) =>
+        b.value.compareTo(a.value));
   if (feelings.isNotEmpty) {
     final MapEntry<String, int> top = feelings.first;
     out.add(MoodInsight(
@@ -266,7 +372,8 @@ List<MoodInsight> buildInsights(
   }
 
   // 8. Check-in habit over the last 7 days.
-  final int daysThisWeek = byDay.keys.where((DateTime day) => !day.isBefore(weekStart)).length;
+  final int daysThisWeek =
+      byDay.keys.where((DateTime day) => !day.isBefore(weekStart)).length;
   if (daysThisWeek >= 5) {
     out.add(MoodInsight(
       id: 'habit',
@@ -303,9 +410,12 @@ List<MoodInsight> buildInsights(
 /// Insights about the check-in just saved: how it compares with the user's
 /// usual mood, big changes during the day, and what its tags usually mean.
 /// [history] is newest first and already includes the new check-in.
-List<MoodInsight> checkInInsights(int mood, List<String> tags, List<MoodEntry> history, {DateTime? now}) {
+List<MoodInsight> checkInInsights(
+    int mood, List<String> tags, List<MoodEntry> history,
+    {DateTime? now}) {
   final List<MoodInsight> out = <MoodInsight>[];
-  final List<MoodEntry> before = history.length > 1 ? history.sublist(1) : const <MoodEntry>[];
+  final List<MoodEntry> before =
+      history.length > 1 ? history.sublist(1) : const <MoodEntry>[];
   final String face = moodFace(mood);
 
   // Compared with the user's usual mood (needs 2+ earlier check-ins).
@@ -317,14 +427,16 @@ List<MoodInsight> checkInInsights(int mood, List<String> tags, List<MoodEntry> h
         id: 'above_usual',
         emoji: '📈',
         title: 'Brighter than usual',
-        body: 'Today $face is higher than your usual mood ($avg out of 5). Notice what helped today.',
+        body:
+            'Today $face is higher than your usual mood ($avg out of 5). Notice what helped today.',
       ));
     } else if (usual - mood >= 1) {
       out.add(MoodInsight(
         id: 'below_usual',
         emoji: '📉',
         title: 'Harder than usual',
-        body: 'Today $face is lower than your usual mood ($avg out of 5). Be gentle with yourself.',
+        body:
+            'Today $face is lower than your usual mood ($avg out of 5). Be gentle with yourself.',
       ));
     } else {
       out.add(MoodInsight(
@@ -370,7 +482,8 @@ List<MoodInsight> checkInInsights(int mood, List<String> tags, List<MoodEntry> h
         id: 'tag_first_$id',
         emoji: tag.emoji,
         title: 'First time you tagged ${tag.en}',
-        body: 'Keep tagging your check-ins and Chipu will show you how $name affects your mood.',
+        body:
+            'Keep tagging your check-ins and Chipu will show you how $name affects your mood.',
       ));
     } else {
       final double withAvg = _average(withTag);
@@ -392,4 +505,5 @@ List<MoodInsight> checkInInsights(int mood, List<String> tags, List<MoodEntry> h
   return out;
 }
 
-String moodFace(int mood) => const <String>['😢', '😕', '😐', '🙂', '😄'][(mood - 1).clamp(0, 4)];
+String moodFace(int mood) =>
+    const <String>['😢', '😕', '😐', '🙂', '😄'][(mood - 1).clamp(0, 4)];

@@ -20,7 +20,8 @@ MoodEntry at(int daysAgo, int mood, {int hour = 12, String? note}) {
 List<MoodEntry> sorted(List<MoodEntry> e) =>
     e..sort((MoodEntry a, MoodEntry b) => b.at.compareTo(a.at));
 
-List<String> ids(List<MoodInsight> i) => i.map((MoodInsight x) => x.id).toList();
+List<String> ids(List<MoodInsight> i) =>
+    i.map((MoodInsight x) => x.id).toList();
 
 void main() {
   group('buildInsights', () {
@@ -46,13 +47,19 @@ void main() {
 
     test('compares this week with last week', () {
       expect(
-          ids(buildInsights(sorted(<MoodEntry>[at(0, 5), at(2, 4), at(8, 2), at(9, 2)]), now: now)),
+          ids(buildInsights(
+              sorted(<MoodEntry>[at(0, 5), at(2, 4), at(8, 2), at(9, 2)]),
+              now: now)),
           contains('trend_up'));
       expect(
-          ids(buildInsights(sorted(<MoodEntry>[at(0, 2), at(2, 2), at(8, 4), at(9, 5)]), now: now)),
+          ids(buildInsights(
+              sorted(<MoodEntry>[at(0, 2), at(2, 2), at(8, 4), at(9, 5)]),
+              now: now)),
           contains('trend_down'));
       expect(
-          ids(buildInsights(sorted(<MoodEntry>[at(0, 3), at(2, 4), at(8, 4), at(9, 3)]), now: now)),
+          ids(buildInsights(
+              sorted(<MoodEntry>[at(0, 3), at(2, 4), at(8, 4), at(9, 3)]),
+              now: now)),
           contains('trend_steady'));
     });
 
@@ -75,7 +82,8 @@ void main() {
               ]),
               now: now)
           .firstWhere((MoodInsight x) => x.id == 'time_of_day');
-      expect(t.body, 'You usually feel better in the mornings than in the evenings.');
+      expect(t.body,
+          'You usually feel better in the mornings than in the evenings.');
     });
 
     test('spots words that keep coming up in notes', () {
@@ -87,8 +95,10 @@ void main() {
             at(5, 4, note: 'Friends came over!'),
           ]),
           now: now);
-      expect(i.firstWhere((MoodInsight x) => x.id == 'low_word').body, contains('"exams"'));
-      expect(i.firstWhere((MoodInsight x) => x.id == 'good_word').body, contains('"friends"'));
+      expect(i.firstWhere((MoodInsight x) => x.id == 'low_word').body,
+          contains('"exams"'));
+      expect(i.firstWhere((MoodInsight x) => x.id == 'good_word').body,
+          contains('"friends"'));
     });
 
     test('uses feelings from the chat', () {
@@ -144,7 +154,8 @@ void main() {
     }
 
     testWidgets('are locked until 3 check-ins', (tester) async {
-      await show(tester, <MoodEntry>[MoodEntry(id: 'a', mood: 4, at: nairobiNow())]);
+      await show(
+          tester, <MoodEntry>[MoodEntry(id: 'a', mood: 4, at: nairobiNow())]);
       expect(find.byKey(const Key('insights-locked')), findsOneWidget);
       expect(find.textContaining('(1/3)'), findsOneWidget);
     });
@@ -196,7 +207,9 @@ void main() {
     });
 
     test('mood mix is always there once insights unlock', () {
-      final List<MoodInsight> i = buildInsights(sorted(<MoodEntry>[at(0, 5), at(1, 5), at(1, 3)]), now: now);
+      final List<MoodInsight> i = buildInsights(
+          sorted(<MoodEntry>[at(0, 5), at(1, 5), at(1, 3)]),
+          now: now);
       expect(i.last.id, 'mood_mix');
       expect(i.last.title, 'Mostly good days');
     });

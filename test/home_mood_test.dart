@@ -133,14 +133,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repo.logged, <(int, String?)>[(2, 'exams tomorrow')]);
-    expect(repo.loggedTags, <List<String>>[<String>['school']]);
+    expect(repo.loggedTags, <List<String>>[
+      <String>['school']
+    ]);
     expect(find.byKey(const Key('check-in-summary')), findsOneWidget);
     expect(find.text('+10 XP'), findsOneWidget);
     expect(find.text('🔥 4-day streak'), findsOneWidget);
-    expect(find.textContaining('Chipu will start spotting patterns'), findsOneWidget);
+    expect(find.textContaining('Chipu will start spotting patterns'),
+        findsOneWidget);
     expect(savedCalls, 0, reason: 'goes Home only after Done');
 
-    expect(find.byKey(const Key('summary-insight-tag_first_school')), findsOneWidget);
+    expect(find.byKey(const Key('summary-insight-tag_first_school')),
+        findsOneWidget);
     await tester.ensureVisible(find.byKey(const Key('summary-done')));
     await tester.tap(find.byKey(const Key('summary-done')));
     await tester.pumpAndSettle();
@@ -153,13 +157,17 @@ void main() {
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
     final DateTime n = nairobiNow();
-    final FakeProgress repo =
-        FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0))
-          ..history = <MoodEntry>[
-            MoodEntry(id: 'a', mood: 1, at: n, tags: const <String>['school']),
-            MoodEntry(id: 'b', mood: 2, at: n.subtract(const Duration(days: 1)), tags: const <String>['school']),
-            MoodEntry(id: 'c', mood: 2, at: n.subtract(const Duration(days: 2))),
-          ];
+    final FakeProgress repo = FakeProgress(
+        const HomeSummary(username: 'A', xp: 0, streak: 0))
+      ..history = <MoodEntry>[
+        MoodEntry(id: 'a', mood: 1, at: n, tags: const <String>['school']),
+        MoodEntry(
+            id: 'b',
+            mood: 2,
+            at: n.subtract(const Duration(days: 1)),
+            tags: const <String>['school']),
+        MoodEntry(id: 'c', mood: 2, at: n.subtract(const Duration(days: 2))),
+      ];
     int support = 0;
     int saved = 0;
     await tester.pumpWidget(MaterialApp(
@@ -244,15 +252,13 @@ void main() {
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
     final DateTime now = nairobiNow();
-    final FakeProgress repo =
-        FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0))
-          ..history = <MoodEntry>[
-            MoodEntry(id: 'a', mood: 4, at: now, note: 'good lecture'),
-            MoodEntry(
-                id: 'b', mood: 2, at: now.subtract(const Duration(days: 1))),
-            MoodEntry(
-                id: 'c', mood: 4, at: now.subtract(const Duration(days: 3))),
-          ];
+    final FakeProgress repo = FakeProgress(
+        const HomeSummary(username: 'A', xp: 0, streak: 0))
+      ..history = <MoodEntry>[
+        MoodEntry(id: 'a', mood: 4, at: now, note: 'good lecture'),
+        MoodEntry(id: 'b', mood: 2, at: now.subtract(const Duration(days: 1))),
+        MoodEntry(id: 'c', mood: 4, at: now.subtract(const Duration(days: 3))),
+      ];
     await tester.pumpWidget(MaterialApp(
         theme: AppTheme.light(), home: MoodHistoryScreen(repository: repo)));
     await tester.pumpAndSettle();

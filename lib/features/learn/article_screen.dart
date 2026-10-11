@@ -35,13 +35,16 @@ class _ArticleScreenState extends State<ArticleScreen> {
   Future<void> _markRead() async {
     setState(() => _saving = true);
     try {
-      final ReadResult result = await widget.repository.markRead(widget.article.id);
+      final ReadResult result =
+          await widget.repository.markRead(widget.article.id);
       if (!mounted) return;
       setState(() => _read = true);
       widget.onRead?.call();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result.xpEarned > 0 ? 'Nice work! +${result.xpEarned} XP' : 'Marked as read'),
+          content: Text(result.xpEarned > 0
+              ? 'Nice work! +${result.xpEarned} XP'
+              : 'Marked as read'),
         ),
       );
       if (result.newBadges.isNotEmpty) {
@@ -50,7 +53,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Couldn't save. Check your connection and try again.")),
+        const SnackBar(
+            content:
+                Text("Couldn't save. Check your connection and try again.")),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -67,7 +72,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 12),
-            child: LanguageToggle(value: _lang, onChanged: (String l) => setState(() => _lang = l)),
+            child: LanguageToggle(
+                value: _lang,
+                onChanged: (String l) => setState(() => _lang = l)),
           ),
         ],
       ),
@@ -77,12 +84,14 @@ class _ArticleScreenState extends State<ArticleScreen> {
           children: <Widget>[
             Row(
               children: <Widget>[
-                Text(categoryEmoji[a.category] ?? '📄', style: const TextStyle(fontSize: 22)),
+                Text(categoryEmoji[a.category] ?? '📄',
+                    style: const TextStyle(fontSize: 22)),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     '${categoryName(a.category, _lang)} · ${a.minutes} min read',
-                    style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary),
+                    style: theme.textTheme.labelLarge
+                        ?.copyWith(color: theme.colorScheme.primary),
                   ),
                 ),
               ],
@@ -93,7 +102,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
             for (final String p in a.paragraphs(_lang))
               Padding(
                 padding: const EdgeInsets.only(bottom: 14),
-                child: Text(p, style: theme.textTheme.bodyLarge?.copyWith(height: 1.55, fontSize: 16)),
+                child: Text(p,
+                    style: theme.textTheme.bodyLarge
+                        ?.copyWith(height: 1.55, fontSize: 16)),
               ),
             const SizedBox(height: 8),
             if (_read)

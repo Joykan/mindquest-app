@@ -57,7 +57,8 @@ class HomeScreen extends StatefulWidget {
 
 /// The week's moods and article picks, loaded next to the summary.
 class HomeExtras {
-  const HomeExtras({this.week = const <MoodEntry>[], this.picks = const <Recommendation>[]});
+  const HomeExtras(
+      {this.week = const <MoodEntry>[], this.picks = const <Recommendation>[]});
 
   final List<MoodEntry> week;
   final List<Recommendation> picks;
@@ -85,10 +86,11 @@ class HomeScreenState extends State<HomeScreen> {
     final LearnRepository? learn = widget.learn;
     if (learn != null) {
       try {
-        picks = recommendArticles(await learn.loadArticles(), recentMoods: week, chatFeelings: feelings);
+        picks = recommendArticles(await learn.loadArticles(),
+            recentMoods: week, chatFeelings: feelings);
       } catch (_) {
-      // Optional: Home works without it.
-    }
+        // Optional: Home works without it.
+      }
     }
     return HomeExtras(week: week, picks: picks);
   }
@@ -159,7 +161,9 @@ class HomeScreenState extends State<HomeScreen> {
               onRefresh: reload,
               child: FutureBuilder<HomeExtras>(
                 future: _extras,
-                builder: (BuildContext context, AsyncSnapshot<HomeExtras> extras) => _HomeBody(
+                builder:
+                    (BuildContext context, AsyncSnapshot<HomeExtras> extras) =>
+                        _HomeBody(
                   summary: snap.data!,
                   extras: extras.data ?? const HomeExtras(),
                   onMoodTap: widget.onMoodTap,
@@ -420,8 +424,10 @@ class _HomeBody extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               child: ListTile(
                 key: Key('recommended-${r.article.id}'),
-                leading: Text(categoryEmoji[r.article.category] ?? '📄', style: const TextStyle(fontSize: 26)),
-                title: Text(r.article.title(language), style: theme.textTheme.titleSmall),
+                leading: Text(categoryEmoji[r.article.category] ?? '📄',
+                    style: const TextStyle(fontSize: 26)),
+                title: Text(r.article.title(language),
+                    style: theme.textTheme.titleSmall),
                 subtitle: Text('${r.reason} · ${r.article.minutes} min'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => onOpenArticle!(r.article),
@@ -442,7 +448,8 @@ class _HomeBody extends StatelessWidget {
           child: ListTile(
             key: const Key('helplines'),
             leading: Icon(Icons.phone_in_talk_outlined, color: mq.crisis),
-            title: const Text('Need support?', style: TextStyle(fontWeight: FontWeight.w700)),
+            title: const Text('Need support?',
+                style: TextStyle(fontWeight: FontWeight.w700)),
             subtitle: const Text('Helplines and calming exercises'),
             trailing: const Icon(Icons.chevron_right),
             onTap: onHelplines,
@@ -638,9 +645,18 @@ class _WeekStrip extends StatelessWidget {
     final DateTime monday = today.subtract(Duration(days: today.weekday - 1));
     final Map<String, int> latest = <String, int>{};
     for (final MoodEntry e in week) {
-      latest.putIfAbsent('${e.at.year}-${e.at.month}-${e.at.day}', () => e.mood);
+      latest.putIfAbsent(
+          '${e.at.year}-${e.at.month}-${e.at.day}', () => e.mood);
     }
-    const List<String> names = <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const List<String> names = <String>[
+      'Mon',
+      'Tue',
+      'Wed',
+      'Thu',
+      'Fri',
+      'Sat',
+      'Sun'
+    ];
     return Card(
       key: const Key('week-strip'),
       clipBehavior: Clip.antiAlias,
@@ -652,9 +668,13 @@ class _WeekStrip extends StatelessWidget {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Expanded(child: Text('This week', style: theme.textTheme.titleMedium)),
+                  Expanded(
+                      child: Text('This week',
+                          style: theme.textTheme.titleMedium)),
                   if (onTap != null)
-                    Text('History →', style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary)),
+                    Text('History →',
+                        style: theme.textTheme.labelLarge
+                            ?.copyWith(color: theme.colorScheme.primary)),
                 ],
               ),
               const SizedBox(height: 10),
@@ -664,24 +684,37 @@ class _WeekStrip extends StatelessWidget {
                     Expanded(
                       child: Builder(builder: (BuildContext context) {
                         final DateTime d = monday.add(Duration(days: i));
-                        final int? mood = latest['${d.year}-${d.month}-${d.day}'];
+                        final int? mood =
+                            latest['${d.year}-${d.month}-${d.day}'];
                         final bool isToday = d == today;
                         return Container(
                           margin: const EdgeInsets.symmetric(horizontal: 2),
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           decoration: BoxDecoration(
-                            color: isToday ? theme.colorScheme.primary.withValues(alpha: 0.12) : mq.surfaceSoft,
+                            color: isToday
+                                ? theme.colorScheme.primary
+                                    .withValues(alpha: 0.12)
+                                : mq.surfaceSoft,
                             borderRadius: BorderRadius.circular(12),
-                            border: isToday ? Border.all(color: theme.colorScheme.primary, width: 1.5) : null,
+                            border: isToday
+                                ? Border.all(
+                                    color: theme.colorScheme.primary,
+                                    width: 1.5)
+                                : null,
                           ),
                           child: Column(
                             children: <Widget>[
                               Text(
-                                mood == null ? '·' : moodOptions[mood - 1].emoji,
-                                style: TextStyle(fontSize: 20, color: mq.textMuted),
+                                mood == null
+                                    ? '·'
+                                    : moodOptions[mood - 1].emoji,
+                                style: TextStyle(
+                                    fontSize: 20, color: mq.textMuted),
                               ),
                               const SizedBox(height: 2),
-                              Text(names[i], style: theme.textTheme.labelSmall?.copyWith(fontSize: 10)),
+                              Text(names[i],
+                                  style: theme.textTheme.labelSmall
+                                      ?.copyWith(fontSize: 10)),
                             ],
                           ),
                         );

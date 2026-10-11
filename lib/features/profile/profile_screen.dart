@@ -97,21 +97,24 @@ class ProfileScreen extends StatelessWidget {
                         if (progress != null)
                           FutureBuilder<HomeSummary>(
                             future: progress!.loadHome(),
-                            builder: (BuildContext context, AsyncSnapshot<HomeSummary> snap) {
+                            builder: (BuildContext context,
+                                AsyncSnapshot<HomeSummary> snap) {
                               if (!snap.hasData) return const SizedBox.shrink();
                               final int level = levelForXp(snap.data!.xp);
                               final LevelTitle title = levelTitle(level);
                               return Container(
                                 key: const Key('profile-level'),
                                 margin: const EdgeInsets.only(top: 6),
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: mq.reward,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
                                   '${title.emoji} ${title.name(session.language)} · Level $level · ${snap.data!.xp} XP',
-                                  style: t.textTheme.labelSmall?.copyWith(color: mq.onReward),
+                                  style: t.textTheme.labelSmall
+                                      ?.copyWith(color: mq.onReward),
                                 ),
                               );
                             },
@@ -130,14 +133,16 @@ class ProfileScreen extends StatelessWidget {
                       if (onRewards != null) ...<Widget>[
                         ListTile(
                           key: const Key('open-badges'),
-                          leading: const Text('🏅', style: TextStyle(fontSize: 22)),
+                          leading:
+                              const Text('🏅', style: TextStyle(fontSize: 22)),
                           title: const Text('My badges'),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: onRewards,
                         ),
                         ListTile(
                           key: const Key('open-quests'),
-                          leading: const Text('🎯', style: TextStyle(fontSize: 22)),
+                          leading:
+                              const Text('🎯', style: TextStyle(fontSize: 22)),
                           title: const Text('My quests'),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: onRewards,
@@ -146,7 +151,8 @@ class ProfileScreen extends StatelessWidget {
                       if (onMoodHistory != null)
                         ListTile(
                           key: const Key('open-mood-history'),
-                          leading: const Text('📊', style: TextStyle(fontSize: 22)),
+                          leading:
+                              const Text('📊', style: TextStyle(fontSize: 22)),
                           title: const Text('Mood history and insights'),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: onMoodHistory,

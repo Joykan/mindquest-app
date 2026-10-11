@@ -77,7 +77,10 @@ class _CheckInSummaryState extends State<CheckInSummary> {
       // Insights are a bonus; the check-in is already saved.
     }
     await wait;
-    return (history, pickSummaryInsights(widget.mood, widget.tags, history, feelings));
+    return (
+      history,
+      pickSummaryInsights(widget.mood, widget.tags, history, feelings)
+    );
   }
 
   String get _title => switch (widget.mood) {
@@ -94,7 +97,8 @@ class _CheckInSummaryState extends State<CheckInSummary> {
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     return FutureBuilder<(List<MoodEntry>, List<MoodInsight>)>(
       future: _insights,
-      builder: (BuildContext context, AsyncSnapshot<(List<MoodEntry>, List<MoodInsight>)> snap) {
+      builder: (BuildContext context,
+          AsyncSnapshot<(List<MoodEntry>, List<MoodInsight>)> snap) {
         if (!snap.hasData) {
           return Padding(
             key: const Key('insights-thinking'),
@@ -106,13 +110,16 @@ class _CheckInSummaryState extends State<CheckInSummary> {
                 const SizedBox(height: 16),
                 const CircularProgressIndicator(),
                 const SizedBox(height: 16),
-                Text('Chipu is looking at your moods…', style: theme.textTheme.titleMedium),
+                Text('Chipu is looking at your moods…',
+                    style: theme.textTheme.titleMedium),
               ],
             ),
           );
         }
-        final (List<MoodEntry> history, List<MoodInsight> insights) = snap.data!;
-        final bool low = widget.mood <= 2 || insights.any((MoodInsight i) => i.needsSupport);
+        final (List<MoodEntry> history, List<MoodInsight> insights) =
+            snap.data!;
+        final bool low =
+            widget.mood <= 2 || insights.any((MoodInsight i) => i.needsSupport);
         final MoodOption m = moodOptions[widget.mood - 1];
         return SingleChildScrollView(
           key: const Key('check-in-summary'),
@@ -122,44 +129,63 @@ class _CheckInSummaryState extends State<CheckInSummary> {
             children: <Widget>[
               Center(
                 child: Mascot(
-                  pose: widget.mood >= 4 ? MascotPose.happy : (widget.mood == 3 ? MascotPose.wave : MascotPose.idle),
+                  pose: widget.mood >= 4
+                      ? MascotPose.happy
+                      : (widget.mood == 3 ? MascotPose.wave : MascotPose.idle),
                   size: 96,
                 ),
               ),
               const SizedBox(height: 8),
-              Text('${m.emoji}  $_title', textAlign: TextAlign.center, style: theme.textTheme.headlineSmall),
+              Text('${m.emoji}  $_title',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.headlineSmall),
               const SizedBox(height: 10),
               Wrap(
                 alignment: WrapAlignment.center,
                 spacing: 8,
                 runSpacing: 6,
                 children: <Widget>[
-                  if (widget.saved.xpEarned > 0) _Pill(text: '+${widget.saved.xpEarned} XP', color: mq.reward),
+                  if (widget.saved.xpEarned > 0)
+                    _Pill(
+                        text: '+${widget.saved.xpEarned} XP', color: mq.reward),
                   _Pill(
                     text: '🔥 ${widget.saved.streak}-day streak',
                     color: theme.colorScheme.primary.withValues(alpha: 0.15),
                   ),
                   for (final String id in widget.tags)
                     if (moodTagById(id) != null)
-                      _Pill(text: '${moodTagById(id)!.emoji} ${moodTagById(id)!.en}', color: mq.surfaceSoft),
+                      _Pill(
+                          text:
+                              '${moodTagById(id)!.emoji} ${moodTagById(id)!.en}',
+                          color: mq.surfaceSoft),
                 ],
               ),
               const SizedBox(height: 14),
-              Text(moodReply(widget.mood), textAlign: TextAlign.center, style: theme.textTheme.bodyLarge),
+              Text(moodReply(widget.mood),
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge),
               const SizedBox(height: 18),
               Text('What Chipu noticed', style: theme.textTheme.titleMedium),
               const SizedBox(height: 8),
               for (final MoodInsight i in insights)
-                _NoteCard(key: Key('summary-insight-${i.id}'), emoji: i.emoji, title: i.title, text: i.body),
+                _NoteCard(
+                    key: Key('summary-insight-${i.id}'),
+                    emoji: i.emoji,
+                    title: i.title,
+                    text: i.body),
               if (history.length < insightMinimumCheckIns)
                 _NoteCard(
                   emoji: '🔒',
-                  text: 'Check in ${insightMinimumCheckIns - history.length} more '
+                  text:
+                      'Check in ${insightMinimumCheckIns - history.length} more '
                       '${insightMinimumCheckIns - history.length == 1 ? 'time' : 'times'} '
                       'and Chipu will start spotting patterns across your days.',
                 )
               else if (insights.isEmpty)
-                const _NoteCard(emoji: '🔍', text: 'No clear patterns yet. Keep checking in and Chipu will spot them.'),
+                const _NoteCard(
+                    emoji: '🔍',
+                    text:
+                        'No clear patterns yet. Keep checking in and Chipu will spot them.'),
               const SizedBox(height: 16),
               if (low && widget.canOpenSupport)
                 FilledButton.icon(
@@ -200,13 +226,15 @@ class _Pill extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(14)),
+        decoration: BoxDecoration(
+            color: color, borderRadius: BorderRadius.circular(14)),
         child: Text(text, style: Theme.of(context).textTheme.labelLarge),
       );
 }
 
 class _NoteCard extends StatelessWidget {
-  const _NoteCard({super.key, required this.emoji, required this.text, this.title});
+  const _NoteCard(
+      {super.key, required this.emoji, required this.text, this.title});
 
   final String emoji;
   final String? title;
@@ -219,7 +247,8 @@ class _NoteCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: mq.surfaceSoft, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+          color: mq.surfaceSoft, borderRadius: BorderRadius.circular(16)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -229,7 +258,8 @@ class _NoteCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                if (title != null) Text(title!, style: theme.textTheme.titleSmall),
+                if (title != null)
+                  Text(title!, style: theme.textTheme.titleSmall),
                 Text(text, style: theme.textTheme.bodyMedium),
               ],
             ),
@@ -250,7 +280,8 @@ List<MoodInsight> pickSummaryInsights(
   List<MoodEntry> history,
   Map<String, int> chatFeelings,
 ) {
-  final List<MoodInsight> patterns = buildInsights(history, chatFeelings: chatFeelings);
+  final List<MoodInsight> patterns =
+      buildInsights(history, chatFeelings: chatFeelings);
   final List<MoodInsight> out = <MoodInsight>[
     ...patterns.where((MoodInsight i) => i.needsSupport),
     ...checkInInsights(mood, tags, history).take(2),
@@ -259,6 +290,7 @@ List<MoodInsight> pickSummaryInsights(
     if (out.length >= 3) break;
     if (!i.needsSupport && i.id != 'mood_mix') out.add(i);
   }
-  if (out.isEmpty) out.addAll(patterns.where((MoodInsight i) => i.id == 'mood_mix'));
+  if (out.isEmpty)
+    out.addAll(patterns.where((MoodInsight i) => i.id == 'mood_mix'));
   return out.take(3).toList();
 }

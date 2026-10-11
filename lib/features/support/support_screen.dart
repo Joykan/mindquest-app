@@ -7,8 +7,14 @@ import '../chat/crisis_sheet.dart';
 
 /// Kenya's emergency numbers, shown if the helplines can't be loaded.
 const List<Helpline> emergencyHelplines = <Helpline>[
-  Helpline(name: 'Emergency services', phone: '999', description: 'Police, ambulance and fire'),
-  Helpline(name: 'Emergency services', phone: '112', description: 'Works from any mobile phone'),
+  Helpline(
+      name: 'Emergency services',
+      phone: '999',
+      description: 'Police, ambulance and fire'),
+  Helpline(
+      name: 'Emergency services',
+      phone: '112',
+      description: 'Works from any mobile phone'),
 ];
 
 /// Support: helplines with Call buttons, a guided box-breathing exercise and
@@ -58,7 +64,8 @@ class _SupportScreenState extends State<SupportScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text("You're not alone", style: theme.textTheme.titleMedium),
+                      Text("You're not alone",
+                          style: theme.textTheme.titleMedium),
                       const SizedBox(height: 4),
                       Text(
                         'Talking to someone helps. These lines are free and confidential. '
@@ -75,7 +82,8 @@ class _SupportScreenState extends State<SupportScreen> {
           Text('Kenya helplines', style: theme.textTheme.titleMedium),
           FutureBuilder<List<Helpline>>(
             future: _lines,
-            builder: (BuildContext context, AsyncSnapshot<List<Helpline>> snap) {
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Helpline>> snap) {
               if (!snap.hasData) {
                 return const Padding(
                   padding: EdgeInsets.all(16),
@@ -83,7 +91,9 @@ class _SupportScreenState extends State<SupportScreen> {
                 );
               }
               return Column(
-                children: <Widget>[for (final Helpline l in snap.data!) HelplineRow(line: l)],
+                children: <Widget>[
+                  for (final Helpline l in snap.data!) HelplineRow(line: l)
+                ],
               );
             },
           ),
@@ -116,14 +126,21 @@ class BoxBreathingCard extends StatefulWidget {
   State<BoxBreathingCard> createState() => _BoxBreathingCardState();
 }
 
-class _BoxBreathingCardState extends State<BoxBreathingCard> with SingleTickerProviderStateMixin {
-  late final AnimationController _box = AnimationController(vsync: this, duration: const Duration(seconds: 16))
-    ..addStatusListener(_onStatus);
+class _BoxBreathingCardState extends State<BoxBreathingCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _box =
+      AnimationController(vsync: this, duration: const Duration(seconds: 16))
+        ..addStatusListener(_onStatus);
   int _round = 0;
   bool _running = false;
   bool _finished = false;
 
-  static const List<String> _phases = <String>['Breathe in', 'Hold', 'Breathe out', 'Hold'];
+  static const List<String> _phases = <String>[
+    'Breathe in',
+    'Hold',
+    'Breathe out',
+    'Hold'
+  ];
 
   void _onStatus(AnimationStatus status) {
     if (status != AnimationStatus.completed || !_running) return;
@@ -183,9 +200,12 @@ class _BoxBreathingCardState extends State<BoxBreathingCard> with SingleTickerPr
               children: <Widget>[
                 const Text('🌬️', style: TextStyle(fontSize: 24)),
                 const SizedBox(width: 10),
-                Expanded(child: Text('Box breathing', style: theme.textTheme.titleMedium)),
+                Expanded(
+                    child: Text('Box breathing',
+                        style: theme.textTheme.titleMedium)),
                 if (_running)
-                  Text('Round ${_round + 1} of ${BoxBreathingCard.rounds}', style: theme.textTheme.labelLarge),
+                  Text('Round ${_round + 1} of ${BoxBreathingCard.rounds}',
+                      style: theme.textTheme.labelLarge),
               ],
             ),
             const SizedBox(height: 8),
@@ -206,10 +226,16 @@ class _BoxBreathingCardState extends State<BoxBreathingCard> with SingleTickerPr
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
-                          colors: <Color>[AppPalette.mint, theme.colorScheme.primary],
+                          colors: <Color>[
+                            AppPalette.mint,
+                            theme.colorScheme.primary
+                          ],
                         ),
                         boxShadow: <BoxShadow>[
-                          BoxShadow(color: AppPalette.mint.withValues(alpha: 0.35), blurRadius: 24, spreadRadius: 4),
+                          BoxShadow(
+                              color: AppPalette.mint.withValues(alpha: 0.35),
+                              blurRadius: 24,
+                              spreadRadius: 4),
                         ],
                       ),
                       child: _running
@@ -217,14 +243,17 @@ class _BoxBreathingCardState extends State<BoxBreathingCard> with SingleTickerPr
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
                                 Text(_phases[phase],
-                                    style: theme.textTheme.titleSmall?.copyWith(color: Colors.white)),
+                                    style: theme.textTheme.titleSmall
+                                        ?.copyWith(color: Colors.white)),
                                 Text('$secondsLeft',
-                                    style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white)),
+                                    style: theme.textTheme.headlineSmall
+                                        ?.copyWith(color: Colors.white)),
                               ],
                             )
                           : _finished
                               ? const Mascot(pose: MascotPose.happy, size: 64)
-                              : const Icon(Icons.air, color: Colors.white, size: 36),
+                              : const Icon(Icons.air,
+                                  color: Colors.white, size: 36),
                     ),
                   );
                 },
@@ -241,7 +270,9 @@ class _BoxBreathingCardState extends State<BoxBreathingCard> with SingleTickerPr
             FilledButton(
               key: const Key('breathing-button'),
               onPressed: _running ? _stop : _start,
-              child: Text(_running ? 'Stop' : (_finished ? 'Go again' : 'Start breathing')),
+              child: Text(_running
+                  ? 'Stop'
+                  : (_finished ? 'Go again' : 'Start breathing')),
             ),
           ],
         ),
@@ -284,7 +315,9 @@ class _GroundingCardState extends State<GroundingCard> {
               children: <Widget>[
                 const Text('🌿', style: TextStyle(fontSize: 24)),
                 const SizedBox(width: 10),
-                Expanded(child: Text('5-4-3-2-1 grounding', style: theme.textTheme.titleMedium)),
+                Expanded(
+                    child: Text('5-4-3-2-1 grounding',
+                        style: theme.textTheme.titleMedium)),
               ],
             ),
             const SizedBox(height: 4),
@@ -298,13 +331,15 @@ class _GroundingCardState extends State<GroundingCard> {
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.trailing,
                 value: _done.contains(i),
-                onChanged: (bool? v) => setState(() => v == true ? _done.add(i) : _done.remove(i)),
+                onChanged: (bool? v) =>
+                    setState(() => v == true ? _done.add(i) : _done.remove(i)),
                 title: Text('${_steps[i].$1}  ${_steps[i].$2}'),
               ),
             if (all)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: Text('Well done. You are here, right now. 💚', style: theme.textTheme.titleSmall),
+                child: Text('Well done. You are here, right now. 💚',
+                    style: theme.textTheme.titleSmall),
               ),
           ],
         ),

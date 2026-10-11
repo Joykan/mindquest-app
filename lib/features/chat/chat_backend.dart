@@ -48,16 +48,19 @@ abstract class ChatBackend {
   Future<RestoredChat?> restore() async => null;
 
   /// Recent conversations, newest first.
-  Future<List<ChatSessionSummary>> loadPastChats() async => const <ChatSessionSummary>[];
+  Future<List<ChatSessionSummary>> loadPastChats() async =>
+      const <ChatSessionSummary>[];
 
   /// All messages of one conversation, oldest first.
-  Future<List<ChatMessage>> loadTranscript(String sessionId) async => const <ChatMessage>[];
+  Future<List<ChatMessage>> loadTranscript(String sessionId) async =>
+      const <ChatMessage>[];
 }
 
 /// Talks to the `chat` Edge Function (supabase/functions/chat) and reads the
 /// user's own sessions and messages (row-level security limits them).
 class SupabaseChatBackend extends ChatBackend {
-  SupabaseChatBackend([SupabaseClient? client]) : _client = client ?? Supabase.instance.client;
+  SupabaseChatBackend([SupabaseClient? client])
+      : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
   String? _sessionId;
@@ -75,7 +78,8 @@ class SupabaseChatBackend extends ChatBackend {
       },
     );
 
-    final ChatReply reply = ChatReply.fromJson(Map<String, dynamic>.from(response.data as Map));
+    final ChatReply reply =
+        ChatReply.fromJson(Map<String, dynamic>.from(response.data as Map));
     _sessionId = reply.sessionId ?? _sessionId;
     return reply;
   }
@@ -87,7 +91,9 @@ class SupabaseChatBackend extends ChatBackend {
     if (id == null) return;
     await _client
         .from('chat_sessions')
-        .update(<String, dynamic>{'ended_at': DateTime.now().toUtc().toIso8601String()})
+        .update(<String, dynamic>{
+          'ended_at': DateTime.now().toUtc().toIso8601String()
+        })
         .eq('id', id)
         .isFilter('ended_at', null);
   }
@@ -117,8 +123,10 @@ class SupabaseChatBackend extends ChatBackend {
         .order('created_at');
     final DateTime last = rows.isEmpty
         ? DateTime.parse(session['started_at'] as String)
-        : DateTime.parse((rows.last as Map<String, dynamic>)['created_at'] as String);
-    if (rows.isEmpty || DateTime.now().toUtc().difference(last) > resumeWithin) {
+        : DateTime.parse(
+            (rows.last as Map<String, dynamic>)['created_at'] as String);
+    if (rows.isEmpty ||
+        DateTime.now().toUtc().difference(last) > resumeWithin) {
       // Too old to pick up: close it, so the next message starts a new chat.
       _sessionId = session['id'] as String;
       await startNewChat();
@@ -135,13 +143,15 @@ class SupabaseChatBackend extends ChatBackend {
   Future<List<ChatSessionSummary>> loadPastChats() async {
     final List<dynamic> rows = await _client
         .from('chat_sessions')
-        .select('id, started_at, ended_at, messages(sender, content, created_at)')
+        .select(
+            'id, started_at, ended_at, messages(sender, content, created_at)')
         .order('started_at', ascending: false)
         .order('created_at', referencedTable: 'messages')
         .limit(30);
     return <ChatSessionSummary>[
       for (final dynamic r in rows)
-        if (((r as Map<String, dynamic>)['messages'] as List<dynamic>).isNotEmpty)
+        if (((r as Map<String, dynamic>)['messages'] as List<dynamic>)
+            .isNotEmpty)
           ChatSessionSummary(
             id: r['id'] as String,
             startedAt: nairobiNow(DateTime.parse(r['started_at'] as String)),
@@ -149,7 +159,8 @@ class SupabaseChatBackend extends ChatBackend {
             messageCount: (r['messages'] as List<dynamic>).length,
             preview: () {
               for (final dynamic m in r['messages'] as List<dynamic>) {
-                if ((m as Map<String, dynamic>)['sender'] == 'user') return m['content'] as String;
+                if ((m as Map<String, dynamic>)['sender'] == 'user')
+                  return m['content'] as String;
               }
               return '';
             }(),

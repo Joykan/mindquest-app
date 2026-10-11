@@ -57,7 +57,8 @@ const List<String> quickReplies = <String>[
 /// Chip that asks for a mood check-in in the chat.
 const String checkInChip = 'Check in my mood';
 
-const String _greeting = "Hi, I'm Chipu, your MindQuest buddy. How are you feeling right now?";
+const String _greeting =
+    "Hi, I'm Chipu, your MindQuest buddy. How are you feeling right now?";
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _input = TextEditingController();
@@ -65,11 +66,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
   ChatMessage _firstMessage() => widget.progress == null
       ? const ChatMessage(
-          text: "Hi, I'm Chipu, your MindQuest buddy. How are you feeling today? "
+          text:
+              "Hi, I'm Chipu, your MindQuest buddy. How are you feeling today? "
               'You can also ask me for a breathing exercise.',
           fromUser: false,
         )
-      : const ChatMessage(text: _greeting, fromUser: false, kind: ChatItemKind.moodPicker);
+      : const ChatMessage(
+          text: _greeting, fromUser: false, kind: ChatItemKind.moodPicker);
 
   @override
   void initState() {
@@ -84,11 +87,15 @@ class _ChatScreenState extends State<ChatScreen> {
       // Only if the user hasn't started typing in the meantime.
       if (chat == null || !mounted || _messages.length > 1 || _sending) return;
       final DateTime t = chat.startedAt;
-      final String time = '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+      final String time =
+          '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
       setState(() {
         _messages
           ..clear()
-          ..add(ChatMessage(text: 'Continuing your chat from $time', fromUser: false, kind: ChatItemKind.note))
+          ..add(ChatMessage(
+              text: 'Continuing your chat from $time',
+              fromUser: false,
+              kind: ChatItemKind.note))
           ..addAll(chat.messages);
         _picked.clear();
       });
@@ -105,9 +112,12 @@ class _ChatScreenState extends State<ChatScreen> {
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: const Text('Start a new chat?'),
-          content: const Text('This conversation is saved. You can read it again in Past chats.'),
+          content: const Text(
+              'This conversation is saved. You can read it again in Past chats.'),
           actions: <Widget>[
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel')),
             TextButton(
               key: const Key('confirm-new-chat'),
               onPressed: () => Navigator.pop(context, true),
@@ -167,7 +177,8 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     } catch (_) {
       if (!mounted) return;
-      _showError("Couldn't send your message. Check your connection and try again.");
+      _showError(
+          "Couldn't send your message. Check your connection and try again.");
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -200,7 +211,8 @@ class _ChatScreenState extends State<ChatScreen> {
       } catch (_) {
         // The graph and insight are a bonus; the check-in is already saved.
       }
-      final List<MoodInsight> insights = buildInsights(week, chatFeelings: feelings);
+      final List<MoodInsight> insights =
+          buildInsights(week, chatFeelings: feelings);
       if (!mounted) return;
       widget.onMoodSaved?.call();
       setState(() {
@@ -228,12 +240,12 @@ class _ChatScreenState extends State<ChatScreen> {
         _picked.remove(index);
         _messages.removeLast();
       });
-      _showError("Couldn't save your mood. Check your connection and try again.");
+      _showError(
+          "Couldn't save your mood. Check your connection and try again.");
     } finally {
       if (mounted) setState(() => _sending = false);
     }
   }
-
 
   void _showError(String text) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
@@ -250,7 +262,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final int extra = _sending ? 1 : 0;
     return Scaffold(
       appBar: AppBar(
-        leading: widget.onBack == null ? null : BackButton(onPressed: widget.onBack),
+        leading:
+            widget.onBack == null ? null : BackButton(onPressed: widget.onBack),
         title: Row(
           children: <Widget>[
             const MascotAvatar(size: 36),
@@ -260,12 +273,14 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text('Chipu', maxLines: 1, overflow: TextOverflow.ellipsis),
+                  const Text('Chipu',
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
                   Text(
                     'AI companion · not a therapist',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall?.copyWith(color: mq.textMuted),
+                    style: theme.textTheme.labelSmall
+                        ?.copyWith(color: mq.textMuted),
                   ),
                 ],
               ),
@@ -309,7 +324,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     message: m,
                     showAvatar: !m.fromUser && lastInRun,
                     picked: _picked[index],
-                    onPick: _sending ? null : (int mood) => _pickMood(index, mood),
+                    onPick:
+                        _sending ? null : (int mood) => _pickMood(index, mood),
                     week: _week,
                     onHelplines: widget.onHelplines,
                   );
@@ -322,7 +338,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: chips.length,
-                separatorBuilder: (BuildContext context, int i) => const SizedBox(width: 8),
+                separatorBuilder: (BuildContext context, int i) =>
+                    const SizedBox(width: 8),
                 itemBuilder: (BuildContext context, int i) => ActionChip(
                   avatar: chips[i] == checkInChip ? const Text('📝') : null,
                   label: Text(chips[i]),
@@ -395,7 +412,8 @@ class _ChatItem extends StatelessWidget {
         child: Center(
           child: Text(
             message.text,
-            style: theme.textTheme.labelSmall?.copyWith(color: theme.extension<MindQuestColors>()!.textMuted),
+            style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.extension<MindQuestColors>()!.textMuted),
           ),
         ),
       );
@@ -471,7 +489,9 @@ class _MoodFaces extends StatelessWidget {
               child: InkWell(
                 key: Key('chat-mood-${m.value}'),
                 borderRadius: BorderRadius.circular(14),
-                onTap: picked != null || onPick == null ? null : () => onPick!(m.value),
+                onTap: picked != null || onPick == null
+                    ? null
+                    : () => onPick!(m.value),
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
                   opacity: picked == null || picked == m.value ? 1 : 0.35,
@@ -484,7 +504,9 @@ class _MoodFaces extends StatelessWidget {
                           : theme.colorScheme.surface,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: picked == m.value ? theme.colorScheme.primary : theme.colorScheme.outline,
+                        color: picked == m.value
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.outline,
                         width: picked == m.value ? 2 : 1,
                       ),
                     ),
@@ -492,7 +514,8 @@ class _MoodFaces extends StatelessWidget {
                       children: <Widget>[
                         Text(m.emoji, style: const TextStyle(fontSize: 22)),
                         Text(m.label,
-                            style: theme.textTheme.labelSmall?.copyWith(fontSize: 10),
+                            style: theme.textTheme.labelSmall
+                                ?.copyWith(fontSize: 10),
                             textAlign: TextAlign.center,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis),
@@ -519,7 +542,8 @@ class _GraphCard extends StatelessWidget {
     final bool happy = week.isNotEmpty && week.first.mood >= 4;
     return Container(
       key: const Key('chat-mood-graph'),
-      constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.8),
+      constraints:
+          BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.8),
       margin: const EdgeInsets.only(top: 2, bottom: 6),
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 8),
       decoration: BoxDecoration(
@@ -532,7 +556,8 @@ class _GraphCard extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Expanded(child: Text('Your week', style: theme.textTheme.titleSmall)),
+              Expanded(
+                  child: Text('Your week', style: theme.textTheme.titleSmall)),
               if (happy) const Mascot(pose: MascotPose.happy, size: 34),
             ],
           ),
@@ -557,7 +582,8 @@ class _Bubble extends StatelessWidget {
     return Align(
       alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.75),
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.75),
         margin: const EdgeInsets.symmetric(vertical: 3),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
         decoration: BoxDecoration(
@@ -573,7 +599,9 @@ class _Bubble extends StatelessWidget {
           message.text,
           style: theme.textTheme.bodyLarge?.copyWith(
             height: 1.35,
-            color: mine ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
+            color: mine
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.onSurface,
           ),
         ),
       ),
@@ -589,9 +617,11 @@ class _TypingBubble extends StatefulWidget {
   State<_TypingBubble> createState() => _TypingBubbleState();
 }
 
-class _TypingBubbleState extends State<_TypingBubble> with SingleTickerProviderStateMixin {
-  late final AnimationController _dots =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..repeat();
+class _TypingBubbleState extends State<_TypingBubble>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _dots = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 1200))
+    ..repeat();
 
   @override
   void dispose() {
@@ -652,7 +682,8 @@ class _TypingBubbleState extends State<_TypingBubble> with SingleTickerProviderS
 
 /// Pill-shaped message box with a round send button inside it.
 class _Composer extends StatelessWidget {
-  const _Composer({required this.controller, required this.sending, required this.onSend});
+  const _Composer(
+      {required this.controller, required this.sending, required this.onSend});
 
   final TextEditingController controller;
   final bool sending;

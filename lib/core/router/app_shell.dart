@@ -27,41 +27,41 @@ class AppShell extends StatelessWidget {
         }
       },
       child: Scaffold(
-      body: shell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: shell.currentIndex,
-        onDestinationSelected: (int i) {
-          if (i == 0) ticker.bump();
-          shell.goBranch(i, initialLocation: i == shell.currentIndex);
-        },
-        destinations: const <NavigationDestination>[
-          NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
-              label: 'Home'),
-          NavigationDestination(
-            icon: Icon(Icons.chat_bubble_outline),
-            selectedIcon: Icon(Icons.chat_bubble),
-            label: 'Chat',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.sentiment_satisfied_outlined),
-            selectedIcon: Icon(Icons.sentiment_satisfied),
-            label: 'Mood',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book),
-            label: 'Learn',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.emoji_events_outlined),
-            selectedIcon: Icon(Icons.emoji_events),
-            label: 'Rewards',
-          ),
-        ],
+        body: shell,
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: shell.currentIndex,
+          onDestinationSelected: (int i) {
+            if (i == 0) ticker.bump();
+            shell.goBranch(i, initialLocation: i == shell.currentIndex);
+          },
+          destinations: const <NavigationDestination>[
+            NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: 'Home'),
+            NavigationDestination(
+              icon: Icon(Icons.chat_bubble_outline),
+              selectedIcon: Icon(Icons.chat_bubble),
+              label: 'Chat',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.sentiment_satisfied_outlined),
+              selectedIcon: Icon(Icons.sentiment_satisfied),
+              label: 'Mood',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.menu_book_outlined),
+              selectedIcon: Icon(Icons.menu_book),
+              label: 'Learn',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.emoji_events_outlined),
+              selectedIcon: Icon(Icons.emoji_events),
+              label: 'Rewards',
+            ),
+          ],
+        ),
       ),
-    ),
     );
   }
 }

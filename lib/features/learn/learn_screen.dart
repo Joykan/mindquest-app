@@ -59,7 +59,8 @@ class _LearnScreenState extends State<LearnScreen> {
     final String lang = widget.language;
     return Scaffold(
       appBar: AppBar(
-        leading: widget.onBack == null ? null : BackButton(onPressed: widget.onBack),
+        leading:
+            widget.onBack == null ? null : BackButton(onPressed: widget.onBack),
         title: Text(lang == 'sw' ? 'Jifunze' : 'Learn'),
       ),
       body: FutureBuilder<List<Article>>(
@@ -69,14 +70,17 @@ class _LearnScreenState extends State<LearnScreen> {
             return Center(
               child: TextButton(
                 onPressed: _reload,
-                child: const Text("Couldn't load the articles. Tap to try again."),
+                child:
+                    const Text("Couldn't load the articles. Tap to try again."),
               ),
             );
           }
-          if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snap.hasData)
+            return const Center(child: CircularProgressIndicator());
           final List<Article> all = snap.data!;
-          final List<Article> shown =
-              _category == null ? all : all.where((Article a) => a.category == _category).toList();
+          final List<Article> shown = _category == null
+              ? all
+              : all.where((Article a) => a.category == _category).toList();
           final int read = all.where((Article a) => a.read).length;
 
           return RefreshIndicator(
@@ -116,7 +120,8 @@ class _LearnScreenState extends State<LearnScreen> {
                           read < 3
                               ? 'Each new article earns +5 XP. Read ${3 - read} more for the Curious Mind badge 📚'
                               : 'Each new article earns +5 XP.',
-                          style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+                          style: theme.textTheme.bodySmall
+                              ?.copyWith(color: mq.textMuted),
                         ),
                       ],
                     ),
@@ -128,12 +133,17 @@ class _LearnScreenState extends State<LearnScreen> {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: <Widget>[
-                      for (final String? c in <String?>[null, ...articleCategories])
+                      for (final String? c in <String?>[
+                        null,
+                        ...articleCategories
+                      ])
                         Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: ChoiceChip(
                             key: Key('category-${c ?? 'all'}'),
-                            label: Text(c == null ? (lang == 'sw' ? 'Zote' : 'All') : categoryName(c, lang)),
+                            label: Text(c == null
+                                ? (lang == 'sw' ? 'Zote' : 'All')
+                                : categoryName(c, lang)),
                             selected: _category == c,
                             onSelected: (_) => setState(() => _category = c),
                           ),
@@ -145,10 +155,14 @@ class _LearnScreenState extends State<LearnScreen> {
                 if (shown.isEmpty)
                   const Padding(
                     padding: EdgeInsets.all(24),
-                    child: Text('No articles here yet.', textAlign: TextAlign.center),
+                    child: Text('No articles here yet.',
+                        textAlign: TextAlign.center),
                   ),
                 for (final Article a in shown)
-                  _ArticleTile(article: a, language: lang, onTap: () => widget.onOpen(a)),
+                  _ArticleTile(
+                      article: a,
+                      language: lang,
+                      onTap: () => widget.onOpen(a)),
               ],
             ),
           );
@@ -159,7 +173,8 @@ class _LearnScreenState extends State<LearnScreen> {
 }
 
 class _ArticleTile extends StatelessWidget {
-  const _ArticleTile({required this.article, required this.language, required this.onTap});
+  const _ArticleTile(
+      {required this.article, required this.language, required this.onTap});
 
   final Article article;
   final String language;
@@ -191,25 +206,29 @@ class _ArticleTile extends StatelessWidget {
                     color: mq.surfaceSoft,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Text(categoryEmoji[article.category] ?? '📄', style: const TextStyle(fontSize: 24)),
+                  child: Text(categoryEmoji[article.category] ?? '📄',
+                      style: const TextStyle(fontSize: 24)),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(article.title(language), style: theme.textTheme.titleMedium),
+                      Text(article.title(language),
+                          style: theme.textTheme.titleMedium),
                       const SizedBox(height: 2),
                       Text(
                         firstLine,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: mq.textMuted),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         '${categoryName(article.category, language)} · ${article.minutes} min',
-                        style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.primary),
+                        style: theme.textTheme.labelSmall
+                            ?.copyWith(color: theme.colorScheme.primary),
                       ),
                     ],
                   ),
@@ -218,10 +237,12 @@ class _ArticleTile extends StatelessWidget {
                 article.read
                     ? Semantics(
                         label: 'Read',
-                        child: Icon(Icons.check_circle, color: theme.colorScheme.primary),
+                        child: Icon(Icons.check_circle,
+                            color: theme.colorScheme.primary),
                       )
                     : Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                           color: mq.reward.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(10),

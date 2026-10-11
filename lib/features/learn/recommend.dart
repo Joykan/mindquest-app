@@ -20,7 +20,8 @@ List<Recommendation> recommendArticles(
   Map<String, int> chatFeelings = const <String, int>{},
   int count = 2,
 }) {
-  final List<(String, String)> wanted = <(String, String)>[]; // (category or article title, reason)
+  final List<(String, String)> wanted =
+      <(String, String)>[]; // (category or article title, reason)
 
   const Map<String, (String, String)> fromFeeling = <String, (String, String)>{
     'feel_stressed': ('stress', 'Because stress came up in your chats'),
@@ -28,35 +29,52 @@ List<Recommendation> recommendArticles(
     'feel_sad': ('support', 'Because you have been feeling low'),
   };
   final List<MapEntry<String, int>> feelings = chatFeelings.entries
-      .where((MapEntry<String, int> f) => fromFeeling.containsKey(f.key) && f.value > 0)
+      .where((MapEntry<String, int> f) =>
+          fromFeeling.containsKey(f.key) && f.value > 0)
       .toList()
-    ..sort((MapEntry<String, int> a, MapEntry<String, int> b) => b.value.compareTo(a.value));
+    ..sort((MapEntry<String, int> a, MapEntry<String, int> b) =>
+        b.value.compareTo(a.value));
   for (final MapEntry<String, int> f in feelings) {
     wanted.add(fromFeeling[f.key]!);
   }
 
   if (recentMoods.isNotEmpty) {
-    final double avg = recentMoods.map((MoodEntry e) => e.mood).reduce((int a, int b) => a + b) /
+    final double avg = recentMoods
+            .map((MoodEntry e) => e.mood)
+            .reduce((int a, int b) => a + b) /
         recentMoods.length;
-    if (avg <= 2.5) wanted.add(('support', 'Because your recent moods have been low'));
-    final bool sleep = recentMoods.any((MoodEntry e) => e.tags.contains('sleep'));
-    if (sleep) wanted.add(('title:Sleep and your mood', 'Because sleep came up in your check-ins'));
-    final bool school = recentMoods.any((MoodEntry e) => e.tags.contains('school') && e.mood <= 3);
-    if (school) wanted.add(('title:Exam stress: a survival plan', 'Because school has been on your mind'));
+    if (avg <= 2.5)
+      wanted.add(('support', 'Because your recent moods have been low'));
+    final bool sleep =
+        recentMoods.any((MoodEntry e) => e.tags.contains('sleep'));
+    if (sleep)
+      wanted.add((
+        'title:Sleep and your mood',
+        'Because sleep came up in your check-ins'
+      ));
+    final bool school = recentMoods
+        .any((MoodEntry e) => e.tags.contains('school') && e.mood <= 3);
+    if (school)
+      wanted.add((
+        'title:Exam stress: a survival plan',
+        'Because school has been on your mind'
+      ));
   }
   wanted.add(('mindfulness', 'A calm moment for your day'));
 
   final List<Recommendation> out = <Recommendation>[];
   final Set<int> used = <int>{};
-  bool matches(Article a, String key) =>
-      key.startsWith('title:') ? a.titleEn == key.substring(6) : a.category == key;
+  bool matches(Article a, String key) => key.startsWith('title:')
+      ? a.titleEn == key.substring(6)
+      : a.category == key;
 
   // Unread first, then anything, so there is always something to show.
   for (final bool unreadOnly in <bool>[true, false]) {
     for (final (String key, String reason) in wanted) {
       if (out.length >= count) return out;
       for (final Article a in articles) {
-        if (used.contains(a.id) || (unreadOnly && a.read) || !matches(a, key)) continue;
+        if (used.contains(a.id) || (unreadOnly && a.read) || !matches(a, key))
+          continue;
         out.add(Recommendation(a, reason));
         used.add(a.id);
         break;

@@ -4,7 +4,15 @@ import '../../core/theme/app_colors.dart';
 import '../home/progress_repository.dart';
 import 'moods.dart';
 
-const List<String> _weekdays = <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const List<String> _weekdays = <String>[
+  'Mon',
+  'Tue',
+  'Wed',
+  'Thu',
+  'Fri',
+  'Sat',
+  'Sun'
+];
 
 String _dayKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
 
@@ -13,7 +21,8 @@ String _dayKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
 /// [entries] are newest first, with times in Nairobi time (as
 /// [ProgressRepository.loadMoodHistory] returns them).
 class MoodWeekGraph extends StatelessWidget {
-  const MoodWeekGraph({super.key, required this.entries, this.now, this.height = 130});
+  const MoodWeekGraph(
+      {super.key, required this.entries, this.now, this.height = 130});
 
   final List<MoodEntry> entries;
 
@@ -31,9 +40,12 @@ class MoodWeekGraph extends StatelessWidget {
     for (final MoodEntry e in entries) {
       latest.putIfAbsent(_dayKey(e.at), () => e.mood);
     }
-    final List<DateTime> days =
-        <DateTime>[for (int i = 6; i >= 0; i--) today.subtract(Duration(days: i))];
-    final List<int?> moods = <int?>[for (final DateTime d in days) latest[_dayKey(d)]];
+    final List<DateTime> days = <DateTime>[
+      for (int i = 6; i >= 0; i--) today.subtract(Duration(days: i))
+    ];
+    final List<int?> moods = <int?>[
+      for (final DateTime d in days) latest[_dayKey(d)]
+    ];
 
     final String summary = <String>[
       for (int i = 0; i < 7; i++)
@@ -52,10 +64,11 @@ class MoodWeekGraph extends StatelessWidget {
             const double face = 26;
             final double plotHeight = height - labelHeight - face;
             final double slot = box.maxWidth / 7;
-            Offset point(int i, int mood) =>
-                Offset(slot * i + slot / 2, face / 2 + plotHeight * (5 - mood) / 4);
+            Offset point(int i, int mood) => Offset(
+                slot * i + slot / 2, face / 2 + plotHeight * (5 - mood) / 4);
             final List<Offset?> points = <Offset?>[
-              for (int i = 0; i < 7; i++) moods[i] == null ? null : point(i, moods[i]!),
+              for (int i = 0; i < 7; i++)
+                moods[i] == null ? null : point(i, moods[i]!),
             ];
             return Stack(
               children: <Widget>[
@@ -92,7 +105,8 @@ class MoodWeekGraph extends StatelessWidget {
                       i == 6 ? 'Today' : _weekdays[days[i].weekday - 1],
                       textAlign: TextAlign.center,
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: i == 6 ? theme.colorScheme.primary : mq.textMuted,
+                        color:
+                            i == 6 ? theme.colorScheme.primary : mq.textMuted,
                         fontWeight: i == 6 ? FontWeight.w800 : null,
                       ),
                     ),

@@ -39,7 +39,8 @@ const Map<String, String> badgeEmoji = <String, String>{
 /// What each badge counts, and how many are needed.
 enum BadgeMeasure { checkIns, chatMessages, articlesRead, streak, weeklyQuests }
 
-const Map<String, (BadgeMeasure, int)> badgeGoals = <String, (BadgeMeasure, int)>{
+const Map<String, (BadgeMeasure, int)> badgeGoals =
+    <String, (BadgeMeasure, int)>{
   'first_checkin': (BadgeMeasure.checkIns, 1),
   'first_chat': (BadgeMeasure.chatMessages, 1),
   'curious_mind': (BadgeMeasure.articlesRead, 3),

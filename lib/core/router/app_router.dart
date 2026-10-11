@@ -60,8 +60,10 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
   final ProgressRepository? progress =
       session == null ? null : SupabaseProgressRepository();
   final ChatBackend? chat = session == null ? null : SupabaseChatBackend();
-  final LearnRepository? learn = session == null ? null : SupabaseLearnRepository();
-  final RewardsRepository? rewards = session == null ? null : SupabaseRewardsRepository();
+  final LearnRepository? learn =
+      session == null ? null : SupabaseLearnRepository();
+  final RewardsRepository? rewards =
+      session == null ? null : SupabaseRewardsRepository();
   String language() => session?.language ?? 'en';
 
   /// Helplines, breathing and grounding.
@@ -128,7 +130,8 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                   repository: progress!,
                   learn: learn,
                   language: language(),
-                  onOpenArticle: (Article a) => context.go('/learn/article/${a.id}', extra: a),
+                  onOpenArticle: (Article a) =>
+                      context.go('/learn/article/${a.id}', extra: a),
                   onSupport: () => showHelplines(context),
                   onMoodHistory: () => context.go('/mood/history'),
                   reloadWhen: ticker,
@@ -155,7 +158,8 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                       path: 'history',
                       builder: (context, state) => PastChatsScreen(
                         backend: chat!,
-                        onOpen: (ChatSessionSummary c) => context.go('/chat/history/${c.id}', extra: c),
+                        onOpen: (ChatSessionSummary c) =>
+                            context.go('/chat/history/${c.id}', extra: c),
                       ),
                       routes: <RouteBase>[
                         GoRoute(
@@ -163,12 +167,14 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                           builder: (context, state) {
                             final Object? extra = state.extra;
                             if (extra is ChatSessionSummary) {
-                              return ChatTranscriptScreen(backend: chat!, chat: extra);
+                              return ChatTranscriptScreen(
+                                  backend: chat!, chat: extra);
                             }
                             // Opened without the summary (e.g. after a restart): back to the list.
                             return PastChatsScreen(
                               backend: chat!,
-                              onOpen: (ChatSessionSummary c) => context.go('/chat/history/${c.id}', extra: c),
+                              onOpen: (ChatSessionSummary c) =>
+                                  context.go('/chat/history/${c.id}', extra: c),
                             );
                           },
                         ),
@@ -197,8 +203,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                 routes: <RouteBase>[
                   GoRoute(
                     path: 'history',
-                    builder: (context, state) =>
-                        MoodHistoryScreen(
+                    builder: (context, state) => MoodHistoryScreen(
                       repository: progress!,
                       onHelplines: () => showHelplines(context),
                     ),
@@ -214,14 +219,16 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                   language: language(),
                   reloadWhen: ticker,
                   onBack: () => goHome(context),
-                  onOpen: (Article a) => context.go('/learn/article/${a.id}', extra: a),
+                  onOpen: (Article a) =>
+                      context.go('/learn/article/${a.id}', extra: a),
                 ),
                 routes: <RouteBase>[
                   GoRoute(
                     path: 'article/:id',
                     builder: (context, state) {
                       final Object? extra = state.extra;
-                      final int? id = int.tryParse(state.pathParameters['id'] ?? '');
+                      final int? id =
+                          int.tryParse(state.pathParameters['id'] ?? '');
                       Widget screen(Article a) => ArticleScreen(
                             article: a,
                             repository: learn!,

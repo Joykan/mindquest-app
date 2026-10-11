@@ -11,7 +11,8 @@ import 'moods.dart';
 /// insights, and every check-in from the last 30 days, with notes. Entries can
 /// be deleted; XP already earned stays.
 class MoodHistoryScreen extends StatefulWidget {
-  const MoodHistoryScreen({super.key, required this.repository, this.onHelplines});
+  const MoodHistoryScreen(
+      {super.key, required this.repository, this.onHelplines});
 
   final ProgressRepository repository;
 
@@ -22,14 +23,34 @@ class MoodHistoryScreen extends StatefulWidget {
   State<MoodHistoryScreen> createState() => _MoodHistoryScreenState();
 }
 
-const List<String> _weekdays = <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const List<String> _weekdays = <String>[
+  'Mon',
+  'Tue',
+  'Wed',
+  'Thu',
+  'Fri',
+  'Sat',
+  'Sun'
+];
 const List<String> _months = <String>[
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 String _dayKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
 
-MoodOption _option(int mood) => moodOptions.firstWhere((MoodOption m) => m.value == mood);
+MoodOption _option(int mood) =>
+    moodOptions.firstWhere((MoodOption m) => m.value == mood);
 
 class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
   late Future<List<MoodEntry>> _entries = widget.repository.loadMoodHistory();
@@ -63,8 +84,12 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
         title: const Text('Delete this check-in?'),
         content: const Text('Your XP and streak stay as they are.'),
         actions: <Widget>[
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Delete')),
         ],
       ),
     );
@@ -76,7 +101,9 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Couldn't delete. Check your connection and try again.")),
+        const SnackBar(
+            content:
+                Text("Couldn't delete. Check your connection and try again.")),
       );
     }
   }
@@ -92,13 +119,16 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
             return Center(
               child: TextButton(
                 onPressed: _reload,
-                child: const Text("Couldn't load your history. Tap to try again."),
+                child:
+                    const Text("Couldn't load your history. Tap to try again."),
               ),
             );
           }
-          if (!snap.hasData) return const Center(child: CircularProgressIndicator());
-          final List<MoodEntry> entries =
-              snap.data!.where((MoodEntry e) => !_removed.contains(e.id)).toList();
+          if (!snap.hasData)
+            return const Center(child: CircularProgressIndicator());
+          final List<MoodEntry> entries = snap.data!
+              .where((MoodEntry e) => !_removed.contains(e.id))
+              .toList();
           if (entries.isEmpty) {
             return const Center(
               child: Padding(
@@ -119,11 +149,13 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
                 const SizedBox(height: 12),
                 _Summary(entries: entries),
                 const SizedBox(height: 20),
-                Text('Insights', style: Theme.of(context).textTheme.titleMedium),
+                Text('Insights',
+                    style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 8),
                 FutureBuilder<Map<String, int>>(
                   future: _feelings,
-                  builder: (BuildContext context, AsyncSnapshot<Map<String, int>> f) =>
+                  builder: (BuildContext context,
+                          AsyncSnapshot<Map<String, int>> f) =>
                       _Insights(
                     entries: entries,
                     chatFeelings: f.data ?? const <String, int>{},
@@ -131,9 +163,11 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text('Last 30 days', style: Theme.of(context).textTheme.titleMedium),
+                Text('Last 30 days',
+                    style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 8),
-                for (final MoodEntry e in entries) _EntryTile(entry: e, onDelete: () => _delete(e)),
+                for (final MoodEntry e in entries)
+                  _EntryTile(entry: e, onDelete: () => _delete(e)),
               ],
             ),
           );
@@ -157,7 +191,8 @@ class _WeekChart extends StatelessWidget {
     final DateTime today = DateTime(now.year, now.month, now.day);
     final Map<String, MoodEntry> latestByDay = <String, MoodEntry>{};
     for (final MoodEntry e in entries) {
-      latestByDay.putIfAbsent(_dayKey(e.at), () => e); // entries are newest first
+      latestByDay.putIfAbsent(
+          _dayKey(e.at), () => e); // entries are newest first
     }
     const double maxBar = 90;
 
@@ -185,20 +220,24 @@ class _WeekChart extends StatelessWidget {
                             : '${_weekdays[day.weekday - 1]}: ${_option(e.mood).label}',
                         child: Column(
                           children: <Widget>[
-                            Text(e == null ? ' ' : _option(e.mood).emoji, style: const TextStyle(fontSize: 18)),
+                            Text(e == null ? ' ' : _option(e.mood).emoji,
+                                style: const TextStyle(fontSize: 18)),
                             const SizedBox(height: 4),
                             Container(
                               height: e == null ? 6 : maxBar * e.mood / 5,
                               margin: const EdgeInsets.symmetric(horizontal: 6),
                               decoration: BoxDecoration(
-                                color: e == null ? mq.surfaceSoft : theme.colorScheme.primary,
+                                color: e == null
+                                    ? mq.surfaceSoft
+                                    : theme.colorScheme.primary,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                             ),
                             const SizedBox(height: 6),
                             Text(
                               i == 0 ? 'Today' : _weekdays[day.weekday - 1],
-                              style: theme.textTheme.labelSmall?.copyWith(color: mq.textMuted),
+                              style: theme.textTheme.labelSmall
+                                  ?.copyWith(color: mq.textMuted),
                             ),
                           ],
                         ),
@@ -224,16 +263,20 @@ class _Summary extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     final DateTime now = nairobiNow();
-    final DateTime weekAgo = DateTime(now.year, now.month, now.day).subtract(const Duration(days: 6));
-    final List<MoodEntry> week =
-        entries.where((MoodEntry e) => !DateTime(e.at.year, e.at.month, e.at.day).isBefore(weekAgo)).toList();
+    final DateTime weekAgo = DateTime(now.year, now.month, now.day)
+        .subtract(const Duration(days: 6));
+    final List<MoodEntry> week = entries
+        .where((MoodEntry e) =>
+            !DateTime(e.at.year, e.at.month, e.at.day).isBefore(weekAgo))
+        .toList();
     final int days = week.map((MoodEntry e) => _dayKey(e.at)).toSet().length;
 
     final Map<int, int> counts = <int, int>{};
     for (final MoodEntry e in entries) {
       counts[e.mood] = (counts[e.mood] ?? 0) + 1;
     }
-    final int common = counts.entries.reduce((MapEntry<int, int> a, MapEntry<int, int> b) {
+    final int common =
+        counts.entries.reduce((MapEntry<int, int> a, MapEntry<int, int> b) {
       if (a.value != b.value) return a.value > b.value ? a : b;
       return a.key > b.key ? a : b; // on a tie, show the better mood
     }).key;
@@ -243,7 +286,10 @@ class _Summary extends StatelessWidget {
             children: <Widget>[
               Text(value, style: theme.textTheme.headlineSmall),
               const SizedBox(height: 2),
-              Text(label, textAlign: TextAlign.center, style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
+              Text(label,
+                  textAlign: TextAlign.center,
+                  style:
+                      theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
             ],
           ),
         );
@@ -254,7 +300,8 @@ class _Summary extends StatelessWidget {
         child: Row(
           children: <Widget>[
             stat('$days / 7', 'days checked in\nthis week'),
-            stat(_option(common).emoji, 'most common mood\n(${_option(common).label.toLowerCase()})'),
+            stat(_option(common).emoji,
+                'most common mood\n(${_option(common).label.toLowerCase()})'),
             stat('${entries.length}', 'check-ins in\n30 days'),
           ],
         ),
@@ -275,7 +322,8 @@ class _EntryTile extends StatelessWidget {
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     final MoodOption m = _option(entry.mood);
     final DateTime d = entry.at;
-    final String when = '${_weekdays[d.weekday - 1]} ${d.day} ${_months[d.month - 1]} · '
+    final String when =
+        '${_weekdays[d.weekday - 1]} ${d.day} ${_months[d.month - 1]} · '
         '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -286,14 +334,17 @@ class _EntryTile extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(when, style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
+              Text(when,
+                  style:
+                      theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
               if (entry.tags.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
                     <String>[
                       for (final String id in entry.tags)
-                        if (moodTagById(id) != null) '${moodTagById(id)!.emoji} ${moodTagById(id)!.en}',
+                        if (moodTagById(id) != null)
+                          '${moodTagById(id)!.emoji} ${moodTagById(id)!.en}',
                     ].join('  '),
                     style: theme.textTheme.labelSmall,
                   ),
@@ -318,7 +369,8 @@ class _EntryTile extends StatelessWidget {
 }
 
 class _Insights extends StatelessWidget {
-  const _Insights({required this.entries, required this.chatFeelings, this.onHelplines});
+  const _Insights(
+      {required this.entries, required this.chatFeelings, this.onHelplines});
 
   final List<MoodEntry> entries;
   final Map<String, int> chatFeelings;
@@ -349,7 +401,8 @@ class _Insights extends StatelessWidget {
         ),
       );
     }
-    final List<MoodInsight> insights = buildInsights(entries, chatFeelings: chatFeelings);
+    final List<MoodInsight> insights =
+        buildInsights(entries, chatFeelings: chatFeelings);
     if (insights.isEmpty) {
       return Card(
         child: Padding(
@@ -372,7 +425,8 @@ class _Insights extends StatelessWidget {
               shape: i.needsSupport
                   ? RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: theme.colorScheme.primary, width: 1.5),
+                      side: BorderSide(
+                          color: theme.colorScheme.primary, width: 1.5),
                     )
                   : null,
               child: Padding(
@@ -389,12 +443,14 @@ class _Insights extends StatelessWidget {
                           Text(i.title, style: theme.textTheme.titleSmall),
                           const SizedBox(height: 2),
                           Text(i.body, style: theme.textTheme.bodyMedium),
-                          if (i.needsSupport && onHelplines != null) ...<Widget>[
+                          if (i.needsSupport &&
+                              onHelplines != null) ...<Widget>[
                             const SizedBox(height: 10),
                             FilledButton.tonalIcon(
                               key: const Key('insight-helplines'),
                               onPressed: onHelplines,
-                              style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
+                              style: FilledButton.styleFrom(
+                                  minimumSize: const Size(0, 44)),
                               icon: const Icon(Icons.phone_in_talk_outlined),
                               label: const Text('See helplines'),
                             ),

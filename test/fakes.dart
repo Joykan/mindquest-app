@@ -25,14 +25,23 @@ class FakeProgress implements ProgressRepository {
   Map<String, int> chatFeelings = <String, int>{};
 
   @override
-  Future<Map<String, int>> loadChatFeelings({int days = 7}) async => chatFeelings;
+  Future<Map<String, int>> loadChatFeelings({int days = 7}) async =>
+      chatFeelings;
 
   @override
-  Future<MoodSaved> logMood({required int mood, String? note, List<String> tags = const <String>[]}) async {
+  Future<MoodSaved> logMood(
+      {required int mood,
+      String? note,
+      List<String> tags = const <String>[]}) async {
     logged.add((mood, note));
     loggedTags.add(tags);
     history = <MoodEntry>[
-      MoodEntry(id: 'new${logged.length}', mood: mood, at: nairobiNow(), note: note, tags: tags),
+      MoodEntry(
+          id: 'new${logged.length}',
+          mood: mood,
+          at: nairobiNow(),
+          note: note,
+          tags: tags),
       ...history,
     ];
     return MoodSaved(xpEarned: logged.length == 1 ? 10 : 0, streak: 4);

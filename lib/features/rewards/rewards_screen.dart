@@ -27,7 +27,18 @@ class RewardsScreen extends StatefulWidget {
 }
 
 const List<String> _months = <String>[
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 String _date(DateTime d) => '${d.day} ${_months[d.month - 1]}';
@@ -59,7 +70,8 @@ class _RewardsScreenState extends State<RewardsScreen> {
     final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        leading: widget.onBack == null ? null : BackButton(onPressed: widget.onBack),
+        leading:
+            widget.onBack == null ? null : BackButton(onPressed: widget.onBack),
         title: Text(widget.language == 'sw' ? 'Zawadi' : 'Rewards'),
       ),
       body: FutureBuilder<RewardsSummary>(
@@ -69,11 +81,13 @@ class _RewardsScreenState extends State<RewardsScreen> {
             return Center(
               child: TextButton(
                 onPressed: _reload,
-                child: const Text("Couldn't load your rewards. Tap to try again."),
+                child:
+                    const Text("Couldn't load your rewards. Tap to try again."),
               ),
             );
           }
-          if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snap.hasData)
+            return const Center(child: CircularProgressIndicator());
           final RewardsSummary s = snap.data!;
           return RefreshIndicator(
             onRefresh: _reload,
@@ -86,8 +100,11 @@ class _RewardsScreenState extends State<RewardsScreen> {
                 const SizedBox(height: 20),
                 Row(
                   children: <Widget>[
-                    Expanded(child: Text('Badges', style: theme.textTheme.titleMedium)),
-                    Text('${s.badgesEarned} of ${s.badges.length}', style: theme.textTheme.labelLarge),
+                    Expanded(
+                        child:
+                            Text('Badges', style: theme.textTheme.titleMedium)),
+                    Text('${s.badgesEarned} of ${s.badges.length}',
+                        style: theme.textTheme.labelLarge),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -99,7 +116,10 @@ class _RewardsScreenState extends State<RewardsScreen> {
                       runSpacing: 10,
                       children: <Widget>[
                         for (final BadgeStatus b in s.badges)
-                          SizedBox(width: width, child: _BadgeTile(status: b, language: widget.language)),
+                          SizedBox(
+                              width: width,
+                              child: _BadgeTile(
+                                  status: b, language: widget.language)),
                       ],
                     );
                   },
@@ -113,9 +133,11 @@ class _RewardsScreenState extends State<RewardsScreen> {
                       for (final (String emoji, String what, int xp) in xpRules)
                         ListTile(
                           dense: true,
-                          leading: Text(emoji, style: const TextStyle(fontSize: 22)),
+                          leading:
+                              Text(emoji, style: const TextStyle(fontSize: 22)),
                           title: Text(what),
-                          trailing: Text('+$xp XP', style: theme.textTheme.labelLarge),
+                          trailing: Text('+$xp XP',
+                              style: theme.textTheme.labelLarge),
                         ),
                     ],
                   ),
@@ -134,7 +156,8 @@ class _RewardsScreenState extends State<RewardsScreen> {
                             subtitle: Text(_date(e.at)),
                             trailing: Text(
                               '+${e.amount} XP',
-                              style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary),
+                              style: theme.textTheme.labelLarge
+                                  ?.copyWith(color: theme.colorScheme.primary),
                             ),
                           ),
                       ],
@@ -171,9 +194,12 @@ class _LevelCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('Level ${level.level}', style: theme.textTheme.headlineSmall),
-                  Text('${summary.xp} XP in total · ${summary.streak}-day streak 🔥',
-                      style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
+                  Text('Level ${level.level}',
+                      style: theme.textTheme.headlineSmall),
+                  Text(
+                      '${summary.xp} XP in total · ${summary.streak}-day streak 🔥',
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(color: mq.textMuted)),
                   const SizedBox(height: 10),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
@@ -185,8 +211,10 @@ class _LevelCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text('${level.earned} / ${level.needed} XP to Level ${level.level + 1}',
-                      style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
+                  Text(
+                      '${level.earned} / ${level.needed} XP to Level ${level.level + 1}',
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(color: mq.textMuted)),
                 ],
               ),
             ),
@@ -218,8 +246,11 @@ class _QuestCard extends StatelessWidget {
               children: <Widget>[
                 const Text('🎯', style: TextStyle(fontSize: 24)),
                 const SizedBox(width: 10),
-                Expanded(child: Text('Weekly quest', style: theme.textTheme.titleMedium)),
-                Text(summary.weeklyQuestDone ? 'Done ✓' : '+25 XP', style: theme.textTheme.labelLarge),
+                Expanded(
+                    child: Text('Weekly quest',
+                        style: theme.textTheme.titleMedium)),
+                Text(summary.weeklyQuestDone ? 'Done ✓' : '+25 XP',
+                    style: theme.textTheme.labelLarge),
               ],
             ),
             const SizedBox(height: 6),
@@ -238,7 +269,9 @@ class _QuestCard extends StatelessWidget {
                       height: 10,
                       margin: EdgeInsets.only(right: i == 4 ? 0 : 6),
                       decoration: BoxDecoration(
-                        color: i < days ? theme.colorScheme.primary : mq.surfaceSoft,
+                        color: i < days
+                            ? theme.colorScheme.primary
+                            : mq.surfaceSoft,
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
@@ -305,7 +338,8 @@ class _BadgeTile extends StatelessWidget {
               if (earned)
                 Text(
                   'Earned ${_date(status.earnedAt!)}',
-                  style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.primary),
+                  style: theme.textTheme.labelSmall
+                      ?.copyWith(color: theme.colorScheme.primary),
                 )
               else ...<Widget>[
                 ClipRRect(
@@ -319,7 +353,8 @@ class _BadgeTile extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   '${status.progress.clamp(0, status.goal)} / ${status.goal}',
-                  style: theme.textTheme.labelSmall?.copyWith(color: mq.textMuted),
+                  style:
+                      theme.textTheme.labelSmall?.copyWith(color: mq.textMuted),
                 ),
               ],
             ],

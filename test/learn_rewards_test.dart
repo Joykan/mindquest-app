@@ -72,7 +72,8 @@ void tallScreen(WidgetTester tester) {
 
 void main() {
   test('article paragraphs are split on blank lines', () {
-    expect(article(1, 'stress').paragraphs('en'), <String>['First paragraph of 1.', 'Second paragraph of 1.']);
+    expect(article(1, 'stress').paragraphs('en'),
+        <String>['First paragraph of 1.', 'Second paragraph of 1.']);
     expect(article(1, 'stress').title('sw'), 'Makala 1');
   });
 
@@ -90,7 +91,8 @@ void main() {
     expect(s[1].fraction, 1);
   });
 
-  testWidgets('Learn shows progress, filters by topic and opens an article', (tester) async {
+  testWidgets('Learn shows progress, filters by topic and opens an article',
+      (tester) async {
     tallScreen(tester);
     Article? opened;
     await tester.pumpWidget(MaterialApp(
@@ -107,7 +109,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('You have read 1 of 3'), findsOneWidget);
-    expect(find.textContaining('Read 2 more for the Curious Mind badge'), findsOneWidget);
+    expect(find.textContaining('Read 2 more for the Curious Mind badge'),
+        findsOneWidget);
     expect(find.text('Article 2'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('category-stress')));
@@ -134,13 +137,18 @@ void main() {
     expect(find.text('Makala 1'), findsOneWidget);
   });
 
-  testWidgets('reading an article earns XP and celebrates a new badge', (tester) async {
+  testWidgets('reading an article earns XP and celebrates a new badge',
+      (tester) async {
     tallScreen(tester);
-    final FakeLearn repo = FakeLearn(<Article>[], badgesOnRead: <RewardBadge>[curious]);
+    final FakeLearn repo =
+        FakeLearn(<Article>[], badgesOnRead: <RewardBadge>[curious]);
     int readCalls = 0;
     await tester.pumpWidget(MaterialApp(
       theme: AppTheme.light(),
-      home: ArticleScreen(article: article(7, 'mindfulness'), repository: repo, onRead: () => readCalls++),
+      home: ArticleScreen(
+          article: article(7, 'mindfulness'),
+          repository: repo,
+          onRead: () => readCalls++),
     ));
 
     expect(find.text('Second paragraph of 7.'), findsOneWidget);
@@ -166,13 +174,16 @@ void main() {
     tallScreen(tester);
     await tester.pumpWidget(MaterialApp(
       theme: AppTheme.light(),
-      home: ArticleScreen(article: article(2, 'stress', read: true), repository: FakeLearn(<Article>[])),
+      home: ArticleScreen(
+          article: article(2, 'stress', read: true),
+          repository: FakeLearn(<Article>[])),
     ));
     expect(find.byKey(const Key('mark-read')), findsNothing);
     expect(find.byKey(const Key('article-read')), findsOneWidget);
   });
 
-  testWidgets('Rewards shows level, weekly quest and badge progress', (tester) async {
+  testWidgets('Rewards shows level, weekly quest and badge progress',
+      (tester) async {
     tallScreen(tester);
     await tester.pumpWidget(MaterialApp(
       theme: AppTheme.light(),
@@ -188,7 +199,10 @@ void main() {
             <String, DateTime>{'first_chat': DateTime(2026, 10, 9)},
             const BadgeCounts(articlesRead: 1, chatMessages: 4),
           ),
-          recent: <XpEvent>[XpEvent(reason: 'article_read', amount: 5, at: DateTime(2026, 10, 10))],
+          recent: <XpEvent>[
+            XpEvent(
+                reason: 'article_read', amount: 5, at: DateTime(2026, 10, 10))
+          ],
         )),
       ),
     ));
@@ -214,8 +228,8 @@ void main() {
     ];
 
     test('follows feelings from the chat, unread first', () {
-      final List<Recommendation> r =
-          recommendArticles(all, chatFeelings: <String, int>{'feel_anxious': 1, 'feel_stressed': 3});
+      final List<Recommendation> r = recommendArticles(all,
+          chatFeelings: <String, int>{'feel_anxious': 1, 'feel_stressed': 3});
       expect(r.map((Recommendation x) => x.article.id), <int>[2, 3]);
       expect(r.first.reason, contains('stress'));
     });
@@ -223,7 +237,11 @@ void main() {
     test('low moods point to support, otherwise mindfulness', () {
       final DateTime now = DateTime(2026, 10, 10);
       expect(
-        recommendArticles(all, recentMoods: <MoodEntry>[MoodEntry(id: 'a', mood: 1, at: now)]).first.article.id,
+        recommendArticles(all,
+                recentMoods: <MoodEntry>[MoodEntry(id: 'a', mood: 1, at: now)])
+            .first
+            .article
+            .id,
         4,
       );
       expect(recommendArticles(all).first.article.id, 5);
@@ -233,29 +251,45 @@ void main() {
   test('tags on low days become an insight', () {
     final DateTime now = DateTime(2026, 10, 10, 12);
     final List<MoodInsight> i = buildInsights(<MoodEntry>[
-      MoodEntry(id: 'a', mood: 2, at: now, tags: const <String>['school', 'sleep']),
-      MoodEntry(id: 'b', mood: 4, at: now.subtract(const Duration(days: 1)), tags: const <String>['friends']),
-      MoodEntry(id: 'c', mood: 1, at: now.subtract(const Duration(days: 3)), tags: const <String>['school']),
-      MoodEntry(id: 'd', mood: 5, at: now.subtract(const Duration(days: 4)), tags: const <String>['friends']),
+      MoodEntry(
+          id: 'a', mood: 2, at: now, tags: const <String>['school', 'sleep']),
+      MoodEntry(
+          id: 'b',
+          mood: 4,
+          at: now.subtract(const Duration(days: 1)),
+          tags: const <String>['friends']),
+      MoodEntry(
+          id: 'c',
+          mood: 1,
+          at: now.subtract(const Duration(days: 3)),
+          tags: const <String>['school']),
+      MoodEntry(
+          id: 'd',
+          mood: 5,
+          at: now.subtract(const Duration(days: 4)),
+          tags: const <String>['friends']),
     ], now: now);
-    expect(i.firstWhere((MoodInsight x) => x.id == 'low_tag').body, contains('school'));
-    expect(i.firstWhere((MoodInsight x) => x.id == 'good_tag').body, contains('friends'));
+    expect(i.firstWhere((MoodInsight x) => x.id == 'low_tag').body,
+        contains('school'));
+    expect(i.firstWhere((MoodInsight x) => x.id == 'good_tag').body,
+        contains('friends'));
   });
 
   testWidgets('Home recommends articles and shows the week', (tester) async {
     tester.view.physicalSize = const Size(1080, 6000);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
-    final FakeProgress progress =
-        FakeProgress(const HomeSummary(username: 'Amani', xp: 60, streak: 1))
-          ..chatFeelings = <String, int>{'feel_stressed': 2}
-          ..history = <MoodEntry>[MoodEntry(id: 'm', mood: 4, at: nairobiNow())];
+    final FakeProgress progress = FakeProgress(
+        const HomeSummary(username: 'Amani', xp: 60, streak: 1))
+      ..chatFeelings = <String, int>{'feel_stressed': 2}
+      ..history = <MoodEntry>[MoodEntry(id: 'm', mood: 4, at: nairobiNow())];
     Article? opened;
     await tester.pumpWidget(MaterialApp(
       theme: AppTheme.light(),
       home: HomeScreen(
         repository: progress,
-        learn: FakeLearn(<Article>[article(1, 'stress'), article(2, 'mindfulness')]),
+        learn: FakeLearn(
+            <Article>[article(1, 'stress'), article(2, 'mindfulness')]),
         onOpenArticle: (Article a) => opened = a,
         onMoodTap: (_) {},
         onTalk: () {},

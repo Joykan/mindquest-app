@@ -59,7 +59,8 @@ class MoodEntry {
 
 abstract class ProgressRepository {
   Future<HomeSummary> loadHome();
-  Future<MoodSaved> logMood({required int mood, String? note, List<String> tags = const <String>[]});
+  Future<MoodSaved> logMood(
+      {required int mood, String? note, List<String> tags = const <String>[]});
   Future<List<Helpline>> loadHelplines();
 
   /// Check-ins from the last [days] days, newest first.
@@ -152,7 +153,10 @@ class SupabaseProgressRepository implements ProgressRepository {
   }
 
   @override
-  Future<MoodSaved> logMood({required int mood, String? note, List<String> tags = const <String>[]}) async {
+  Future<MoodSaved> logMood(
+      {required int mood,
+      String? note,
+      List<String> tags = const <String>[]}) async {
     final String today = startOfTodayUtc().toIso8601String();
     final List<dynamic> before = await _client
         .from('xp_events')
@@ -177,9 +181,8 @@ class SupabaseProgressRepository implements ProgressRepository {
 
   @override
   Future<List<MoodEntry>> loadMoodHistory({int days = 30}) async {
-    final String since = startOfTodayUtc()
-        .subtract(Duration(days: days - 1))
-        .toIso8601String();
+    final String since =
+        startOfTodayUtc().subtract(Duration(days: days - 1)).toIso8601String();
     final List<dynamic> rows = await _client
         .from('mood_logs')
         .select('id, mood, note, tags, created_at')
@@ -192,7 +195,10 @@ class SupabaseProgressRepository implements ProgressRepository {
         id: m['id'] as String,
         mood: m['mood'] as int,
         note: m['note'] as String?,
-        tags: <String>[for (final dynamic t in m['tags'] as List<dynamic>? ?? <dynamic>[]) t as String],
+        tags: <String>[
+          for (final dynamic t in m['tags'] as List<dynamic>? ?? <dynamic>[])
+            t as String
+        ],
         at: nairobiNow(DateTime.parse(m['created_at'] as String)),
       );
     }).toList();
@@ -205,16 +211,19 @@ class SupabaseProgressRepository implements ProgressRepository {
 
   @override
   Future<Map<String, int>> loadChatFeelings({int days = 7}) async {
-    final String since = startOfTodayUtc()
-        .subtract(Duration(days: days - 1))
-        .toIso8601String();
+    final String since =
+        startOfTodayUtc().subtract(Duration(days: days - 1)).toIso8601String();
     // Row-level security returns only this user's messages.
     final List<dynamic> rows = await _client
         .from('messages')
         .select('intent')
         .eq('sender', 'user')
-        .inFilter('intent', <String>['feel_stressed', 'feel_anxious', 'feel_sad', 'feel_good'])
-        .gte('created_at', since);
+        .inFilter('intent', <String>[
+      'feel_stressed',
+      'feel_anxious',
+      'feel_sad',
+      'feel_good'
+    ]).gte('created_at', since);
     final Map<String, int> counts = <String, int>{};
     for (final dynamic r in rows) {
       final String intent = (r as Map<String, dynamic>)['intent'] as String;

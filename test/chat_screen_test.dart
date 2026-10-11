@@ -12,7 +12,8 @@ import 'fakes.dart';
 
 /// Answers from a fixed list instead of calling Supabase.
 class FakeBackend extends ChatBackend {
-  FakeBackend(this.replies, {this.restored, this.past = const <ChatSessionSummary>[]});
+  FakeBackend(this.replies,
+      {this.restored, this.past = const <ChatSessionSummary>[]});
 
   final List<ChatReply> replies;
   final List<String> sent = <String>[];
@@ -32,7 +33,8 @@ class FakeBackend extends ChatBackend {
   Future<List<ChatSessionSummary>> loadPastChats() async => past;
 
   @override
-  Future<List<ChatMessage>> loadTranscript(String sessionId) async => const <ChatMessage>[
+  Future<List<ChatMessage>> loadTranscript(String sessionId) async =>
+      const <ChatMessage>[
         ChatMessage(text: 'old question', fromUser: true),
         ChatMessage(text: 'old answer', fromUser: false),
       ];
@@ -143,7 +145,10 @@ void main() {
     final FakeProgress progress =
         FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0));
     progress.history = <MoodEntry>[
-      MoodEntry(id: 'old', mood: 2, at: nairobiNow().subtract(const Duration(days: 2))),
+      MoodEntry(
+          id: 'old',
+          mood: 2,
+          at: nairobiNow().subtract(const Duration(days: 2))),
     ];
     int saved = 0;
     await tester.pumpWidget(MaterialApp(
@@ -156,7 +161,9 @@ void main() {
     ));
     await tester.pumpAndSettle();
 
-    expect(find.text("Hi, I'm Chipu, your MindQuest buddy. How are you feeling right now?"),
+    expect(
+        find.text(
+            "Hi, I'm Chipu, your MindQuest buddy. How are you feeling right now?"),
         findsOneWidget);
     await tester.tap(find.byKey(const Key('chat-mood-5')));
     await tester.pumpAndSettle();
@@ -164,7 +171,8 @@ void main() {
     expect(progress.logged, <(int, String?)>[(5, null)]);
     expect(saved, 1);
     expect(find.text('😄 Great'), findsOneWidget);
-    expect(find.text("That's wonderful! I'm so glad to hear it."), findsOneWidget);
+    expect(
+        find.text("That's wonderful! I'm so glad to hear it."), findsOneWidget);
     expect(find.text("I've added that to your graph. +10 XP"), findsOneWidget);
     expect(find.byKey(const Key('chat-mood-graph')), findsOneWidget);
 
@@ -191,7 +199,8 @@ void main() {
 
     expect(find.text('How are you feeling right now?'), findsOneWidget);
     expect(find.byKey(const Key('chat-mood-3')), findsNWidgets(2));
-    expect(backend.sent, isEmpty, reason: 'mood check-ins are not sent to the chatbot');
+    expect(backend.sent, isEmpty,
+        reason: 'mood check-ins are not sent to the chatbot');
   });
 
   testWidgets('week graph shows a face per check-in day', (tester) async {
@@ -201,8 +210,10 @@ void main() {
       home: Scaffold(
         body: MoodWeekGraph(now: now, entries: <MoodEntry>[
           MoodEntry(id: 'a', mood: 5, at: now),
-          MoodEntry(id: 'b', mood: 1, at: now.subtract(const Duration(hours: 2))),
-          MoodEntry(id: 'c', mood: 3, at: now.subtract(const Duration(days: 3))),
+          MoodEntry(
+              id: 'b', mood: 1, at: now.subtract(const Duration(hours: 2))),
+          MoodEntry(
+              id: 'c', mood: 3, at: now.subtract(const Duration(days: 3))),
         ]),
       ),
     ));
@@ -220,13 +231,13 @@ void main() {
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
     final DateTime n = nairobiNow();
-    final FakeProgress progress =
-        FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0))
-          ..history = <MoodEntry>[
-            MoodEntry(id: 'a', mood: 1, at: n),
-            MoodEntry(id: 'b', mood: 2, at: n.subtract(const Duration(days: 1))),
-            MoodEntry(id: 'c', mood: 2, at: n.subtract(const Duration(days: 2))),
-          ];
+    final FakeProgress progress = FakeProgress(
+        const HomeSummary(username: 'A', xp: 0, streak: 0))
+      ..history = <MoodEntry>[
+        MoodEntry(id: 'a', mood: 1, at: n),
+        MoodEntry(id: 'b', mood: 2, at: n.subtract(const Duration(days: 1))),
+        MoodEntry(id: 'c', mood: 2, at: n.subtract(const Duration(days: 2))),
+      ];
     int opened = 0;
     await tester.pumpWidget(MaterialApp(
       theme: AppTheme.light(),
@@ -286,17 +297,23 @@ void main() {
 
   testWidgets('past chats list opens a transcript', (tester) async {
     ChatSessionSummary? opened;
-    final FakeBackend backend = FakeBackend(<ChatReply>[], past: <ChatSessionSummary>[
+    final FakeBackend backend =
+        FakeBackend(<ChatReply>[], past: <ChatSessionSummary>[
       ChatSessionSummary(
-          id: 's1', startedAt: DateTime(2026, 10, 9, 18, 5), preview: 'exams are close', messageCount: 6),
+          id: 's1',
+          startedAt: DateTime(2026, 10, 9, 18, 5),
+          preview: 'exams are close',
+          messageCount: 6),
     ]);
     await tester.pumpWidget(MaterialApp(
       theme: AppTheme.light(),
-      home: PastChatsScreen(backend: backend, onOpen: (ChatSessionSummary c) => opened = c),
+      home: PastChatsScreen(
+          backend: backend, onOpen: (ChatSessionSummary c) => opened = c),
     ));
     await tester.pumpAndSettle();
     expect(find.text('exams are close'), findsOneWidget);
-    expect(find.textContaining('Fri 9 Oct · 18:05 · 6 messages'), findsOneWidget);
+    expect(
+        find.textContaining('Fri 9 Oct · 18:05 · 6 messages'), findsOneWidget);
     await tester.tap(find.byKey(const Key('past-chat-s1')));
     expect(opened?.id, 's1');
 
