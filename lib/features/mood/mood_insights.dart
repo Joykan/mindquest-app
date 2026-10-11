@@ -278,23 +278,23 @@ List<MoodInsight> buildInsights(
   }
 
   // 9. The overall mix of moods, so there is always something to show.
-  final int good = entries.where((MoodEntry e) => e.mood >= 4).length;
-  final int okay = entries.where((MoodEntry e) => e.mood == 3).length;
-  final int low = entries.where((MoodEntry e) => e.mood <= 2).length;
+  final int nGood = entries.where((MoodEntry e) => e.mood >= 4).length;
+  final int nOkay = entries.where((MoodEntry e) => e.mood == 3).length;
+  final int nLow = entries.where((MoodEntry e) => e.mood <= 2).length;
   final int total = entries.length;
   out.add(MoodInsight(
     id: 'mood_mix',
-    emoji: good * 2 > total ? '🌤️' : (low * 2 > total ? '🌧️' : '⛅'),
-    title: good * 2 > total
+    emoji: nGood * 2 > total ? '🌤️' : (nLow * 2 > total ? '🌧️' : '⛅'),
+    title: nGood * 2 > total
         ? 'Mostly good days'
-        : low * 2 > total
+        : nLow * 2 > total
             ? 'A lot of low days lately'
             : 'A mix of ups and downs',
-    body: good * 2 > total
-        ? '$good of your last $total check-ins were good or great.'
-        : low * 2 > total
-            ? '$low of your last $total check-ins were low. Chipu is here to talk, and the helplines are always on Home.'
-            : 'Of your last $total check-ins, $good were good, $okay okay and $low low. Ups and downs are normal.',
+    body: nGood * 2 > total
+        ? '$nGood of your last $total check-ins were good or great.'
+        : nLow * 2 > total
+            ? '$nLow of your last $total check-ins were low. Chipu is here to talk, and the helplines are always on Home.'
+            : 'Of your last $total check-ins, $nGood were good, $nOkay okay and $nLow low. Ups and downs are normal.',
   ));
 
   return out;
