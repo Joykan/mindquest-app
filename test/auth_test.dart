@@ -9,6 +9,9 @@ import 'package:mindquest/features/auth/onboarding_screen.dart';
 import 'package:mindquest/features/auth/session_controller.dart';
 import 'package:mindquest/features/auth/sign_in_screen.dart';
 import 'package:mindquest/features/auth/welcome_screen.dart';
+import 'package:mindquest/core/theme/theme_controller.dart';
+import 'package:mindquest/features/profile/profile_screen.dart';
+import 'package:mindquest/features/profile/save_progress_screen.dart';
 
 /// In-memory stand-in for Supabase auth and the profiles table.
 class FakeAccount implements AccountRepository {
@@ -61,6 +64,39 @@ class FakeAccount implements AccountRepository {
     onboardedName = username;
     onboardedLanguage = language;
     profile = Profile(username: username, language: language, onboarded: true);
+  }
+
+  String? linkedEmail;
+  bool emailConfirmed = false;
+  String? password;
+  bool deleted = false;
+
+  @override
+  String? get email => emailConfirmed ? linkedEmail : null;
+
+  @override
+  Future<void> linkEmail(String email) async {
+    if (email == 'taken@example.com') throw const AccountException('A user with this email address has already been registered');
+    linkedEmail = email;
+  }
+
+  @override
+  Future<void> confirmEmailCode({required String email, required String code}) async {
+    if (code != '123456') throw const AccountException('Token has expired or is invalid');
+    emailConfirmed = true;
+    _anonymous = false;
+  }
+
+  @override
+  Future<bool> checkEmailConfirmed() async => emailConfirmed;
+
+  @override
+  Future<void> setPassword(String password) async => this.password = password;
+
+  @override
+  Future<void> deleteAccount() async {
+    deleted = true;
+    _userId = null;
   }
 
   @override
@@ -194,5 +230,95 @@ void main() {
     await tester.pumpAndSettle();
     expect(
         find.textContaining('Open it to confirm your email'), findsOneWidget);
+  });
+
+  Future<(FakeAccount, SessionController)> anonymousUser() async {
+    final FakeAccount account = FakeAccount();
+    await account.signInAnonymously();
+    await account.completeOnboarding(username: 'Candy', language: 'en');
+    final SessionController s = SessionController(account);
+    await s.refresh();
+    return (account, s);
+  }
+
+  void tallScreen(WidgetTester tester) {
+    tester.view.physicalSize = const Size(1080, 3600);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+  }
+
+  testWidgets('Save your progress: email, code, then password', (tester) async {
+    tallScreen(tester);
+    final (FakeAccount account, SessionController s) = await anonymousUser();
+    await tester.pumpWidget(wrap(SaveProgressScreen(session: s)));
+
+    FilledButton send() => tester.widget<FilledButton>(find.byKey(const Key('send-code')));
+    expect(send().onPressed, isNull, reason: 'no email yet');
+    await tester.enterText(find.byKey(const Key('save-email')), 'candy@example.com');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('send-code')));
+    await tester.pumpAndSettle();
+    expect(account.linkedEmail, 'candy@example.com');
+    expect(find.text('Check your email'), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('save-code')), '000000');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('confirm-code')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining("That code didn't work"), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('save-code')), '123456');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('confirm-code')));
+    await tester.pumpAndSettle();
+    expect(find.text('Choose a password'), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('save-password')), 'short');
+    await tester.enterText(find.byKey(const Key('save-password2')), 'short');
+    await tester.tap(find.byKey(const Key('save-password-button')));
+    await tester.pump();
+    expect(find.text('Use at least 8 characters.'), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('save-password')), 'long-enough-1');
+    await tester.enterText(find.byKey(const Key('save-password2')), 'long-enough-1');
+    await tester.tap(find.byKey(const Key('save-password-button')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('save-done')), findsOneWidget);
+    expect(account.password, 'long-enough-1');
+    expect(account.isAnonymous, isFalse);
+  });
+
+  testWidgets('Save your progress explains an email that is already used', (tester) async {
+    tallScreen(tester);
+    final (FakeAccount _, SessionController s) = await anonymousUser();
+    await tester.pumpWidget(wrap(SaveProgressScreen(session: s)));
+    await tester.enterText(find.byKey(const Key('save-email')), 'taken@example.com');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('send-code')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('already has a MindQuest account'), findsOneWidget);
+  });
+
+  testWidgets('Delete my data needs DELETE typed, then signs out', (tester) async {
+    tallScreen(tester);
+    final (FakeAccount account, SessionController s) = await anonymousUser();
+    await tester.pumpWidget(wrap(ProfileScreen(
+      session: s,
+      theme: ThemeController(),
+      onSaveProgress: () {},
+    )));
+    expect(find.byKey(const Key('open-save-progress')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('delete-data')));
+    await tester.pumpAndSettle();
+    TextButton confirm() => tester.widget<TextButton>(find.byKey(const Key('delete-confirm')));
+    expect(confirm().onPressed, isNull);
+    await tester.enterText(find.byKey(const Key('delete-confirm-field')), 'delete');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('delete-confirm')));
+    await tester.pumpAndSettle();
+
+    expect(account.deleted, isTrue);
+    expect(s.signedIn, isFalse);
   });
 }

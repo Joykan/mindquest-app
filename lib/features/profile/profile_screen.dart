@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/language_toggle.dart';
+import '../auth/account_repository.dart';
 import '../auth/session_controller.dart';
 import '../gamification/levels.dart';
 import '../home/progress_repository.dart';
@@ -17,7 +18,11 @@ class ProfileScreen extends StatelessWidget {
       this.onHelplines,
       this.onMoodHistory,
       this.onRewards,
+      this.onSaveProgress,
       this.progress});
+
+  /// Opens "Save your progress" (shown for anonymous accounts).
+  final VoidCallback? onSaveProgress;
 
   /// Opens Rewards (badges and quests).
   final VoidCallback? onRewards;
@@ -55,6 +60,21 @@ class ProfileScreen extends StatelessWidget {
     await session.signOut();
   }
 
+  Future<void> _deleteData(BuildContext context) async {
+    final bool? sure = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => const _DeleteDialog(),
+    );
+    if (sure != true || !context.mounted) return;
+    final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+    try {
+      await session.deleteAccount();
+      messenger.showSnackBar(const SnackBar(content: Text('Your account and all your data were deleted.')));
+    } on AccountException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text("Couldn't delete: ${e.message}")));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData t = Theme.of(context);
@@ -89,8 +109,8 @@ class ProfileScreen extends StatelessWidget {
                         Text(name, style: t.textTheme.headlineSmall),
                         Text(
                           session.account.isAnonymous
-                              ? 'Anonymous account'
-                              : 'Signed in with email',
+                              ? 'Anonymous account (only on this phone)'
+                              : session.account.email ?? 'Signed in with email',
                           style: t.textTheme.bodySmall
                               ?.copyWith(color: mq.textMuted),
                         ),
@@ -125,6 +145,23 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
+              if (session.account.isAnonymous && onSaveProgress != null) ...<Widget>[
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  color: mq.surfaceSoft,
+                  child: ListTile(
+                    key: const Key('open-save-progress'),
+                    leading: const Text('💾', style: TextStyle(fontSize: 24)),
+                    title: const Text('Save your progress',
+                        style: TextStyle(fontWeight: FontWeight.w700)),
+                    subtitle: const Text(
+                        "Add an email so you don't lose your XP, moods and chats if you change phones."),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: onSaveProgress,
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               if (onRewards != null || onMoodHistory != null) ...<Widget>[
                 Card(
                   clipBehavior: Clip.antiAlias,
@@ -224,6 +261,13 @@ class ProfileScreen extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                     side: BorderSide(color: mq.crisis)),
               ),
+              const SizedBox(height: 8),
+              TextButton.icon(
+                key: const Key('delete-data'),
+                onPressed: () => _deleteData(context),
+                icon: Icon(Icons.delete_forever_outlined, color: mq.crisis),
+                label: Text('Delete my data', style: TextStyle(color: mq.crisis)),
+              ),
             ],
           );
         },
@@ -261,6 +305,60 @@ class _ThemeOption extends StatelessWidget {
             selected ? Icon(Icons.check_circle, color: scheme.primary) : null,
         onTap: onTap,
       ),
+    );
+  }
+}
+
+/// Asks the user to type DELETE, so data is never removed by accident.
+class _DeleteDialog extends StatefulWidget {
+  const _DeleteDialog();
+
+  @override
+  State<_DeleteDialog> createState() => _DeleteDialogState();
+}
+
+class _DeleteDialogState extends State<_DeleteDialog> {
+  final TextEditingController _typed = TextEditingController();
+
+  @override
+  void dispose() {
+    _typed.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final MindQuestColors mq = Theme.of(context).extension<MindQuestColors>()!;
+    final bool ok = _typed.text.trim().toUpperCase() == 'DELETE';
+    return AlertDialog(
+      title: const Text('Delete all your data?'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Text(
+            'This permanently deletes your account, chats, mood check-ins, notes, XP, badges and quests. '
+            'It cannot be undone.',
+          ),
+          const SizedBox(height: 12),
+          const Text('Type DELETE to confirm.'),
+          const SizedBox(height: 8),
+          TextField(
+            key: const Key('delete-confirm-field'),
+            controller: _typed,
+            autofocus: true,
+            onChanged: (_) => setState(() {}),
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+        TextButton(
+          key: const Key('delete-confirm'),
+          onPressed: ok ? () => Navigator.pop(context, true) : null,
+          child: Text('Delete', style: TextStyle(color: ok ? mq.crisis : null)),
+        ),
+      ],
     );
   }
 }

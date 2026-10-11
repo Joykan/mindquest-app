@@ -17,6 +17,7 @@ import '../../features/learn/learn_screen.dart';
 import '../../features/mood/mood_history_screen.dart';
 import '../../features/mood/mood_screen.dart';
 import '../../features/profile/profile_screen.dart';
+import '../../features/profile/save_progress_screen.dart';
 import '../../features/rewards/rewards_repository.dart';
 import '../../features/rewards/rewards_screen.dart';
 import '../../features/setup/setup_status_screen.dart';
@@ -110,7 +111,12 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
             onHelplines: () => showHelplines(context),
             onMoodHistory: () => context.go('/mood/history'),
             onRewards: () => context.go('/rewards'),
+            onSaveProgress: () => context.push('/save-progress'),
           ),
+        ),
+        GoRoute(
+          path: '/save-progress',
+          builder: (context, state) => SaveProgressScreen(session: session),
         ),
         GoRoute(
           path: '/support',

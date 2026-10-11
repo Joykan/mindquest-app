@@ -72,6 +72,15 @@ class SessionController extends ChangeNotifier {
     await refresh();
   }
 
+  /// Deletes the account and all its data, then returns to Welcome.
+  Future<void> deleteAccount() async {
+    await account.deleteAccount();
+    await refresh();
+  }
+
+  /// Call after the email or password changes, so screens update.
+  Future<void> accountChanged() => refresh();
+
   @override
   void dispose() {
     _sub.cancel();

@@ -48,6 +48,26 @@ abstract class AccountRepository {
 
   /// Changes the language the chatbot replies in ('en' or 'sw').
   Future<void> updateLanguage(String language);
+
+  /// The confirmed email, or null for anonymous accounts.
+  String? get email;
+
+  /// "Save your progress", step 1: adds an email to an anonymous account.
+  /// Supabase emails a 6-digit code and a link to confirm it.
+  Future<void> linkEmail(String email);
+
+  /// Step 2: confirms the email with the 6-digit code from the email.
+  Future<void> confirmEmailCode({required String email, required String code});
+
+  /// Step 2 (other way): after tapping the link in the email. True if the
+  /// email is now confirmed.
+  Future<bool> checkEmailConfirmed();
+
+  /// Step 3: sets a password, so the user can sign in on any phone.
+  Future<void> setPassword(String password);
+
+  /// "Delete my data": removes the account and everything in it, for good.
+  Future<void> deleteAccount();
 }
 
 class SupabaseAccountRepository implements AccountRepository {
@@ -126,6 +146,44 @@ class SupabaseAccountRepository implements AccountRepository {
           },
         ),
       );
+
+  @override
+  String? get email {
+    final User? u = _client.auth.currentUser;
+    if (u == null || u.isAnonymous || u.emailConfirmedAt == null) return null;
+    return u.email;
+  }
+
+  @override
+  Future<void> linkEmail(String email) =>
+      _guard(() => _client.auth.updateUser(UserAttributes(email: email.trim())));
+
+  @override
+  Future<void> confirmEmailCode({required String email, required String code}) => _guard(
+        () => _client.auth.verifyOTP(type: OtpType.emailChange, email: email.trim(), token: code.trim()),
+      );
+
+  @override
+  Future<bool> checkEmailConfirmed() => _guard(() async {
+        await _client.auth.refreshSession();
+        final User? u = _client.auth.currentUser;
+        return u != null && !u.isAnonymous && u.emailConfirmedAt != null;
+      });
+
+  @override
+  Future<void> setPassword(String password) =>
+      _guard(() => _client.auth.updateUser(UserAttributes(password: password)));
+
+  @override
+  Future<void> deleteAccount() => _guard(() async {
+        await _client.functions.invoke('delete-account');
+        try {
+          // The account is already gone, so only the local session is cleared.
+          await _client.auth.signOut(scope: SignOutScope.local);
+        } catch (_) {
+          // Nothing left to sign out of.
+        }
+      });
 
   @override
   Future<void> updateLanguage(String language) => _guard(() async {

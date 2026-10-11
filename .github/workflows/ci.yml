@@ -79,7 +79,7 @@ jobs:
           retention-days: 14
 
   chat-function:
-    name: Chat function tests
+    name: Edge function tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -100,3 +100,7 @@ jobs:
 
       - name: Unit tests
         run: deno test
+
+      - name: Delete-account function (format, lint, type check)
+        working-directory: supabase/functions/delete-account
+        run: deno fmt --check && deno lint && deno check index.ts
