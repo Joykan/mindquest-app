@@ -9,7 +9,8 @@ enum _Step { email, confirm, password, done }
 
 /// "Save your progress": turns an anonymous account into one with an email
 /// and password, so XP, moods and chats can be recovered on another phone.
-/// 1. enter email -> 2. confirm with the 6-digit code (or the link) ->
+/// 1. enter email -> 2. confirm with the link in the email (or a 6-digit code
+/// if the email template includes one) ->
 /// 3. choose a password.
 class SaveProgressScreen extends StatefulWidget {
   const SaveProgressScreen({super.key, required this.session, this.onDone});
@@ -176,19 +177,24 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
             decoration: const InputDecoration(labelText: 'Email'),
           ),
           const SizedBox(height: 16),
-          button('send-code', 'Send me a code', _emailOk ? _sendCode : null),
+          button('send-code', 'Send confirmation email', _emailOk ? _sendCode : null),
         ];
       case _Step.confirm:
         return <Widget>[
           Text('Check your email', textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
-            'We sent an email to ${_email.text.trim()}. Type the 6-digit code from it, '
-            'or tap the link in the email and then come back here.',
+            'We sent an email to ${_email.text.trim()}. Open it on this phone and tap the link '
+            '("Change Email"). Then come back here and tap the button below. '
+            'If the page that opens shows an error, that is fine: the link still works.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(color: mq.textMuted),
           ),
           const SizedBox(height: 20),
+          button('tapped-link', "I've tapped the link", _checkLink),
+          const SizedBox(height: 20),
+          Text('Got a 6-digit code instead?', style: theme.textTheme.titleSmall),
+          const SizedBox(height: 8),
           TextField(
             key: const Key('save-code'),
             controller: _code,
@@ -197,13 +203,11 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
             onChanged: (_) => setState(() {}),
             decoration: const InputDecoration(labelText: '6-digit code', counterText: ''),
           ),
-          const SizedBox(height: 16),
-          button('confirm-code', 'Confirm code', _code.text.trim().length == 6 ? _confirmCode : null),
           const SizedBox(height: 8),
           OutlinedButton(
-            key: const Key('tapped-link'),
-            onPressed: _busy ? null : _checkLink,
-            child: const Text("I've tapped the link"),
+            key: const Key('confirm-code'),
+            onPressed: _busy || _code.text.trim().length != 6 ? null : _confirmCode,
+            child: const Text('Confirm code'),
           ),
           TextButton(
             onPressed: _busy ? null : () => setState(() => _step = _Step.email),
