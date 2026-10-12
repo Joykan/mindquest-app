@@ -284,9 +284,11 @@ class _HomeBody extends StatelessWidget {
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        summary.streak == 1
-                            ? '1-day streak'
-                            : '${summary.streak}-day streak',
+                        summary.streak == 0
+                            ? 'Start your streak today'
+                            : summary.streak == 1
+                                ? '1-day streak'
+                                : '${summary.streak}-day streak',
                         style: theme.textTheme.titleMedium,
                       ),
                     ),

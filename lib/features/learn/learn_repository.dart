@@ -118,7 +118,7 @@ class SupabaseLearnRepository implements LearnRepository {
           .select(
               'id, category, title_en, title_sw, body_en, body_sw, read_minutes')
           .eq('published', true)
-          .order('id'),
+          .order('id', ascending: true),
       _client.from('resource_reads').select('resource_id').eq('user_id', _uid),
     ]);
     final Set<int> read = <int>{

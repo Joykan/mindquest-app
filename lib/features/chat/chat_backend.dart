@@ -120,7 +120,7 @@ class SupabaseChatBackend extends ChatBackend {
         .from('messages')
         .select('sender, content, created_at')
         .eq('session_id', session['id'] as String)
-        .order('created_at');
+        .order('created_at', ascending: true);
     final DateTime last = rows.isEmpty
         ? DateTime.parse(session['started_at'] as String)
         : DateTime.parse(
@@ -146,7 +146,7 @@ class SupabaseChatBackend extends ChatBackend {
         .select(
             'id, started_at, ended_at, messages(sender, content, created_at)')
         .order('started_at', ascending: false)
-        .order('created_at', referencedTable: 'messages')
+        .order('created_at', ascending: true, referencedTable: 'messages')
         .limit(30);
     return <ChatSessionSummary>[
       for (final dynamic r in rows)
@@ -174,7 +174,7 @@ class SupabaseChatBackend extends ChatBackend {
         .from('messages')
         .select('sender, content, created_at')
         .eq('session_id', sessionId)
-        .order('created_at');
+        .order('created_at', ascending: true);
     return _messages(rows);
   }
 }

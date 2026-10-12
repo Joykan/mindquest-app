@@ -141,7 +141,7 @@ class SupabaseRewardsRepository implements RewardsRepository {
       _client
           .from('badges')
           .select('id, name, name_sw, description')
-          .order('sort_order'),
+          .order('sort_order', ascending: true),
       _client
           .from('user_badges')
           .select('badge_id, earned_at')

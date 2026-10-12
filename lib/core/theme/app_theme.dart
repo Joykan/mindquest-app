@@ -67,8 +67,10 @@ class AppTheme {
   }) {
     final RoundedRectangleBorder rounded =
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
-    const TextStyle label =
-        TextStyle(fontWeight: FontWeight.w700, fontSize: 15);
+    // fontFamily is set here too: button and chip styles don't inherit it,
+    // and some phones (e.g. vivo) would otherwise use their own font.
+    const TextStyle label = TextStyle(
+        fontFamily: 'Nunito', fontWeight: FontWeight.w700, fontSize: 15);
 
     return ThemeData(
       useMaterial3: true,
@@ -133,8 +135,10 @@ class AppTheme {
         backgroundColor: scheme.surface,
         side: BorderSide(color: scheme.outline),
         shape: const StadiumBorder(),
-        labelStyle:
-            TextStyle(fontWeight: FontWeight.w600, color: scheme.onSurface),
+        labelStyle: TextStyle(
+            fontFamily: 'Nunito',
+            fontWeight: FontWeight.w600,
+            color: scheme.onSurface),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
