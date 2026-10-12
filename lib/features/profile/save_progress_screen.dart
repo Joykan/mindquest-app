@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/google_button.dart';
 import '../../core/widgets/mascot.dart';
 import '../auth/account_repository.dart';
 import '../auth/session_controller.dart';
@@ -33,8 +34,30 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
 
   AccountRepository get _account => widget.session.account;
 
+  /// Saved with Google: the email shown at the end comes from the account.
+  bool _viaGoogle = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.session.addListener(_onSession);
+  }
+
+  /// After "Save with Google" the app comes back from the browser with the
+  /// account no longer anonymous.
+  void _onSession() {
+    if (!mounted || _step != _Step.email || _account.isAnonymous) return;
+    setState(() {
+      _viaGoogle = true;
+      _step = _Step.done;
+    });
+  }
+
+  Future<void> _saveWithGoogle() => _run(() => _account.linkGoogle());
+
   @override
   void dispose() {
+    widget.session.removeListener(_onSession);
     _email.dispose();
     _code.dispose();
     _password.dispose();
@@ -58,6 +81,13 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
 
   static String _friendly(String message) {
     final String m = message.toLowerCase();
+    if (m.contains('identity') && m.contains('already')) {
+      return 'This Google account is already used by another MindQuest account. '
+          'Use another Google account or your email instead.';
+    }
+    if (m.contains('manual linking')) {
+      return 'Saving with Google is switched off on the server. Use your email for now.';
+    }
     if (m.contains('already') && m.contains('registered')) {
       return 'This email already has a MindQuest account. Use another email, '
           'or sign out and sign in to that account (progress here would not move across).';
@@ -168,6 +198,19 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
             style: theme.textTheme.bodyMedium?.copyWith(color: mq.textMuted),
           ),
           const SizedBox(height: 20),
+          GoogleButton(label: 'Save with Google', onPressed: _busy ? null : _saveWithGoogle),
+          const SizedBox(height: 16),
+          Row(
+            children: <Widget>[
+              const Expanded(child: Divider()),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Text('or with email', style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
+              ),
+              const Expanded(child: Divider()),
+            ],
+          ),
+          const SizedBox(height: 16),
           TextField(
             key: const Key('save-email'),
             controller: _email,
@@ -246,7 +289,9 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
               key: const Key('save-done'), textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
-            'On a new phone, choose "Sign in" and use ${_email.text.trim()} with your password.',
+            _viaGoogle
+                ? 'On a new phone, choose "Continue with Google" and pick the same Google account.'
+                : 'On a new phone, choose "Sign in" and use ${_email.text.trim()} with your password.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(color: mq.textMuted),
           ),

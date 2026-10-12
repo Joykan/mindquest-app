@@ -93,6 +93,21 @@ class FakeAccount implements AccountRepository {
   @override
   Future<void> setPassword(String password) async => this.password = password;
 
+  int googleSignIns = 0;
+  int googleLinks = 0;
+
+  @override
+  Future<void> signInWithGoogle() async => googleSignIns++;
+
+  @override
+  Future<void> linkGoogle() async {
+    googleLinks++;
+    _anonymous = false;
+    emailConfirmed = true;
+    linkedEmail = 'candy@gmail.com';
+    _changes.add(null);
+  }
+
   @override
   Future<void> deleteAccount() async {
     deleted = true;
@@ -320,5 +335,31 @@ void main() {
 
     expect(account.deleted, isTrue);
     expect(s.signedIn, isFalse);
+  });
+
+  testWidgets('Welcome and Sign in offer Continue with Google', (tester) async {
+    tallScreen(tester);
+    final FakeAccount account = FakeAccount();
+    final SessionController s = SessionController(account);
+    await tester.pumpWidget(wrap(WelcomeScreen(session: s)));
+    await tester.tap(find.byKey(const Key('google')));
+    await tester.pumpAndSettle();
+    expect(account.googleSignIns, 1);
+
+    await tester.pumpWidget(wrap(SignInScreen(session: s)));
+    await tester.tap(find.byKey(const Key('google')));
+    await tester.pumpAndSettle();
+    expect(account.googleSignIns, 2);
+  });
+
+  testWidgets('Save your progress with Google finishes when the account is linked', (tester) async {
+    tallScreen(tester);
+    final (FakeAccount account, SessionController s) = await anonymousUser();
+    await tester.pumpWidget(wrap(SaveProgressScreen(session: s)));
+    await tester.tap(find.byKey(const Key('google')));
+    await tester.pumpAndSettle();
+    expect(account.googleLinks, 1);
+    expect(find.byKey(const Key('save-done')), findsOneWidget);
+    expect(find.textContaining('Continue with Google'), findsOneWidget);
   });
 }

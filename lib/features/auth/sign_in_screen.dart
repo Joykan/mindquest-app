@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/google_button.dart';
 import 'account_repository.dart';
 import 'session_controller.dart';
 
@@ -101,6 +102,29 @@ class _SignInScreenState extends State<SignInScreen> {
                 style: theme.textTheme.bodyLarge?.copyWith(color: mq.textMuted),
               ),
               const SizedBox(height: 24),
+              GoogleButton(
+                onPressed: _busy
+                    ? null
+                    : () async {
+                        try {
+                          await widget.session.account.signInWithGoogle();
+                        } on AccountException catch (e) {
+                          if (mounted) setState(() => _error = e.message);
+                        }
+                      },
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: <Widget>[
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text('or with email', style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
+              ),
+              const SizedBox(height: 16),
               TextFormField(
                 key: const Key('email'),
                 controller: _email,

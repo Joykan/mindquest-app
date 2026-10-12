@@ -68,7 +68,19 @@ abstract class AccountRepository {
 
   /// "Delete my data": removes the account and everything in it, for good.
   Future<void> deleteAccount();
+
+  /// Opens Google sign-in in the browser. The app is reopened through
+  /// [authRedirect] and the session arrives on [changes].
+  Future<void> signInWithGoogle();
+
+  /// "Save your progress" with Google: links a Google account to the
+  /// anonymous account, keeping all its data.
+  Future<void> linkGoogle();
 }
+
+/// Where Supabase sends the user back after Google sign-in. Must match the
+/// intent filter in AndroidManifest.xml and the Supabase redirect URLs.
+const String authRedirect = 'ke.ac.maseno.mindquest://login-callback';
 
 class SupabaseAccountRepository implements AccountRepository {
   SupabaseAccountRepository([SupabaseClient? client])
@@ -183,6 +195,18 @@ class SupabaseAccountRepository implements AccountRepository {
         } catch (_) {
           // Nothing left to sign out of.
         }
+      });
+
+  @override
+  Future<void> signInWithGoogle() => _guard(() async {
+        final bool opened = await _client.auth.signInWithOAuth(OAuthProvider.google, redirectTo: authRedirect);
+        if (!opened) throw const AccountException("Couldn't open Google sign-in.");
+      });
+
+  @override
+  Future<void> linkGoogle() => _guard(() async {
+        final bool opened = await _client.auth.linkIdentity(OAuthProvider.google, redirectTo: authRedirect);
+        if (!opened) throw const AccountException("Couldn't open Google sign-in.");
       });
 
   @override

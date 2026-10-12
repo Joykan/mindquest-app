@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/google_button.dart';
 import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/logo_mark.dart';
 import 'account_repository.dart';
@@ -29,6 +30,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _google() async {
+    setState(() => _busy = true);
+    try {
+      // Opens the browser; the app comes back signed in.
+      await widget.session.account.signInWithGoogle();
+    } on AccountException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -133,6 +147,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 : const Text('Continue anonymously'),
                           ),
                           const SizedBox(height: 12),
+                          GoogleButton(onPressed: _busy ? null : _google, onDark: true),
+                          const SizedBox(height: 12),
                           OutlinedButton(
                             key: const Key('go-sign-in'),
                             onPressed:
@@ -142,7 +158,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               side: const BorderSide(
                                   color: Colors.white54, width: 1.5),
                             ),
-                            child: const Text('Sign in or create account'),
+                            child: const Text('Sign in or create account with email'),
                           ),
                           const SizedBox(height: 16),
                           Text(
