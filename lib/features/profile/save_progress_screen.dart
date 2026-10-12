@@ -192,8 +192,8 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
           Text('Keep your XP, moods and chats', textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
-            "Right now your account lives only on this phone. Add an email and password and you can "
-            'sign in on any phone without losing anything. We only use the email to sign you in.',
+            'Right now your account lives only on this phone. Link Google or an email and you can '
+            'sign in on any phone without losing anything. We only use it to sign you in.',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(color: mq.textMuted),
           ),

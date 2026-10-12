@@ -197,7 +197,8 @@ class _LevelCard extends StatelessWidget {
                   Text('Level ${level.level}',
                       style: theme.textTheme.headlineSmall),
                   Text(
-                      '${summary.xp} XP in total · ${summary.streak}-day streak 🔥',
+                      '${summary.xp} XP in total · '
+                      '${summary.streak == 0 ? 'No streak yet' : '${summary.streak}-day streak 🔥'}',
                       style: theme.textTheme.bodySmall
                           ?.copyWith(color: mq.textMuted)),
                   const SizedBox(height: 10),
