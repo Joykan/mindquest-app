@@ -189,8 +189,10 @@ class _SignInScreenState extends State<SignInScreen> {
                     : Text(create ? 'Create account' : 'Sign in'),
               ),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              // Wrap so it breaks onto two lines on narrow screens.
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: <Widget>[
                   Text(create ? 'Already have an account?' : 'New here?'),
                   TextButton(
