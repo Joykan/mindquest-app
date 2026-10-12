@@ -196,9 +196,12 @@ class _Point extends StatelessWidget {
         children: <Widget>[
           Icon(icon, color: AppPalette.mint, size: 20),
           const SizedBox(width: 10),
-          Text(text,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.w600)),
+          // Flexible so large system text sizes wrap instead of overflowing.
+          Flexible(
+            child: Text(text,
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w600)),
+          ),
         ],
       ),
     );
