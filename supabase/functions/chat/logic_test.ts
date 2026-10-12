@@ -21,6 +21,9 @@ Deno.test("crisis phrases are caught in English, Kiswahili and Sheng", () => {
       "nimechoka kuishi",
       "nataka kujimaliza bana",
       "I want to END IT ALL!!!",
+      "nimefika kikomo, siwezi tena",
+      "ntajitia kitanzi leo",
+      "maisha yamenichosha kabisa",
     ]
   ) assert(isCrisis(t), t);
 });

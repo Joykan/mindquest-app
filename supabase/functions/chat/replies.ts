@@ -1,6 +1,6 @@
 // Bot replies in English and Kiswahili. Each key has a few variants so the bot
 // doesn't repeat itself word for word. {name} is filled in where used.
-// The Kiswahili replies should be checked by a fluent speaker.
+// Kiswahili reviewed by a fluent speaker (Rajula Bonum, 12 Oct 2026).
 
 export type Lang = "en" | "sw";
 
@@ -11,7 +11,7 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
   },
   goodbye: {
     en: ["Take care! Come back any time you want to talk.", "Bye for now. Remember to log your mood today."],
-    sw: ["Kwaheri! Rudi wakati wowote ukitaka kuongea.", "Tutaonana. Usisahau kurekodi hisia zako leo."],
+    sw: ["Kwaheri! Rudi wakati wowote unapohitaji kuongea.", "Tutaonana. Usisahau kurekodi hisia zako leo."],
   },
   thank: {
     en: ["You're welcome. I'm glad I could help.", "Any time. I'm here whenever you need me."],
@@ -33,7 +33,7 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
       "I'm sorry you're feeling anxious. Slow breathing can calm your body. Shall we try it together?",
     ],
     sw: [
-      "Wasiwasi unaweza kufanya kila kitu kionekane kikubwa. Ungependa zoezi la kupumua la kutuliza?",
+      "Wasiwasi unaweza kufanya kila kitu kionekane kikubwa. Je, ungependa kujaribu zoezi la kupumua linalotuliza?",
       "Pole kwa wasiwasi unaohisi. Kupumua polepole kunaweza kutuliza mwili. Tujaribu pamoja?",
     ],
   },
@@ -43,8 +43,8 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
       "That sounds hard. You don't have to go through it alone. Would talking about it help?",
     ],
     sw: [
-      "Pole kwa unavyojisikia. Ni sawa kuhisi huzuni. Ungependa kunieleza zaidi kinachoendelea?",
-      "Hiyo inaonekana ngumu. Huhitaji kupitia hili peke yako. Kuongea kuhusu hilo kunaweza kusaidia?",
+      "Pole kwa unavyohisi. Ni sawa kuhisi huzuni wakati mwingine. Ungependa kunielezea zaidi kinachokukwaza?",
+      "Hiyo inaonekana ngumu. Huhitaji kulipitia peke yako. Kuongea kulihusu kunaweza kusaidia?",
     ],
   },
   feel_good: {
@@ -83,7 +83,7 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
   },
   deny: {
     en: ["No problem. I'm here if you want to talk."],
-    sw: ["Hakuna shida. Niko hapa ukitaka kuongea."],
+    sw: ["Hakuna matata. Niko hapo unapohitaji kuongea."],
   },
   nice_to_meet: {
     en: ["Nice to meet you, {name}! How are you feeling today?"],
@@ -114,7 +114,7 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
       "It sounds like you're going through something really painful, and I'm glad you told me. You don't have to face this alone. Please reach out to someone right now:",
     ],
     sw: [
-      "Inaonekana unapitia jambo linaloumiza sana, na nashukuru umeniambia. Huhitaji kukabiliana na hili peke yako. Tafadhali wasiliana na mtu sasa hivi:",
+      "Inaonekana unakumbwa na jambo linaloumiza sana. Nashukuru kwa kunielezea. Huhitaji kukabiliana nalo peke yako. Tafadhali wasiliana na mtu sasa hivi:",
     ],
   },
 };

@@ -46,6 +46,12 @@ export const CRISIS_PHRASES: string[] = [
   "kujimaliza",
   "nijimalize",
   "nataka kujimaliza",
+  // Added by the Kiswahili reviewer (12 Oct 2026)
+  "nimefika kikomo",
+  "nitajitia kitanzi",
+  "ntajitia kitanzi",
+  "kujitia kitanzi",
+  "maisha yamenichosha",
 ];
 
 /** Lower-case, drop apostrophes, turn other punctuation into spaces. */
