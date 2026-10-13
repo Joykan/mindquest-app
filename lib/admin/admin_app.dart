@@ -354,11 +354,11 @@ class _AdminShellState extends State<AdminShell> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: <Widget>[
-            const LogoMark(size: 32),
-            const SizedBox(width: 10),
-            const Text('MindQuest Admin'),
+            LogoMark(size: 32),
+            SizedBox(width: 10),
+            Text('MindQuest Admin'),
           ],
         ),
         actions: <Widget>[

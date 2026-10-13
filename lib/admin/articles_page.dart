@@ -22,7 +22,9 @@ class _ArticlesPageState extends State<ArticlesPage> {
   String? _category;
 
   void _reload() =>
-      setState(() => _articles = widget.repository.articles());
+      setState(() {
+        _articles = widget.repository.articles();
+      });
 
   Future<void> _edit([AdminArticle? article]) async {
     final bool? saved = await showDialog<bool>(

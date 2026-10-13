@@ -18,7 +18,9 @@ class HelplinesPage extends StatefulWidget {
 class _HelplinesPageState extends State<HelplinesPage> {
   late Future<List<AdminHelpline>> _lines = widget.repository.helplines();
 
-  void _reload() => setState(() => _lines = widget.repository.helplines());
+  void _reload() => setState(() {
+        _lines = widget.repository.helplines();
+      });
 
   Future<void> _edit([AdminHelpline? line]) async {
     final bool? saved = await showDialog<bool>(

@@ -37,7 +37,9 @@ class _TeamPageState extends State<TeamPage> {
     super.dispose();
   }
 
-  void _reload() => setState(() => _staff = widget.repository.staff());
+  void _reload() => setState(() {
+        _staff = widget.repository.staff();
+      });
 
   Future<void> _setRole(String email, String role) async {
     setState(() {
