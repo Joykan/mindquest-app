@@ -45,9 +45,13 @@ class _ArticleScreenState extends State<ArticleScreen> {
       widget.onRead?.call();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result.xpEarned > 0
-              ? '${_sw ? 'Kazi nzuri!' : 'Nice work!'} +${result.xpEarned} XP'
-              : (_sw ? 'Imewekwa kama imesomwa' : 'Marked as read')),
+          content: Text(result.pending
+              ? (_sw
+                  ? 'Kazi nzuri! Huna mtandao, kwa hiyo +${result.xpEarned} XP itaongezwa ukipata mtandao.'
+                  : "Nice work! You're offline, so the +${result.xpEarned} XP is added when you're back online.")
+              : result.xpEarned > 0
+                  ? '${_sw ? 'Kazi nzuri!' : 'Nice work!'} +${result.xpEarned} XP'
+                  : (_sw ? 'Imewekwa kama imesomwa' : 'Marked as read')),
         ),
       );
       if (result.newBadges.isNotEmpty) {

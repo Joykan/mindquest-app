@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/l10n/tr.dart';
+import '../../core/offline/offline_store.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/language_toggle.dart';
@@ -9,6 +10,8 @@ import '../auth/account_repository.dart';
 import '../auth/session_controller.dart';
 import '../gamification/levels.dart';
 import '../home/progress_repository.dart';
+import '../reminders/reminder_widgets.dart';
+import '../reminders/reminders.dart';
 
 /// Profile and settings (wireframe 12): level, shortcuts to badges, quests
 /// and mood history, language, appearance, support and sign out.
@@ -21,7 +24,15 @@ class ProfileScreen extends StatelessWidget {
       this.onMoodHistory,
       this.onRewards,
       this.onSaveProgress,
-      this.progress});
+      this.progress,
+      this.reminders,
+      this.connection});
+
+  /// The daily reminder setting (hidden where reminders aren't supported).
+  final ReminderController? reminders;
+
+  /// Warns before signing out while check-ins are still waiting to sync.
+  final ConnectionStatus? connection;
 
   /// Opens "Save your progress" (shown for anonymous accounts).
   final VoidCallback? onSaveProgress;
@@ -38,17 +49,27 @@ class ProfileScreen extends StatelessWidget {
   final VoidCallback? onMoodHistory;
 
   Future<void> _signOut(BuildContext context) async {
-    if (session.account.isAnonymous) {
+    final int waiting = connection?.pending ?? 0;
+    if (session.account.isAnonymous || waiting > 0) {
       final bool? sure = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: Text(context.tr('Sign out?', 'Utoke?')),
-          content: Text(context.tr(
-            "You're using MindQuest without an account. If you sign out, your chats, "
-                'moods and XP on this phone cannot be recovered.',
-            'Unatumia MindQuest bila akaunti. Ukitoka, mazungumzo yako, '
-                'hisia ulizorekodi na XP kwenye simu hii haviwezi kurejeshwa.',
-          )),
+          content: Text(<String>[
+            if (waiting > 0)
+              context.tr(
+                  '$waiting saved on this phone (made without internet) '
+                      "haven't synced yet and will be lost if you sign out now.",
+                  '$waiting zilizohifadhiwa kwenye simu hii (bila mtandao) '
+                      'bado hazijatumwa na zitapotea ukitoka sasa.'),
+            if (session.account.isAnonymous)
+              context.tr(
+                "You're using MindQuest without an account. If you sign out, your chats, "
+                    'moods and XP on this phone cannot be recovered.',
+                'Unatumia MindQuest bila akaunti. Ukitoka, mazungumzo yako, '
+                    'hisia ulizorekodi na XP kwenye simu hii haviwezi kurejeshwa.',
+              ),
+          ].join('\n\n')),
           actions: <Widget>[
             TextButton(
                 onPressed: () => Navigator.pop(context, false),
@@ -264,6 +285,13 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
+              if (reminders != null && reminders!.supported) ...<Widget>[
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: ReminderSettingsTile(reminders: reminders!),
+                ),
+                const SizedBox(height: 12),
+              ],
               if (onHelplines != null)
                 Card(
                   clipBehavior: Clip.antiAlias,

@@ -3,20 +3,32 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/l10n/tr.dart';
-
+import 'core/offline/offline_store.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
 import 'features/auth/session_controller.dart';
+import 'features/reminders/reminders.dart';
 
 class MindQuestApp extends StatefulWidget {
-  const MindQuestApp({super.key, this.themeController, this.session});
+  const MindQuestApp(
+      {super.key,
+      this.themeController,
+      this.session,
+      this.offline,
+      this.reminders});
 
   /// Loaded in main() from the saved setting; tests use the default.
   final ThemeController? themeController;
 
   /// Null when the app was built without Supabase keys.
   final SessionController? session;
+
+  /// Saved data for offline use (null in tests).
+  final OfflineStore? offline;
+
+  /// Daily check-in reminders (null in tests).
+  final ReminderController? reminders;
 
   @override
   State<MindQuestApp> createState() => _MindQuestAppState();
@@ -25,7 +37,29 @@ class MindQuestApp extends StatefulWidget {
 class _MindQuestAppState extends State<MindQuestApp> {
   late final ThemeController _theme =
       widget.themeController ?? ThemeController();
-  late final GoRouter _router = createRouter(_theme, widget.session);
+  late final GoRouter _router = createRouter(_theme, widget.session,
+      offline: widget.offline, reminders: widget.reminders);
+
+  @override
+  void initState() {
+    super.initState();
+    widget.session?.addListener(_updateReminders);
+    _updateReminders();
+  }
+
+  @override
+  void dispose() {
+    widget.session?.removeListener(_updateReminders);
+    super.dispose();
+  }
+
+  /// Reminders only for a signed-in user, in their language.
+  void _updateReminders() {
+    final SessionController? s = widget.session;
+    if (s == null) return;
+    widget.reminders
+        ?.update(signedIn: s.signedIn && s.onboarded, language: s.language);
+  }
 
   @override
   Widget build(BuildContext context) {

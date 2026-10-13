@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../core/offline/offline_store.dart';
+
 /// The parts of the profile the app needs to decide where to go.
 class Profile {
   const Profile(
@@ -83,10 +85,18 @@ abstract class AccountRepository {
 const String authRedirect = 'ke.ac.maseno.mindquest://login-callback';
 
 class SupabaseAccountRepository implements AccountRepository {
-  SupabaseAccountRepository([SupabaseClient? client])
+  SupabaseAccountRepository({SupabaseClient? client, this.offline})
       : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
+
+  /// Lets the app open without internet, using the saved profile.
+  final OfflineStore? offline;
+
+  /// Removes this phone's saved copy of the user's data.
+  Future<void> _forget(String? id) async {
+    if (id != null) await offline?.clearUser(id);
+  }
 
   @override
   String? get userId => _client.auth.currentUser?.id;
@@ -127,18 +137,26 @@ class SupabaseAccountRepository implements AccountRepository {
       });
 
   @override
-  Future<void> signOut() => _guard(() => _client.auth.signOut());
+  Future<void> signOut() => _guard(() async {
+        final String? id = userId;
+        await _client.auth.signOut();
+        await _forget(id);
+      });
 
   @override
   Future<Profile?> loadProfile() => _guard(() async {
         final String? id = userId;
         if (id == null) return null;
-        final Map<String, dynamic>? row = await _client
+        Future<Map<String, dynamic>?> query() => _client
             .from('profiles')
             .select('username, language, consent_at')
             .eq('id', id)
             .maybeSingle();
-        if (row == null) return null;
+        final OfflineStore? store = offline;
+        final dynamic found =
+            store == null ? await query() : await store.load('profile', query);
+        if (found == null) return null;
+        final Map<String, dynamic> row = Map<String, dynamic>.from(found as Map);
         return Profile(
           username: row['username'] as String? ?? 'Friend',
           language: row['language'] as String? ?? 'en',
@@ -191,7 +209,9 @@ class SupabaseAccountRepository implements AccountRepository {
 
   @override
   Future<void> deleteAccount() => _guard(() async {
+        final String? id = userId;
         await _client.functions.invoke('delete-account');
+        await _forget(id);
         try {
           // The account is already gone, so only the local session is cleared.
           await _client.auth.signOut(scope: SignOutScope.local);

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../l10n/tr.dart';
+import '../offline/offline_store.dart';
+import '../widgets/offline_banner.dart';
 
 /// Tells screens that progress changed (mood saved, tab switched to Home), so
 /// they reload their numbers.
@@ -11,10 +13,19 @@ class ProgressTicker extends ChangeNotifier {
 
 /// Bottom navigation from the wireframes: Home, Chat, Mood, Learn, Rewards.
 class AppShell extends StatelessWidget {
-  const AppShell({super.key, required this.shell, required this.ticker});
+  const AppShell(
+      {super.key,
+      required this.shell,
+      required this.ticker,
+      this.connection,
+      this.onRetry});
 
   final StatefulNavigationShell shell;
   final ProgressTicker ticker;
+
+  /// Shows the offline banner above the tabs (null in tests).
+  final ConnectionStatus? connection;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -30,36 +41,43 @@ class AppShell extends StatelessWidget {
       },
       child: Scaffold(
         body: shell,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: shell.currentIndex,
-          onDestinationSelected: (int i) {
-            if (i == 0) ticker.bump();
-            shell.goBranch(i, initialLocation: i == shell.currentIndex);
-          },
-          destinations: <NavigationDestination>[
-            NavigationDestination(
-                icon: const Icon(Icons.home_outlined),
-                selectedIcon: const Icon(Icons.home),
-                label: context.tr('Home', 'Nyumbani')),
-            NavigationDestination(
-              icon: const Icon(Icons.chat_bubble_outline),
-              selectedIcon: const Icon(Icons.chat_bubble),
-              label: context.tr('Chat', 'Ongea'),
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.sentiment_satisfied_outlined),
-              selectedIcon: const Icon(Icons.sentiment_satisfied),
-              label: context.tr('Mood', 'Hisia'),
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.menu_book_outlined),
-              selectedIcon: const Icon(Icons.menu_book),
-              label: context.tr('Learn', 'Jifunze'),
-            ),
-            NavigationDestination(
-              icon: const Icon(Icons.emoji_events_outlined),
-              selectedIcon: const Icon(Icons.emoji_events),
-              label: context.tr('Rewards', 'Zawadi'),
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            if (connection != null)
+              OfflineBanner(status: connection!, onRetry: onRetry),
+            NavigationBar(
+              selectedIndex: shell.currentIndex,
+              onDestinationSelected: (int i) {
+                if (i == 0) ticker.bump();
+                shell.goBranch(i, initialLocation: i == shell.currentIndex);
+              },
+              destinations: <NavigationDestination>[
+                NavigationDestination(
+                    icon: const Icon(Icons.home_outlined),
+                    selectedIcon: const Icon(Icons.home),
+                    label: context.tr('Home', 'Nyumbani')),
+                NavigationDestination(
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  selectedIcon: const Icon(Icons.chat_bubble),
+                  label: context.tr('Chat', 'Ongea'),
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.sentiment_satisfied_outlined),
+                  selectedIcon: const Icon(Icons.sentiment_satisfied),
+                  label: context.tr('Mood', 'Hisia'),
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.menu_book_outlined),
+                  selectedIcon: const Icon(Icons.menu_book),
+                  label: context.tr('Learn', 'Jifunze'),
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.emoji_events_outlined),
+                  selectedIcon: const Icon(Icons.emoji_events),
+                  label: context.tr('Rewards', 'Zawadi'),
+                ),
+              ],
             ),
           ],
         ),

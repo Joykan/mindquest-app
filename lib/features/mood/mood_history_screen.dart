@@ -329,13 +329,27 @@ class _EntryTile extends StatelessWidget {
     final DateTime d = entry.at;
     final String lang = context.lang;
     final String when =
-        '${shortDay(lang, d.weekday)} ${shortDate(lang, d)} · ${clock(d)}';
+        '${shortDay(lang, d.weekday)} ${shortDate(lang, d)} · ${clock(d)}'
+        '${entry.pending ? ' · ${tr(lang, 'waiting to sync', 'inasubiri mtandao')}' : ''}';
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Card(
         child: ListTile(
           leading: Text(m.emoji, style: const TextStyle(fontSize: 28)),
-          title: Text(m.name(lang), style: theme.textTheme.titleMedium),
+          title: Row(
+            children: <Widget>[
+              Flexible(
+                  child:
+                      Text(m.name(lang), style: theme.textTheme.titleMedium)),
+              if (entry.pending) ...<Widget>[
+                const SizedBox(width: 6),
+                Icon(Icons.cloud_upload_outlined,
+                    key: Key('pending-${entry.id}'),
+                    size: 16,
+                    color: mq.textMuted),
+              ],
+            ],
+          ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

@@ -18,11 +18,13 @@ import '../../features/mood/mood_history_screen.dart';
 import '../../features/mood/mood_screen.dart';
 import '../../features/profile/profile_screen.dart';
 import '../../features/profile/save_progress_screen.dart';
+import '../../features/reminders/reminders.dart';
 import '../../features/rewards/rewards_repository.dart';
 import '../../features/rewards/rewards_screen.dart';
 import '../../features/setup/setup_status_screen.dart';
 import '../../features/support/support_screen.dart';
 import '../l10n/tr.dart';
+import '../offline/offline_store.dart';
 import '../theme/theme_controller.dart';
 import 'app_shell.dart';
 
@@ -59,15 +61,37 @@ String? redirectFor(SessionController? session, String location) {
 }
 
 /// [session] is null when the app was built without Supabase keys.
-GoRouter createRouter(ThemeController theme, SessionController? session) {
+/// [offline] keeps data for use without internet; [reminders] is the daily
+/// check-in reminder (both null in tests).
+GoRouter createRouter(ThemeController theme, SessionController? session,
+    {OfflineStore? offline, ReminderController? reminders}) {
   final ProgressTicker ticker = ProgressTicker();
-  final ProgressRepository? progress =
-      session == null ? null : SupabaseProgressRepository();
-  final ChatBackend? chat = session == null ? null : SupabaseChatBackend();
+  final ProgressRepository? progress = session == null
+      ? null
+      : SupabaseProgressRepository(
+          offline: offline,
+          onMoodLogged: () => reminders?.checkedInToday(),
+        );
+  final ChatBackend? chat =
+      session == null ? null : SupabaseChatBackend(offline: offline);
   final LearnRepository? learn =
-      session == null ? null : SupabaseLearnRepository();
+      session == null ? null : SupabaseLearnRepository(offline: offline);
   final RewardsRepository? rewards =
-      session == null ? null : SupabaseRewardsRepository();
+      session == null ? null : SupabaseRewardsRepository(offline: offline);
+
+  // Something made offline reached the server, or the internet is back:
+  // screens reload to show the real XP, streak and badges.
+  offline?.onSynced = ticker.bump;
+
+  /// The offline banner's Retry: send what is waiting, then reload.
+  Future<void> retryOffline() async {
+    await offline?.retry();
+    ticker.bump();
+  }
+
+  /// Where to go once the app is ready, when it was opened from a reminder.
+  String? openAfterLoading = reminders?.launchLocation;
+  reminders?.launchLocation = null;
 
   /// Helplines, breathing and grounding.
   void showHelplines(BuildContext context) => context.push('/support');
@@ -77,9 +101,17 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
     context.go('/home');
   }
 
-  return GoRouter(
+  final GoRouter router = GoRouter(
     refreshListenable: session,
-    redirect: (context, state) => redirectFor(session, state.matchedLocation),
+    redirect: (context, state) {
+      final String? to = redirectFor(session, state.matchedLocation);
+      if (to == '/home' && openAfterLoading != null) {
+        final String target = openAfterLoading!;
+        openAfterLoading = null;
+        return target;
+      }
+      return to;
+    },
     routes: <RouteBase>[
       GoRoute(
           path: '/', builder: (context, state) => const SetupStatusScreen()),
@@ -110,6 +142,8 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
             session: session,
             theme: theme,
             progress: progress,
+            reminders: reminders,
+            connection: offline?.status,
             onHelplines: () => showHelplines(context),
             onMoodHistory: () => context.go('/mood/history'),
             onRewards: () => context.go('/rewards'),
@@ -128,8 +162,12 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
           ),
         ),
         StatefulShellRoute.indexedStack(
-          builder: (context, state, shell) =>
-              AppShell(shell: shell, ticker: ticker),
+          builder: (context, state, shell) => AppShell(
+            shell: shell,
+            ticker: ticker,
+            connection: offline?.status,
+            onRetry: offline == null ? null : retryOffline,
+          ),
           branches: <StatefulShellBranch>[
             StatefulShellBranch(routes: <RouteBase>[
               GoRoute(
@@ -146,6 +184,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                   onMoodTap: (int mood) => context.go('/mood?mood=$mood'),
                   onTalk: () => context.go('/chat'),
                   onProfile: () => context.push('/profile'),
+                  reminders: reminders,
                 ),
               ),
             ]),
@@ -278,4 +317,14 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
       ],
     ],
   );
+
+  // Tapping a reminder while the app is open opens the mood check-in.
+  reminders?.onOpen = (String location) {
+    if (session != null && session.signedIn && session.onboarded) {
+      router.go(location);
+    } else {
+      openAfterLoading = location;
+    }
+  };
+  return router;
 }

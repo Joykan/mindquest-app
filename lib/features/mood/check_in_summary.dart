@@ -155,6 +155,14 @@ class _CheckInSummaryState extends State<CheckInSummary> {
                   if (widget.saved.xpEarned > 0)
                     _Pill(
                         text: '+${widget.saved.xpEarned} XP', color: mq.reward),
+                  if (widget.saved.pending)
+                    _Pill(
+                      key: const Key('summary-pending'),
+                      text: context.tr(
+                          '📴 Saved on your phone · syncs when online',
+                          '📴 Imehifadhiwa kwenye simu · itatumwa ukipata mtandao'),
+                      color: mq.surfaceSoft,
+                    ),
                   _Pill(
                     text: context.tr('🔥 ${widget.saved.streak}-day streak',
                         '🔥 Mfululizo wa siku ${widget.saved.streak}'),
@@ -231,7 +239,7 @@ class _CheckInSummaryState extends State<CheckInSummary> {
 }
 
 class _Pill extends StatelessWidget {
-  const _Pill({required this.text, required this.color});
+  const _Pill({super.key, required this.text, required this.color});
 
   final String text;
   final Color color;

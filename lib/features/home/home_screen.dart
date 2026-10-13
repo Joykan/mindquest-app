@@ -11,6 +11,8 @@ import '../gamification/levels.dart';
 import '../learn/learn_repository.dart';
 import '../learn/recommend.dart';
 import '../mood/moods.dart';
+import '../reminders/reminder_widgets.dart';
+import '../reminders/reminders.dart';
 import 'progress_repository.dart';
 
 /// Home (wireframe 04): streak and level, today's mood, today's quests,
@@ -28,7 +30,11 @@ class HomeScreen extends StatefulWidget {
     this.onOpenArticle,
     this.onSupport,
     this.onMoodHistory,
+    this.reminders,
   });
+
+  /// Asks once whether the user wants a daily reminder.
+  final ReminderController? reminders;
 
   /// For "Recommended for you". Without it the section is hidden.
   final LearnRepository? learn;
@@ -176,6 +182,7 @@ class HomeScreenState extends State<HomeScreen> {
                   onMoodHistory: widget.onMoodHistory,
                   onOpenArticle: widget.onOpenArticle,
                   theme: widget.theme,
+                  reminders: widget.reminders,
                 ),
               ),
             );
@@ -197,8 +204,10 @@ class _HomeBody extends StatelessWidget {
     this.onMoodHistory,
     this.onOpenArticle,
     this.theme,
+    this.reminders,
   });
 
+  final ReminderController? reminders;
   final HomeExtras extras;
   final VoidCallback? onMoodHistory;
   final ValueChanged<Article>? onOpenArticle;
@@ -419,6 +428,7 @@ class _HomeBody extends StatelessWidget {
             ),
           ),
         ),
+        if (reminders != null) ReminderPrompt(reminders: reminders!),
         if (extras.picks.isNotEmpty && onOpenArticle != null) ...<Widget>[
           const SizedBox(height: 16),
           Text(context.tr('Recommended for you', 'Tunakupendekezea'),

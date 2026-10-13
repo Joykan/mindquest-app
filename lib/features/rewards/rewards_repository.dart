@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/l10n/tr.dart';
+import '../../core/offline/offline_store.dart';
 import '../gamification/badges.dart';
 import '../home/progress_repository.dart';
 
@@ -114,12 +115,22 @@ abstract class RewardsRepository {
 }
 
 class SupabaseRewardsRepository implements RewardsRepository {
-  SupabaseRewardsRepository([SupabaseClient? client])
+  SupabaseRewardsRepository({SupabaseClient? client, this.offline})
       : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
 
+  /// Shows the last saved rewards when offline (null in tests).
+  final OfflineStore? offline;
+
   String get _uid => _client.auth.currentUser!.id;
+
+  Future<dynamic> _load(String name, Future<dynamic> Function() query) async {
+    final OfflineStore? store = offline;
+    if (store == null) return query();
+    await store.flush();
+    return store.load(name, query);
+  }
 
   /// Number of rows (a HEAD request, so no rows are downloaded).
   Future<int> _count(String table,
@@ -139,39 +150,61 @@ class SupabaseRewardsRepository implements RewardsRepository {
         .subtract(Duration(days: n.weekday - 1));
     final String mondayDate =
         '${monday.year}-${monday.month.toString().padLeft(2, '0')}-${monday.day.toString().padLeft(2, '0')}';
+    final DateTime weekStart = startOfWeekUtc();
 
     final List<dynamic> r = await Future.wait<dynamic>(<Future<dynamic>>[
-      _client.from('profiles').select('xp, streak').eq('id', _uid).single(),
-      _client
-          .from('badges')
-          .select('id, name, name_sw, description')
-          .order('sort_order', ascending: true),
-      _client
-          .from('user_badges')
-          .select('badge_id, earned_at')
-          .eq('user_id', _uid),
-      _count('mood_logs'),
+      _load(
+          'profile.progress',
+          () => _client
+              .from('profiles')
+              .select('username, xp, streak, last_checkin')
+              .eq('id', _uid)
+              .single()),
+      _load(
+          'badges',
+          () => _client
+              .from('badges')
+              .select('id, name, name_sw, description')
+              .order('sort_order', ascending: true)),
+      _load(
+          'badges.earned',
+          () => _client
+              .from('user_badges')
+              .select('badge_id, earned_at')
+              .eq('user_id', _uid)),
+      _load('count.moods', () => _count('mood_logs')),
       // Row-level security limits messages to this user's own chats.
-      _count('messages', own: false, where: <String, Object>{'sender': 'user'}),
-      _count('resource_reads'),
-      _client
-          .from('quest_completions')
-          .select('week_start')
-          .eq('user_id', _uid),
-      _client
-          .from('mood_logs')
-          .select('created_at')
-          .eq('user_id', _uid)
-          .gte('created_at', startOfWeekUtc().toIso8601String()),
-      _client
-          .from('xp_events')
-          .select('reason, amount, created_at')
-          .eq('user_id', _uid)
-          .order('created_at', ascending: false)
-          .limit(8),
+      _load(
+          'count.messages',
+          () => _count('messages',
+              own: false, where: <String, Object>{'sender': 'user'})),
+      _load('count.reads', () => _count('resource_reads')),
+      _load(
+          'quests',
+          () => _client
+              .from('quest_completions')
+              .select('week_start')
+              .eq('user_id', _uid)),
+      _load(
+          'moods.week',
+          () => _client
+              .from('mood_logs')
+              .select('id, mood, logged_at')
+              .eq('user_id', _uid)
+              .gte('logged_at', weekStart.toIso8601String())
+              .order('logged_at', ascending: false)),
+      _load(
+          'xp.recent',
+          () => _client
+              .from('xp_events')
+              .select('reason, amount, created_at')
+              .eq('user_id', _uid)
+              .order('created_at', ascending: false)
+              .limit(8)),
     ]);
 
-    final Map<String, dynamic> profile = r[0] as Map<String, dynamic>;
+    final Map<String, dynamic> profile =
+        Map<String, dynamic>.from(r[0] as Map);
     final List<RewardBadge> badges = <RewardBadge>[
       for (final dynamic b in r[1] as List<dynamic>)
         RewardBadge.fromJson(b as Map<String, dynamic>),
@@ -182,19 +215,33 @@ class SupabaseRewardsRepository implements RewardsRepository {
             nairobiNow(DateTime.parse(u['earned_at'] as String)),
     };
     final List<dynamic> quests = r[6] as List<dynamic>;
-    final Set<String> days = <String>{
-      for (final dynamic m in r[7] as List<dynamic>)
-        () {
-          final DateTime d = nairobiNow(DateTime.parse(
-              (m as Map<String, dynamic>)['created_at'] as String));
-          return '${d.year}-${d.month}-${d.day}';
-        }(),
+
+    // Check-ins made offline count on this screen straight away.
+    final List<String> pendingTimes = <String>[
+      for (final PendingAction a
+          in offline?.pending('mood') ?? const <PendingAction>[])
+        a.data['logged_at'] as String,
+    ];
+    final Set<DateTime> pendingDays = <DateTime>{
+      for (final String t in pendingTimes) nairobiDay(DateTime.parse(t)),
     };
-    final int streak = profile['streak'] as int? ?? 0;
+    final Set<DateTime> days = <DateTime>{
+      for (final dynamic m in r[7] as List<dynamic>)
+        nairobiDay(DateTime.parse(
+            (m as Map<String, dynamic>)['logged_at'] as String)),
+      ...pendingDays,
+    }.where((DateTime d) => !d.isBefore(nairobiDay(weekStart))).toSet();
+
+    final int streak = currentStreak(
+      streak: profile['streak'] as int? ?? 0,
+      lastCheckin: parseDay(profile['last_checkin'] as String?),
+      pendingDays: pendingDays,
+    );
     final BadgeCounts counts = BadgeCounts(
-      checkIns: r[3] as int,
+      checkIns: (r[3] as int) + pendingTimes.length,
       chatMessages: r[4] as int,
-      articlesRead: r[5] as int,
+      articlesRead: (r[5] as int) +
+          (offline?.pending('read') ?? const <PendingAction>[]).length,
       streak: streak,
       weeklyQuests: quests.length,
     );

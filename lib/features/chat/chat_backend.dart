@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../core/offline/offline_store.dart';
 import '../home/progress_repository.dart';
 import 'chat_models.dart';
 
@@ -59,11 +60,20 @@ abstract class ChatBackend {
 /// Talks to the `chat` Edge Function (supabase/functions/chat) and reads the
 /// user's own sessions and messages (row-level security limits them).
 class SupabaseChatBackend extends ChatBackend {
-  SupabaseChatBackend([SupabaseClient? client])
+  SupabaseChatBackend({SupabaseClient? client, this.offline})
       : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
+
+  /// Keeps past chats readable offline (null in tests).
+  final OfflineStore? offline;
   String? _sessionId;
+
+  Future<dynamic> _load(String name, Future<dynamic> Function() query) =>
+      offline == null ? query() : offline!.load(name, query);
+
+  /// How long to wait for Chipu's reply before giving up.
+  static const Duration replyTimeout = Duration(seconds: 30);
 
   /// A conversation is picked up again only if its last message is this recent.
   static const Duration resumeWithin = Duration(hours: 12);
@@ -76,7 +86,7 @@ class SupabaseChatBackend extends ChatBackend {
         'text': text,
         if (_sessionId != null) 'session_id': _sessionId,
       },
-    );
+    ).timeout(replyTimeout);
 
     final ChatReply reply =
         ChatReply.fromJson(Map<String, dynamic>.from(response.data as Map));
@@ -141,13 +151,15 @@ class SupabaseChatBackend extends ChatBackend {
 
   @override
   Future<List<ChatSessionSummary>> loadPastChats() async {
-    final List<dynamic> rows = await _client
-        .from('chat_sessions')
-        .select(
-            'id, started_at, ended_at, messages(sender, content, created_at)')
-        .order('started_at', ascending: false)
-        .order('created_at', ascending: true, referencedTable: 'messages')
-        .limit(30);
+    final List<dynamic> rows = await _load(
+        'chats',
+        () => _client
+            .from('chat_sessions')
+            .select(
+                'id, started_at, ended_at, messages(sender, content, created_at)')
+            .order('started_at', ascending: false)
+            .order('created_at', ascending: true, referencedTable: 'messages')
+            .limit(30)) as List<dynamic>;
     return <ChatSessionSummary>[
       for (final dynamic r in rows)
         if (((r as Map<String, dynamic>)['messages'] as List<dynamic>)
@@ -171,11 +183,13 @@ class SupabaseChatBackend extends ChatBackend {
 
   @override
   Future<List<ChatMessage>> loadTranscript(String sessionId) async {
-    final List<dynamic> rows = await _client
-        .from('messages')
-        .select('sender, content, created_at')
-        .eq('session_id', sessionId)
-        .order('created_at', ascending: true);
+    final List<dynamic> rows = await _load(
+        'chat.$sessionId',
+        () => _client
+            .from('messages')
+            .select('sender, content, created_at')
+            .eq('session_id', sessionId)
+            .order('created_at', ascending: true)) as List<dynamic>;
     return _messages(rows);
   }
 }

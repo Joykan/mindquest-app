@@ -27,10 +27,15 @@ class LoadingScreen extends StatelessWidget {
               if (!session.failed)
                 const CircularProgressIndicator(color: AppPalette.mint)
               else ...<Widget>[
-                Text(
-                    context.tr("Couldn't load your profile.",
-                        'Imeshindikana kupakia wasifu wako.'),
-                    style: const TextStyle(color: Colors.white)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                      context.tr(
+                          "Couldn't load your profile. Check your internet connection.",
+                          'Imeshindikana kupakia wasifu wako. Angalia mtandao wako.'),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white)),
+                ),
                 const SizedBox(height: 12),
                 FilledButton(
                   onPressed: session.refresh,

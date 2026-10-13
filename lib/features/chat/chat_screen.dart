@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/l10n/tr.dart';
+import '../../core/offline/offline_store.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/mascot.dart';
 import '../home/progress_repository.dart';
@@ -9,6 +10,8 @@ import '../mood/mood_week_graph.dart';
 import '../mood/moods.dart';
 import 'chat_backend.dart';
 import 'chat_models.dart';
+import '../support/support_screen.dart' show emergencyHelplines;
+import 'crisis_phrases.dart';
 import 'crisis_sheet.dart';
 
 /// Chat (wireframe 05). Sends each message to the chat Edge Function and
@@ -202,15 +205,47 @@ class _ChatScreenState extends State<ChatScreen> {
       if (reply.crisis) {
         await showCrisisSheet(context, reply);
       }
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
-      _showError(tr(
-          lang,
-          "Couldn't send your message. Check your connection and try again.",
-          'Imeshindikana kutuma ujumbe wako. Angalia mtandao wako kisha ujaribu tena.'));
+      // Chipu can't be reached, but a crisis message must still get help:
+      // the same phrase check runs on the phone, with the saved helplines.
+      if (isCrisisText(text)) {
+        final ChatReply reply =
+            offlineCrisisReply(lang, await _helplinesForCrisis());
+        if (!mounted) return;
+        setState(() {
+          _addBot(reply.reply);
+          _sending = false;
+        });
+        await showCrisisSheet(context, reply);
+        return;
+      }
+      _showError(isOfflineError(e)
+          ? tr(
+              lang,
+              "You're offline. Chipu needs the internet to reply, so try again when you're connected. "
+                  'Mood check-ins and Support still work.',
+              'Huna mtandao. Chipu anahitaji intaneti ili kujibu, kwa hiyo jaribu tena ukipata mtandao. '
+                  'Bado unaweza kurekodi hisia na kutumia ukurasa wa Msaada.')
+          : tr(
+              lang,
+              "Couldn't send your message. Check your connection and try again.",
+              'Imeshindikana kutuma ujumbe wako. Angalia mtandao wako kisha ujaribu tena.'));
     } finally {
       if (mounted) setState(() => _sending = false);
     }
+  }
+
+  /// The helplines saved on the phone, or the emergency numbers.
+  Future<List<Helpline>> _helplinesForCrisis() async {
+    try {
+      final List<Helpline> lines =
+          await widget.progress?.loadHelplines() ?? const <Helpline>[];
+      if (lines.isNotEmpty) return lines;
+    } catch (_) {
+      // No saved copy: the emergency numbers below always work.
+    }
+    return emergencyHelplines;
   }
 
   static bool _isCheckIn(String chip) =>
@@ -257,7 +292,12 @@ class _ChatScreenState extends State<ChatScreen> {
         _week = week;
         _addBot(moodReply(mood, lang));
         _addBot(
-          saved.xpEarned > 0
+          saved.pending
+              ? tr(
+                  lang,
+                  "I've added that to your graph. You're offline, so it's saved on your phone and will sync later.",
+                  'Nimeiongeza kwenye grafu yako. Huna mtandao, kwa hiyo imehifadhiwa kwenye simu yako na itatumwa baadaye.')
+              : saved.xpEarned > 0
               ? tr(lang, "I've added that to your graph. +${saved.xpEarned} XP",
                   'Nimeiongeza kwenye grafu yako. +${saved.xpEarned} XP')
               : tr(lang, "I've added that to your graph.",
