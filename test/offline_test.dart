@@ -63,9 +63,9 @@ void main() {
     });
 
     test('an answer from the server is not offline', () {
-      expect(isOfflineError(PostgrestException(message: 'denied')),
+      expect(isOfflineError(const PostgrestException(message: 'denied')),
           isFalse);
-      expect(isOfflineError(AuthException('bad password')), isFalse);
+      expect(isOfflineError(const AuthException('bad password')), isFalse);
       expect(isOfflineError(StateError('bug')), isFalse);
     });
   });
@@ -110,7 +110,7 @@ void main() {
       await store.load('profile', () async => <String, dynamic>{'xp': 5});
       await expectLater(
           store.load('profile',
-              () async => throw PostgrestException(message: 'denied')),
+              () async => throw const PostgrestException(message: 'denied')),
           throwsA(isA<PostgrestException>()));
     });
 
@@ -171,10 +171,10 @@ void main() {
       final OfflineStore store = await newStore();
       store.register('mood', (Map<String, dynamic> d) async {
         if (d['id'] == 'dup') {
-          throw PostgrestException(message: 'duplicate', code: '23505');
+          throw const PostgrestException(message: 'duplicate', code: '23505');
         }
         if (d['id'] == 'old') {
-          throw PostgrestException(message: 'too old', code: '23514');
+          throw const PostgrestException(message: 'too old', code: '23514');
         }
       });
       await store.addPending(mood('dup'));
@@ -188,7 +188,7 @@ void main() {
       final OfflineStore store = await newStore();
       store.register(
           'mood',
-          (Map<String, dynamic> d) async => throw PostgrestException(
+          (Map<String, dynamic> d) async => throw const PostgrestException(
               message: 'JWT expired', code: 'PGRST301'));
       await store.addPending(mood('a'));
       expect(await store.flush(), 0);

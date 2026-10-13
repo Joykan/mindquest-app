@@ -80,6 +80,9 @@ class ReminderPrompt extends StatelessWidget {
                     const SizedBox(width: 4),
                     FilledButton(
                       key: const Key('reminder-turn-on'),
+                      // The app's buttons are full width; this one sits in a row.
+                      style: FilledButton.styleFrom(
+                          minimumSize: const Size(96, 44)),
                       onPressed: () => _turnOn(context, reminders),
                       child: Text(context.tr('Turn on', 'Washa')),
                     ),
