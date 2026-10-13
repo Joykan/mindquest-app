@@ -22,6 +22,7 @@ import '../../features/rewards/rewards_repository.dart';
 import '../../features/rewards/rewards_screen.dart';
 import '../../features/setup/setup_status_screen.dart';
 import '../../features/support/support_screen.dart';
+import '../l10n/tr.dart';
 import '../theme/theme_controller.dart';
 import 'app_shell.dart';
 
@@ -67,7 +68,6 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
       session == null ? null : SupabaseLearnRepository();
   final RewardsRepository? rewards =
       session == null ? null : SupabaseRewardsRepository();
-  String language() => session?.language ?? 'en';
 
   /// Helplines, breathing and grounding.
   void showHelplines(BuildContext context) => context.push('/support');
@@ -137,7 +137,6 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                 builder: (context, state) => HomeScreen(
                   repository: progress!,
                   learn: learn,
-                  language: language(),
                   onOpenArticle: (Article a) =>
                       context.go('/learn/article/${a.id}', extra: a),
                   onSupport: () => showHelplines(context),
@@ -201,7 +200,6 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                   onHistory: () => context.go('/mood/history'),
                   onSupport: () => showHelplines(context),
                   onTalk: () => context.go('/chat'),
-                  language: language(),
                   onSaved: () {
                     // Back to Home, which reloads to show the new XP and streak.
                     ticker.bump();
@@ -224,7 +222,6 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                 path: '/learn',
                 builder: (context, state) => LearnScreen(
                   repository: learn!,
-                  language: language(),
                   reloadWhen: ticker,
                   onBack: () => goHome(context),
                   onOpen: (Article a) =>
@@ -240,7 +237,6 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                       Widget screen(Article a) => ArticleScreen(
                             article: a,
                             repository: learn!,
-                            language: language(),
                             onRead: ticker.bump,
                           );
                       if (extra is Article) return screen(extra);
@@ -255,7 +251,8 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                             appBar: AppBar(),
                             body: Center(
                               child: snap.hasData || snap.hasError
-                                  ? const Text('Article not found.')
+                                  ? Text(context.tr('Article not found.',
+                                      'Makala haikupatikana.'))
                                   : const CircularProgressIndicator(),
                             ),
                           );
@@ -271,7 +268,6 @@ GoRouter createRouter(ThemeController theme, SessionController? session) {
                 path: '/rewards',
                 builder: (context, state) => RewardsScreen(
                   repository: rewards!,
-                  language: language(),
                   reloadWhen: ticker,
                   onBack: () => goHome(context),
                 ),

@@ -237,7 +237,7 @@ class SupabaseProgressRepository implements ProgressRepository {
   Future<List<Helpline>> loadHelplines() async {
     final List<dynamic> rows = await _client
         .from('helplines')
-        .select('name, phone, description')
+        .select('name, phone, description, description_sw')
         .order('sort_order', ascending: true);
     return rows
         .map((dynamic r) => Helpline.fromJson(r as Map<String, dynamic>))

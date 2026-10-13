@@ -22,10 +22,16 @@ const MAX_LENGTH = 1000;
 const RASA_TIMEOUT_MS = 8000;
 
 /** Used only if no helpline has been verified yet. Kenya's emergency numbers. */
-const EMERGENCY_FALLBACK = [
-  { name: "Emergency services", phone: "999", description: "Police, ambulance and fire" },
-  { name: "Emergency services", phone: "112", description: "Works from any mobile phone" },
-];
+const EMERGENCY_FALLBACK: Record<Lang, { name: string; phone: string; description: string }[]> = {
+  en: [
+    { name: "Emergency services", phone: "999", description: "Police, ambulance and fire" },
+    { name: "Emergency services", phone: "112", description: "Works from any mobile phone" },
+  ],
+  sw: [
+    { name: "Huduma za dharura", phone: "999", description: "Polisi, ambulensi na zimamoto" },
+    { name: "Huduma za dharura", phone: "112", description: "Inafanya kazi kutoka simu yoyote ya mkononi" },
+  ],
+};
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -113,9 +119,16 @@ Deno.serve(async (req) => {
   // 1. Crisis check, before the model.
   if (isCrisis(text)) {
     await db.from("crisis_events").insert({ user_id: userId });
-    const { data: lines } = await db.from("helplines").select("name, phone, description")
+    const { data: lines } = await db.from("helplines").select("name, phone, description, description_sw")
       .eq("verified", true).order("sort_order");
-    const helplines = lines && lines.length > 0 ? lines : EMERGENCY_FALLBACK;
+    // Descriptions in the user's language (the names are the organisations' own).
+    const helplines = lines && lines.length > 0
+      ? lines.map((l) => ({
+        name: l.name,
+        phone: l.phone,
+        description: lang === "sw" && l.description_sw ? l.description_sw : l.description,
+      }))
+      : EMERGENCY_FALLBACK[lang];
     const reply = REPLIES.crisis[lang][0];
     await db.from("messages").insert({
       session_id: sessionId,

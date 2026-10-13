@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/language_toggle.dart';
 import '../gamification/badge_dialog.dart';
@@ -12,13 +13,11 @@ class ArticleScreen extends StatefulWidget {
     super.key,
     required this.article,
     required this.repository,
-    this.language = 'en',
     this.onRead,
   });
 
   final Article article;
   final LearnRepository repository;
-  final String language;
 
   /// Called after the article is marked read (e.g. to refresh Learn and Home).
   final VoidCallback? onRead;
@@ -28,7 +27,8 @@ class ArticleScreen extends StatefulWidget {
 }
 
 class _ArticleScreenState extends State<ArticleScreen> {
-  late String _lang = widget.language;
+  /// Starts in the app's language; the toggle switches only this article.
+  late String _lang = LanguageScope.of(context);
   late bool _read = widget.article.read;
   bool _saving = false;
 
@@ -56,9 +56,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text("Couldn't save. Check your connection and try again.")),
+        SnackBar(
+            content: Text(_sw
+                ? 'Imeshindikana kuhifadhi. Angalia mtandao wako kisha ujaribu tena.'
+                : "Couldn't save. Check your connection and try again.")),
       );
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -148,7 +149,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
             Text(
               _sw
                   ? 'Makala za MindQuest zinatoa taarifa za jumla. Si ushauri wa kitabibu. '
-                      'Ukihitaji msaada, ongea na mshauri au tumia nambari za msaada zilizo kwenye Home.'
+                      'Ukihitaji msaada, ongea na mshauri au tumia nambari za msaada zilizo kwenye ukurasa wa Nyumbani.'
                   : 'MindQuest articles share general information. They are not medical advice. '
                       'If you need help, talk to a counsellor or use the helplines on Home.',
               style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),

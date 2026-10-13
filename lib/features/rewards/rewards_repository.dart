@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../core/l10n/tr.dart';
 import '../gamification/badges.dart';
 import '../home/progress_repository.dart';
 
@@ -31,11 +32,14 @@ class XpEvent {
   final int amount;
   final DateTime at;
 
-  String get label => switch (reason) {
-        'mood_checkin' => 'Mood check-in',
-        'chat_message' => 'Chat message',
-        'article_read' => 'Article read',
-        'weekly_quest' => 'Weekly quest complete',
+  String get label => labelIn('en');
+
+  String labelIn(String language) => switch (reason) {
+        'mood_checkin' => tr(language, 'Mood check-in', 'Kurekodi hisia'),
+        'chat_message' => tr(language, 'Chat message', 'Ujumbe kwa Chipu'),
+        'article_read' => tr(language, 'Article read', 'Makala imesomwa'),
+        'weekly_quest' =>
+          tr(language, 'Weekly quest complete', 'Changamoto ya wiki imekamilika'),
         _ => reason,
       };
 }

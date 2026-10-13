@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mindquest/core/l10n/tr.dart';
 import 'package:mindquest/core/theme/app_theme.dart';
 import 'package:mindquest/features/gamification/badges.dart';
 import 'package:mindquest/features/learn/article_screen.dart';
@@ -126,15 +127,18 @@ void main() {
     tallScreen(tester);
     await tester.pumpWidget(MaterialApp(
       theme: AppTheme.light(),
+      builder: (BuildContext context, Widget? child) =>
+          LanguageScope(language: 'sw', child: child!),
       home: LearnScreen(
         repository: FakeLearn(<Article>[article(1, 'stress')]),
-        language: 'sw',
         onOpen: (_) {},
       ),
     ));
     await tester.pumpAndSettle();
     expect(find.text('Jifunze'), findsOneWidget);
     expect(find.text('Makala 1'), findsOneWidget);
+    expect(find.text('Umesoma 0 kati ya 1'), findsOneWidget);
+    expect(find.text('Zote'), findsOneWidget);
   });
 
   testWidgets('reading an article earns XP and celebrates a new badge',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import 'learn_repository.dart';
 
@@ -10,7 +11,6 @@ class LearnScreen extends StatefulWidget {
     super.key,
     required this.repository,
     required this.onOpen,
-    this.language = 'en',
     this.onBack,
     this.reloadWhen,
   });
@@ -18,8 +18,6 @@ class LearnScreen extends StatefulWidget {
   final LearnRepository repository;
   final ValueChanged<Article> onOpen;
 
-  /// Which language to show titles in ('en' or 'sw').
-  final String language;
   final VoidCallback? onBack;
 
   /// Reloads (e.g. after an article is marked read).
@@ -56,12 +54,12 @@ class _LearnScreenState extends State<LearnScreen> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
-    final String lang = widget.language;
+    final String lang = context.lang;
     return Scaffold(
       appBar: AppBar(
         leading:
             widget.onBack == null ? null : BackButton(onPressed: widget.onBack),
-        title: Text(lang == 'sw' ? 'Jifunze' : 'Learn'),
+        title: Text(context.tr('Learn', 'Jifunze')),
       ),
       body: FutureBuilder<List<Article>>(
         future: _articles,
@@ -70,8 +68,9 @@ class _LearnScreenState extends State<LearnScreen> {
             return Center(
               child: TextButton(
                 onPressed: _reload,
-                child:
-                    const Text("Couldn't load the articles. Tap to try again."),
+                child: Text(context.tr(
+                    "Couldn't load the articles. Tap to try again.",
+                    'Imeshindikana kupakia makala. Gusa ujaribu tena.')),
               ),
             );
           }
@@ -101,7 +100,8 @@ class _LearnScreenState extends State<LearnScreen> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'You have read $read of ${all.length}',
+                                context.tr('You have read $read of ${all.length}',
+                                    'Umesoma $read kati ya ${all.length}'),
                                 style: theme.textTheme.titleMedium,
                               ),
                             ),
@@ -119,8 +119,11 @@ class _LearnScreenState extends State<LearnScreen> {
                         const SizedBox(height: 8),
                         Text(
                           read < 3
-                              ? 'Each new article earns +5 XP. Read ${3 - read} more for the Curious Mind badge 📚'
-                              : 'Each new article earns +5 XP.',
+                              ? context.tr(
+                                  'Each new article earns +5 XP. Read ${3 - read} more for the Curious Mind badge 📚',
+                                  'Kila makala mpya inakupa +5 XP. Soma ${3 - read} zaidi upate beji ya Akili Dadisi 📚')
+                              : context.tr('Each new article earns +5 XP.',
+                                  'Kila makala mpya inakupa +5 XP.'),
                           style: theme.textTheme.bodySmall
                               ?.copyWith(color: mq.textMuted),
                         ),
@@ -143,7 +146,7 @@ class _LearnScreenState extends State<LearnScreen> {
                           child: ChoiceChip(
                             key: Key('category-${c ?? 'all'}'),
                             label: Text(c == null
-                                ? (lang == 'sw' ? 'Zote' : 'All')
+                                ? context.tr('All', 'Zote')
                                 : categoryName(c, lang)),
                             selected: _category == c,
                             onSelected: (_) => setState(() => _category = c),
@@ -154,9 +157,11 @@ class _LearnScreenState extends State<LearnScreen> {
                 ),
                 const SizedBox(height: 8),
                 if (shown.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Text('No articles here yet.',
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                        context.tr('No articles here yet.',
+                            'Bado hakuna makala hapa.'),
                         textAlign: TextAlign.center),
                   ),
                 for (final Article a in shown)
@@ -227,7 +232,10 @@ class _ArticleTile extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '${categoryName(article.category, language)} · ${article.minutes} min',
+                        tr(
+                            language,
+                            '${categoryName(article.category, language)} · ${article.minutes} min',
+                            '${categoryName(article.category, language)} · dakika ${article.minutes}'),
                         style: theme.textTheme.labelSmall
                             ?.copyWith(color: theme.colorScheme.primary),
                       ),
@@ -237,7 +245,7 @@ class _ArticleTile extends StatelessWidget {
                 const SizedBox(width: 8),
                 article.read
                     ? Semantics(
-                        label: 'Read',
+                        label: tr(language, 'Read', 'Imesomwa'),
                         child: Icon(Icons.check_circle,
                             color: theme.colorScheme.primary),
                       )

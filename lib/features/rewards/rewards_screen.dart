@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/mascot.dart';
 import '../gamification/badges.dart';
@@ -12,13 +13,11 @@ class RewardsScreen extends StatefulWidget {
   const RewardsScreen({
     super.key,
     required this.repository,
-    this.language = 'en',
     this.onBack,
     this.reloadWhen,
   });
 
   final RewardsRepository repository;
-  final String language;
   final VoidCallback? onBack;
   final Listenable? reloadWhen;
 
@@ -26,22 +25,6 @@ class RewardsScreen extends StatefulWidget {
   State<RewardsScreen> createState() => _RewardsScreenState();
 }
 
-const List<String> _months = <String>[
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-
-String _date(DateTime d) => '${d.day} ${_months[d.month - 1]}';
 
 class _RewardsScreenState extends State<RewardsScreen> {
   late Future<RewardsSummary> _summary = widget.repository.loadRewards();
@@ -72,7 +55,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
       appBar: AppBar(
         leading:
             widget.onBack == null ? null : BackButton(onPressed: widget.onBack),
-        title: Text(widget.language == 'sw' ? 'Zawadi' : 'Rewards'),
+        title: Text(context.tr('Rewards', 'Zawadi')),
       ),
       body: FutureBuilder<RewardsSummary>(
         future: _summary,
@@ -81,8 +64,9 @@ class _RewardsScreenState extends State<RewardsScreen> {
             return Center(
               child: TextButton(
                 onPressed: _reload,
-                child:
-                    const Text("Couldn't load your rewards. Tap to try again."),
+                child: Text(context.tr(
+                    "Couldn't load your rewards. Tap to try again.",
+                    'Imeshindikana kupakia zawadi zako. Gusa ujaribu tena.')),
               ),
             );
           }
@@ -103,8 +87,11 @@ class _RewardsScreenState extends State<RewardsScreen> {
                   children: <Widget>[
                     Expanded(
                         child:
-                            Text('Badges', style: theme.textTheme.titleMedium)),
-                    Text('${s.badgesEarned} of ${s.badges.length}',
+                            Text(context.tr('Badges', 'Beji'),
+                                style: theme.textTheme.titleMedium)),
+                    Text(
+                        context.tr('${s.badgesEarned} of ${s.badges.length}',
+                            '${s.badgesEarned} kati ya ${s.badges.length}'),
                         style: theme.textTheme.labelLarge),
                   ],
                 ),
@@ -120,23 +107,25 @@ class _RewardsScreenState extends State<RewardsScreen> {
                           SizedBox(
                               width: width,
                               child: _BadgeTile(
-                                  status: b, language: widget.language)),
+                                  status: b, language: context.lang)),
                       ],
                     );
                   },
                 ),
                 const SizedBox(height: 20),
-                Text('Ways to earn XP', style: theme.textTheme.titleMedium),
+                Text(context.tr('Ways to earn XP', 'Njia za kupata XP'),
+                    style: theme.textTheme.titleMedium),
                 const SizedBox(height: 8),
                 Card(
                   child: Column(
                     children: <Widget>[
-                      for (final (String emoji, String what, int xp) in xpRules)
+                      for (final (String emoji, String what, String whatSw, int xp)
+                          in xpRules)
                         ListTile(
                           dense: true,
                           leading:
                               Text(emoji, style: const TextStyle(fontSize: 22)),
-                          title: Text(what),
+                          title: Text(context.tr(what, whatSw)),
                           trailing: Text('+$xp XP',
                               style: theme.textTheme.labelLarge),
                         ),
@@ -145,7 +134,8 @@ class _RewardsScreenState extends State<RewardsScreen> {
                 ),
                 if (s.recent.isNotEmpty) ...<Widget>[
                   const SizedBox(height: 20),
-                  Text('Recent XP', style: theme.textTheme.titleMedium),
+                  Text(context.tr('Recent XP', 'XP za karibuni'),
+                      style: theme.textTheme.titleMedium),
                   const SizedBox(height: 8),
                   Card(
                     child: Column(
@@ -153,8 +143,8 @@ class _RewardsScreenState extends State<RewardsScreen> {
                         for (final XpEvent e in s.recent)
                           ListTile(
                             dense: true,
-                            title: Text(e.label),
-                            subtitle: Text(_date(e.at)),
+                            title: Text(e.labelIn(context.lang)),
+                            subtitle: Text(shortDate(context.lang, e.at)),
                             trailing: Text(
                               '+${e.amount} XP',
                               style: theme.textTheme.labelLarge
@@ -195,11 +185,14 @@ class _LevelCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('Level ${level.level}',
+                  Text('${context.tr('Level', 'Kiwango')} ${level.level}',
                       style: theme.textTheme.headlineSmall),
                   Text(
-                      '${summary.xp} XP in total · '
-                      '${summary.streak == 0 ? 'No streak yet' : '${summary.streak}-day streak 🔥'}',
+                      context.tr(
+                          '${summary.xp} XP in total · '
+                              '${summary.streak == 0 ? 'No streak yet' : '${summary.streak}-day streak 🔥'}',
+                          'XP ${summary.xp} kwa jumla · '
+                              '${summary.streak == 0 ? 'Bado hakuna mfululizo' : 'Mfululizo wa siku ${summary.streak} 🔥'}'),
                       style: theme.textTheme.bodySmall
                           ?.copyWith(color: mq.textMuted)),
                   const SizedBox(height: 10),
@@ -214,7 +207,9 @@ class _LevelCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                      '${level.earned} / ${level.needed} XP to Level ${level.level + 1}',
+                      context.tr(
+                          '${level.earned} / ${level.needed} XP to Level ${level.level + 1}',
+                          'XP ${level.earned} / ${level.needed} kufikia Kiwango ${level.level + 1}'),
                       style: theme.textTheme.bodySmall
                           ?.copyWith(color: mq.textMuted)),
                 ],
@@ -249,17 +244,22 @@ class _QuestCard extends StatelessWidget {
                 const Text('🎯', style: TextStyle(fontSize: 24)),
                 const SizedBox(width: 10),
                 Expanded(
-                    child: Text('Weekly quest',
+                    child: Text(context.tr('Weekly quest', 'Changamoto ya wiki'),
                         style: theme.textTheme.titleMedium)),
-                Text(summary.weeklyQuestDone ? 'Done ✓' : '+25 XP',
+                Text(
+                    summary.weeklyQuestDone
+                        ? context.tr('Done ✓', 'Imekamilika ✓')
+                        : '+25 XP',
                     style: theme.textTheme.labelLarge),
               ],
             ),
             const SizedBox(height: 6),
             Text(
               summary.weeklyQuestDone
-                  ? 'You checked in on 5 days this week. Well done!'
-                  : 'Check in on 5 days this week (Monday to Sunday).',
+                  ? context.tr('You checked in on 5 days this week. Well done!',
+                      'Umerekodi hisia siku 5 wiki hii. Hongera!')
+                  : context.tr('Check in on 5 days this week (Monday to Sunday).',
+                      'Rekodi hisia siku 5 wiki hii (Jumatatu hadi Jumapili).'),
               style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 10),
@@ -282,8 +282,11 @@ class _QuestCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              '$days / 5 days · ${summary.questsCompleted} weekly '
-              '${summary.questsCompleted == 1 ? 'quest' : 'quests'} completed so far',
+              context.tr(
+                  '$days / 5 days · ${summary.questsCompleted} weekly '
+                      '${summary.questsCompleted == 1 ? 'quest' : 'quests'} completed so far',
+                  'Siku $days / 5 · changamoto ${summary.questsCompleted} za wiki '
+                      'zimekamilika hadi sasa'),
               style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
             ),
           ],
@@ -306,8 +309,8 @@ class _BadgeTile extends StatelessWidget {
     final RewardBadge b = status.badge;
     final bool earned = status.earned;
     return Semantics(
-      label: '${b.displayName(language)}. ${b.description}. '
-          '${earned ? 'Earned' : 'Not earned yet, ${status.progress} of ${status.goal}'}',
+      label: '${b.displayName(language)}. ${b.describe(language)}. '
+          '${earned ? tr(language, 'Earned', 'Umeipata') : tr(language, 'Not earned yet, ${status.progress} of ${status.goal}', 'Bado hujaipata, ${status.progress} kati ya ${status.goal}')}',
       excludeSemantics: true,
       child: Card(
         key: Key('badge-${b.id}'),
@@ -330,7 +333,7 @@ class _BadgeTile extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                b.description,
+                b.describe(language),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -339,7 +342,8 @@ class _BadgeTile extends StatelessWidget {
               const SizedBox(height: 8),
               if (earned)
                 Text(
-                  'Earned ${_date(status.earnedAt!)}',
+                  tr(language, 'Earned ${shortDate(language, status.earnedAt!)}',
+                      'Umeipata ${shortDate(language, status.earnedAt!)}'),
                   style: theme.textTheme.labelSmall
                       ?.copyWith(color: theme.colorScheme.primary),
                 )

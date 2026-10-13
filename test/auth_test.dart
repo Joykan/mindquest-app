@@ -232,7 +232,8 @@ void main() {
     await tester.enterText(find.byKey(const Key('email')), 'amani@example.com');
     await tester.tap(find.byKey(const Key('submit')));
     await tester.pumpAndSettle();
-    expect(find.text('Invalid login credentials'), findsOneWidget);
+    // Supabase's English error is turned into a friendlier message.
+    expect(find.text('That email or password is not right.'), findsOneWidget);
   });
 
   testWidgets(

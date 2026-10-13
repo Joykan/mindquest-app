@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/language_toggle.dart';
+import '../auth/account_errors.dart';
 import '../auth/account_repository.dart';
 import '../auth/session_controller.dart';
 import '../gamification/levels.dart';
@@ -40,18 +42,20 @@ class ProfileScreen extends StatelessWidget {
       final bool? sure = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: const Text('Sign out?'),
-          content: const Text(
+          title: Text(context.tr('Sign out?', 'Utoke?')),
+          content: Text(context.tr(
             "You're using MindQuest without an account. If you sign out, your chats, "
-            'moods and XP on this phone cannot be recovered.',
-          ),
+                'moods and XP on this phone cannot be recovered.',
+            'Unatumia MindQuest bila akaunti. Ukitoka, mazungumzo yako, '
+                'hisia ulizorekodi na XP kwenye simu hii haviwezi kurejeshwa.',
+          )),
           actions: <Widget>[
             TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Stay')),
+                child: Text(context.tr('Stay', 'Baki'))),
             TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Sign out')),
+                child: Text(context.tr('Sign out', 'Toka'))),
           ],
         ),
       );
@@ -67,11 +71,16 @@ class ProfileScreen extends StatelessWidget {
     );
     if (sure != true || !context.mounted) return;
     final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+    final String lang = context.lang;
     try {
       await session.deleteAccount();
-      messenger.showSnackBar(const SnackBar(content: Text('Your account and all your data were deleted.')));
+      messenger.showSnackBar(SnackBar(
+          content: Text(tr(lang, 'Your account and all your data were deleted.',
+              'Akaunti yako na data yako yote imefutwa.'))));
     } on AccountException catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text("Couldn't delete: ${e.message}")));
+      messenger.showSnackBar(SnackBar(
+          content: Text(tr(lang, "Couldn't delete: ", 'Imeshindikana kufuta: ') +
+              accountError(e.message, lang))));
     }
   }
 
@@ -80,7 +89,7 @@ class ProfileScreen extends StatelessWidget {
     final ThemeData t = Theme.of(context);
     final MindQuestColors mq = t.extension<MindQuestColors>()!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(context.tr('Profile', 'Wasifu'))),
       body: ListenableBuilder(
         listenable: Listenable.merge(<Listenable>[session, theme]),
         builder: (BuildContext context, _) {
@@ -109,8 +118,11 @@ class ProfileScreen extends StatelessWidget {
                         Text(name, style: t.textTheme.headlineSmall),
                         Text(
                           session.account.isAnonymous
-                              ? 'Anonymous account (only on this phone)'
-                              : session.account.email ?? 'Signed in with email',
+                              ? context.tr('Anonymous account (only on this phone)',
+                                  'Akaunti bila jina (kwenye simu hii tu)')
+                              : session.account.email ??
+                                  context.tr('Signed in with email',
+                                      'Umeingia kwa barua pepe'),
                           style: t.textTheme.bodySmall
                               ?.copyWith(color: mq.textMuted),
                         ),
@@ -132,7 +144,7 @@ class ProfileScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
-                                  '${title.emoji} ${title.name(session.language)} · Level $level · ${snap.data!.xp} XP',
+                                  '${title.emoji} ${title.name(context.lang)} · ${context.tr('Level', 'Kiwango')} $level · ${snap.data!.xp} XP',
                                   style: t.textTheme.labelSmall
                                       ?.copyWith(color: mq.onReward),
                                 ),
@@ -152,10 +164,12 @@ class ProfileScreen extends StatelessWidget {
                   child: ListTile(
                     key: const Key('open-save-progress'),
                     leading: const Text('💾', style: TextStyle(fontSize: 24)),
-                    title: const Text('Save your progress',
-                        style: TextStyle(fontWeight: FontWeight.w700)),
-                    subtitle: const Text(
-                        "Add an email so you don't lose your XP, moods and chats if you change phones."),
+                    title: Text(context.tr('Save your progress', 'Hifadhi maendeleo yako'),
+                        style: const TextStyle(fontWeight: FontWeight.w700)),
+                    subtitle: Text(
+                        context.tr(
+                            "Add Google or an email so you don't lose your XP, moods and chats if you change phones.",
+                            'Ongeza Google au barua pepe ili usipoteze XP, hisia na mazungumzo yako ukibadilisha simu.')),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: onSaveProgress,
                   ),
@@ -172,7 +186,7 @@ class ProfileScreen extends StatelessWidget {
                           key: const Key('open-badges'),
                           leading:
                               const Text('🏅', style: TextStyle(fontSize: 22)),
-                          title: const Text('My badges'),
+                          title: Text(context.tr('My badges', 'Beji zangu')),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: onRewards,
                         ),
@@ -180,7 +194,7 @@ class ProfileScreen extends StatelessWidget {
                           key: const Key('open-quests'),
                           leading:
                               const Text('🎯', style: TextStyle(fontSize: 22)),
-                          title: const Text('My quests'),
+                          title: Text(context.tr('My quests', 'Changamoto zangu')),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: onRewards,
                         ),
@@ -190,7 +204,8 @@ class ProfileScreen extends StatelessWidget {
                           key: const Key('open-mood-history'),
                           leading:
                               const Text('📊', style: TextStyle(fontSize: 22)),
-                          title: const Text('Mood history and insights'),
+                          title: Text(context.tr('Mood history and insights',
+                              'Historia ya hisia na maarifa')),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: onMoodHistory,
                         ),
@@ -204,7 +219,9 @@ class ProfileScreen extends StatelessWidget {
                   children: <Widget>[
                     ListTile(
                       leading: const Icon(Icons.translate),
-                      title: const Text('Chatbot language'),
+                      title: Text(context.tr('Language', 'Lugha')),
+                      subtitle: Text(context.tr('For the app and Chipu',
+                          'Kwa programu na Chipu')),
                       trailing: LanguageToggle(
                           value: session.language,
                           onChanged: session.changeLanguage),
@@ -212,27 +229,29 @@ class ProfileScreen extends StatelessWidget {
                     const Divider(height: 1),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 14, 16, 2),
-                      child: Text('Appearance', style: t.textTheme.titleMedium),
+                      child: Text(context.tr('Appearance', 'Mwonekano'),
+                          style: t.textTheme.titleMedium),
                     ),
                     _ThemeOption(
                       key: const Key('theme-system'),
                       icon: Icons.brightness_auto_outlined,
-                      label: 'System default',
-                      subtitle: "Follows your phone's setting",
+                      label: context.tr('System default', 'Kama simu yako'),
+                      subtitle: context.tr("Follows your phone's setting",
+                          'Inafuata mpangilio wa simu yako'),
                       selected: theme.value == ThemeMode.system,
                       onTap: () => theme.set(ThemeMode.system),
                     ),
                     _ThemeOption(
                       key: const Key('theme-light'),
                       icon: Icons.light_mode_outlined,
-                      label: 'Light mode',
+                      label: context.tr('Light mode', 'Mwanga'),
                       selected: theme.value == ThemeMode.light,
                       onTap: () => theme.set(ThemeMode.light),
                     ),
                     _ThemeOption(
                       key: const Key('theme-dark'),
                       icon: Icons.dark_mode_outlined,
-                      label: 'Dark mode',
+                      label: context.tr('Dark mode', 'Giza'),
                       selected: theme.value == ThemeMode.dark,
                       onTap: () => theme.set(ThemeMode.dark),
                     ),
@@ -246,8 +265,10 @@ class ProfileScreen extends StatelessWidget {
                   child: ListTile(
                     leading:
                         Icon(Icons.phone_in_talk_outlined, color: mq.crisis),
-                    title: const Text('Support and helplines'),
-                    subtitle: const Text('Call for help, breathing, grounding'),
+                    title: Text(context.tr('Support and helplines',
+                        'Msaada na nambari za msaada')),
+                    subtitle: Text(context.tr('Call for help, breathing, grounding',
+                        'Piga simu kupata msaada, kupumua, kutuliza akili')),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: onHelplines,
                   ),
@@ -257,7 +278,8 @@ class ProfileScreen extends StatelessWidget {
                 key: const Key('sign-out'),
                 onPressed: () => _signOut(context),
                 icon: Icon(Icons.logout, color: mq.crisis),
-                label: Text('Sign out', style: TextStyle(color: mq.crisis)),
+                label: Text(context.tr('Sign out', 'Toka'),
+                    style: TextStyle(color: mq.crisis)),
                 style: OutlinedButton.styleFrom(
                     side: BorderSide(color: mq.crisis)),
               ),
@@ -266,7 +288,8 @@ class ProfileScreen extends StatelessWidget {
                 key: const Key('delete-data'),
                 onPressed: () => _deleteData(context),
                 icon: Icon(Icons.delete_forever_outlined, color: mq.crisis),
-                label: Text('Delete my data', style: TextStyle(color: mq.crisis)),
+                label: Text(context.tr('Delete my data', 'Futa data yangu'),
+                    style: TextStyle(color: mq.crisis)),
               ),
             ],
           );
@@ -329,19 +352,23 @@ class _DeleteDialogState extends State<_DeleteDialog> {
   @override
   Widget build(BuildContext context) {
     final MindQuestColors mq = Theme.of(context).extension<MindQuestColors>()!;
-    final bool ok = _typed.text.trim().toUpperCase() == 'DELETE';
+    // DELETE or its Kiswahili, FUTA.
+    final String typed = _typed.text.trim().toUpperCase();
+    final bool ok = typed == 'DELETE' || typed == 'FUTA';
     return AlertDialog(
-      title: const Text('Delete all your data?'),
+      title: Text(context.tr('Delete all your data?', 'Futa data yako yote?')),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text(
+          Text(context.tr(
             'This permanently deletes your account, chats, mood check-ins, notes, XP, badges and quests. '
-            'It cannot be undone.',
-          ),
+                'It cannot be undone.',
+            'Hii inafuta kabisa akaunti yako, mazungumzo, hisia ulizorekodi, maelezo, XP, beji na changamoto. '
+                'Haiwezi kurudishwa.',
+          )),
           const SizedBox(height: 12),
-          const Text('Type DELETE to confirm.'),
+          Text(context.tr('Type DELETE to confirm.', 'Andika FUTA kuthibitisha.')),
           const SizedBox(height: 8),
           TextField(
             key: const Key('delete-confirm-field'),
@@ -352,11 +379,14 @@ class _DeleteDialogState extends State<_DeleteDialog> {
         ],
       ),
       actions: <Widget>[
-        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+        TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.tr('Cancel', 'Ghairi'))),
         TextButton(
           key: const Key('delete-confirm'),
           onPressed: ok ? () => Navigator.pop(context, true) : null,
-          child: Text('Delete', style: TextStyle(color: ok ? mq.crisis : null)),
+          child: Text(context.tr('Delete', 'Futa'),
+              style: TextStyle(color: ok ? mq.crisis : null)),
         ),
       ],
     );

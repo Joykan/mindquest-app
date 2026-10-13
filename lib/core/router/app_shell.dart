@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../l10n/tr.dart';
+
 /// Tells screens that progress changed (mood saved, tab switched to Home), so
 /// they reload their numbers.
 class ProgressTicker extends ChangeNotifier {
@@ -34,30 +36,30 @@ class AppShell extends StatelessWidget {
             if (i == 0) ticker.bump();
             shell.goBranch(i, initialLocation: i == shell.currentIndex);
           },
-          destinations: const <NavigationDestination>[
+          destinations: <NavigationDestination>[
             NavigationDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home),
-                label: 'Home'),
+                icon: const Icon(Icons.home_outlined),
+                selectedIcon: const Icon(Icons.home),
+                label: context.tr('Home', 'Nyumbani')),
             NavigationDestination(
-              icon: Icon(Icons.chat_bubble_outline),
-              selectedIcon: Icon(Icons.chat_bubble),
-              label: 'Chat',
+              icon: const Icon(Icons.chat_bubble_outline),
+              selectedIcon: const Icon(Icons.chat_bubble),
+              label: context.tr('Chat', 'Ongea'),
             ),
             NavigationDestination(
-              icon: Icon(Icons.sentiment_satisfied_outlined),
-              selectedIcon: Icon(Icons.sentiment_satisfied),
-              label: 'Mood',
+              icon: const Icon(Icons.sentiment_satisfied_outlined),
+              selectedIcon: const Icon(Icons.sentiment_satisfied),
+              label: context.tr('Mood', 'Hisia'),
             ),
             NavigationDestination(
-              icon: Icon(Icons.menu_book_outlined),
-              selectedIcon: Icon(Icons.menu_book),
-              label: 'Learn',
+              icon: const Icon(Icons.menu_book_outlined),
+              selectedIcon: const Icon(Icons.menu_book),
+              label: context.tr('Learn', 'Jifunze'),
             ),
             NavigationDestination(
-              icon: Icon(Icons.emoji_events_outlined),
-              selectedIcon: Icon(Icons.emoji_events),
-              label: 'Rewards',
+              icon: const Icon(Icons.emoji_events_outlined),
+              selectedIcon: const Icon(Icons.emoji_events),
+              label: context.tr('Rewards', 'Zawadi'),
             ),
           ],
         ),

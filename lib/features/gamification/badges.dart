@@ -25,7 +25,21 @@ class RewardBadge {
       language == 'sw' && nameSw.isNotEmpty ? nameSw : name;
 
   String get emoji => badgeEmoji[id] ?? '🏅';
+
+  /// The description in the given language. The database holds English only,
+  /// so the Kiswahili ones live here.
+  String describe(String language) =>
+      language == 'sw' ? (badgeDescriptionSw[id] ?? description) : description;
 }
+
+const Map<String, String> badgeDescriptionSw = <String, String>{
+  'first_checkin': 'Rekodi hisia zako kwa mara ya kwanza',
+  'first_chat': 'Tuma ujumbe wako wa kwanza kwa MindQuest',
+  'curious_mind': 'Soma makala 3',
+  'streak_7': 'Rekodi hisia siku 7 mfululizo',
+  'mood_explorer': 'Rekodi hisia mara 20',
+  'quest_master': 'Kamilisha changamoto 4 za wiki',
+};
 
 const Map<String, String> badgeEmoji = <String, String>{
   'first_checkin': '🌱',
@@ -50,9 +64,21 @@ const Map<String, (BadgeMeasure, int)> badgeGoals =
 };
 
 /// XP rules, the same as the database triggers. Shown on Rewards.
-const List<(String, String, int)> xpRules = <(String, String, int)>[
-  ('😊', 'Daily mood check-in', 10),
-  ('💬', 'Each chat message (up to 20 XP a day)', 2),
-  ('📖', 'Each article you read', 5),
-  ('🎯', 'Weekly quest: check in on 5 days', 25),
+/// (emoji, English, Kiswahili, XP)
+const List<(String, String, String, int)> xpRules =
+    <(String, String, String, int)>[
+  ('😊', 'Daily mood check-in', 'Kurekodi hisia kila siku', 10),
+  (
+    '💬',
+    'Each chat message (up to 20 XP a day)',
+    'Kila ujumbe kwa Chipu (hadi XP 20 kwa siku)',
+    2
+  ),
+  ('📖', 'Each article you read', 'Kila makala unayosoma', 5),
+  (
+    '🎯',
+    'Weekly quest: check in on 5 days',
+    'Changamoto ya wiki: rekodi hisia siku 5',
+    25
+  ),
 ];

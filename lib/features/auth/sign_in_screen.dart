@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/google_button.dart';
+import 'account_errors.dart';
 import 'account_repository.dart';
 import 'session_controller.dart';
 
@@ -35,26 +37,30 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  static String? validateEmail(String? v) {
+  String? _validateEmail(String? v) {
     final String value = (v ?? '').trim();
-    if (value.isEmpty) return 'Enter your email';
+    if (value.isEmpty) return context.tr('Enter your email', 'Andika barua pepe yako');
     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value)) {
-      return "That email doesn't look right";
+      return context.tr("That email doesn't look right",
+          'Barua pepe hiyo haionekani sahihi');
     }
     return null;
   }
 
   String? _validatePassword(String? v) {
     final String value = v ?? '';
-    if (value.isEmpty) return 'Enter your password';
+    if (value.isEmpty) {
+      return context.tr('Enter your password', 'Andika nenosiri lako');
+    }
     if (widget.createAccount && value.length < 8) {
-      return 'Use at least 8 characters';
+      return context.tr('Use at least 8 characters', 'Tumia angalau herufi 8');
     }
     return null;
   }
 
   Future<void> _submit() async {
     if (!_form.currentState!.validate()) return;
+    final String lang = context.lang;
     setState(() {
       _busy = true;
       _error = null;
@@ -65,9 +71,11 @@ class _SignInScreenState extends State<SignInScreen> {
         final bool signedIn = await widget.session.account
             .signUp(email: _email.text, password: _password.text);
         if (!signedIn && mounted) {
-          setState(() => _notice =
+          setState(() => _notice = tr(lang,
               'Almost there! We sent a link to ${_email.text.trim()}. '
-                  'Open it to confirm your email, then sign in.');
+                  'Open it to confirm your email, then sign in.',
+              'Karibu umalize! Tumetuma kiungo kwa ${_email.text.trim()}. '
+                  'Kifungue ili kuthibitisha barua pepe yako, kisha uingie.'));
         }
       } else {
         await widget.session.account
@@ -75,7 +83,7 @@ class _SignInScreenState extends State<SignInScreen> {
       }
       await widget.session.refresh();
     } on AccountException catch (e) {
-      if (mounted) setState(() => _error = e.message);
+      if (mounted) setState(() => _error = accountError(e.message, lang));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -94,13 +102,19 @@ class _SignInScreenState extends State<SignInScreen> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
             children: <Widget>[
-              Text(create ? 'Create your account' : 'Welcome back',
+              Text(
+                  create
+                      ? context.tr('Create your account', 'Fungua akaunti yako')
+                      : context.tr('Welcome back', 'Karibu tena'),
                   style: theme.textTheme.headlineMedium),
               const SizedBox(height: 6),
               Text(
                 create
-                    ? 'Your progress is saved to your email, so you can use any phone.'
-                    : 'Sign in to pick up where you left off.',
+                    ? context.tr(
+                        'Your progress is saved to your email, so you can use any phone.',
+                        'Maendeleo yako yanahifadhiwa kwenye barua pepe yako, hivyo unaweza kutumia simu yoyote.')
+                    : context.tr('Sign in to pick up where you left off.',
+                        'Ingia ili uendelee ulipoachia.'),
                 style: theme.textTheme.bodyLarge?.copyWith(color: mq.textMuted),
               ),
               const SizedBox(height: 24),
@@ -108,10 +122,14 @@ class _SignInScreenState extends State<SignInScreen> {
                 onPressed: _busy
                     ? null
                     : () async {
+                        final String lang = context.lang;
                         try {
                           await widget.session.account.signInWithGoogle();
                         } on AccountException catch (e) {
-                          if (mounted) setState(() => _error = e.message);
+                          if (mounted) {
+                            setState(() =>
+                                _error = accountError(e.message, lang));
+                          }
                         }
                       },
               ),
@@ -121,7 +139,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   const Expanded(child: Divider()),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text('or with email',
+                    child: Text(context.tr('or with email', 'au kwa barua pepe'),
                         style: theme.textTheme.bodySmall
                             ?.copyWith(color: mq.textMuted)),
                   ),
@@ -135,10 +153,10 @@ class _SignInScreenState extends State<SignInScreen> {
                 keyboardType: TextInputType.emailAddress,
                 autofillHints: const <String>[AutofillHints.email],
                 textInputAction: TextInputAction.next,
-                validator: validateEmail,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: Icon(Icons.mail_outline),
+                validator: _validateEmail,
+                decoration: InputDecoration(
+                  labelText: context.tr('Email', 'Barua pepe'),
+                  prefixIcon: const Icon(Icons.mail_outline),
                 ),
               ),
               const SizedBox(height: 12),
@@ -153,11 +171,15 @@ class _SignInScreenState extends State<SignInScreen> {
                 onFieldSubmitted: (_) => _submit(),
                 validator: _validatePassword,
                 decoration: InputDecoration(
-                  labelText: 'Password',
-                  helperText: create ? 'At least 8 characters' : null,
+                  labelText: context.tr('Password', 'Nenosiri'),
+                  helperText: create
+                      ? context.tr('At least 8 characters', 'Angalau herufi 8')
+                      : null,
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    tooltip: _hidePassword ? 'Show password' : 'Hide password',
+                    tooltip: _hidePassword
+                        ? context.tr('Show password', 'Onyesha nenosiri')
+                        : context.tr('Hide password', 'Ficha nenosiri'),
                     icon: Icon(_hidePassword
                         ? Icons.visibility_outlined
                         : Icons.visibility_off_outlined),
@@ -190,7 +212,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         width: 22,
                         height: 22,
                         child: CircularProgressIndicator(strokeWidth: 2.5))
-                    : Text(create ? 'Create account' : 'Sign in'),
+                    : Text(create
+                        ? context.tr('Create account', 'Fungua akaunti')
+                        : context.tr('Sign in', 'Ingia')),
               ),
               const SizedBox(height: 16),
               // Wrap so it breaks onto two lines on narrow screens.
@@ -198,11 +222,15 @@ class _SignInScreenState extends State<SignInScreen> {
                 alignment: WrapAlignment.center,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: <Widget>[
-                  Text(create ? 'Already have an account?' : 'New here?'),
+                  Text(create
+                      ? context.tr('Already have an account?', 'Tayari una akaunti?')
+                      : context.tr('New here?', 'Mgeni hapa?')),
                   TextButton(
                     onPressed: () => context
                         .pushReplacement(create ? '/sign-in' : '/sign-up'),
-                    child: Text(create ? 'Sign in' : 'Create an account'),
+                    child: Text(create
+                        ? context.tr('Sign in', 'Ingia')
+                        : context.tr('Create an account', 'Fungua akaunti')),
                   ),
                 ],
               ),
@@ -213,7 +241,9 @@ class _SignInScreenState extends State<SignInScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Your email is only used to sign in. It is never shown to anyone.',
+                      context.tr(
+                          'Your email is only used to sign in. It is never shown to anyone.',
+                          'Barua pepe yako inatumika tu kukuingiza. Haionyeshwi kwa mtu yeyote.'),
                       style: theme.textTheme.bodySmall
                           ?.copyWith(color: mq.textMuted),
                     ),

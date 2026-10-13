@@ -31,17 +31,36 @@ class ChatMessage {
 
 /// A helpline shown when a crisis message is detected.
 class Helpline {
-  const Helpline({required this.name, required this.phone, this.description});
+  const Helpline({
+    required this.name,
+    required this.phone,
+    this.description,
+    this.descriptionSw,
+    this.nameSw,
+  });
 
   factory Helpline.fromJson(Map<String, dynamic> json) => Helpline(
         name: json['name'] as String? ?? '',
         phone: json['phone'] as String? ?? '',
         description: json['description'] as String?,
+        descriptionSw: json['description_sw'] as String?,
       );
 
   final String name;
   final String phone;
   final String? description;
+  final String? descriptionSw;
+
+  /// Only for names that are not the organisation's own name.
+  final String? nameSw;
+
+  String nameIn(String language) =>
+      language == 'sw' && (nameSw ?? '').isNotEmpty ? nameSw! : name;
+
+  String? describe(String language) =>
+      language == 'sw' && (descriptionSw ?? '').isNotEmpty
+          ? descriptionSw
+          : description;
 }
 
 /// What the chat Edge Function sends back for one message.

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/logo_mark.dart';
 import 'session_controller.dart';
@@ -26,8 +27,10 @@ class LoadingScreen extends StatelessWidget {
               if (!session.failed)
                 const CircularProgressIndicator(color: AppPalette.mint)
               else ...<Widget>[
-                const Text("Couldn't load your profile.",
-                    style: TextStyle(color: Colors.white)),
+                Text(
+                    context.tr("Couldn't load your profile.",
+                        'Imeshindikana kupakia wasifu wako.'),
+                    style: const TextStyle(color: Colors.white)),
                 const SizedBox(height: 12),
                 FilledButton(
                   onPressed: session.refresh,
@@ -36,12 +39,12 @@ class LoadingScreen extends StatelessWidget {
                     backgroundColor: AppPalette.mint,
                     foregroundColor: AppPalette.forest,
                   ),
-                  child: const Text('Try again'),
+                  child: Text(context.tr('Try again', 'Jaribu tena')),
                 ),
                 TextButton(
                   onPressed: session.signOut,
-                  child: const Text('Back to start',
-                      style: TextStyle(color: Colors.white70)),
+                  child: Text(context.tr('Back to start', 'Rudi mwanzo'),
+                      style: const TextStyle(color: Colors.white70)),
                 ),
               ],
             ],

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/google_button.dart';
 import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/logo_mark.dart';
+import 'account_errors.dart';
 import 'account_repository.dart';
 import 'session_controller.dart';
 
@@ -22,6 +24,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   bool _busy = false;
 
   Future<void> _continueAnonymously() async {
+    final String lang = context.lang;
     setState(() => _busy = true);
     try {
       await widget.session.account.signInAnonymously();
@@ -29,20 +32,21 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     } on AccountException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message)));
+          .showSnackBar(SnackBar(content: Text(accountError(e.message, lang))));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
   Future<void> _google() async {
+    final String lang = context.lang;
     setState(() => _busy = true);
     try {
       // Opens the browser; the app comes back signed in.
       await widget.session.account.signInWithGoogle();
     } on AccountException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(accountError(e.message, lang))));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -104,7 +108,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           const Spacer(flex: 5),
                           const SizedBox(height: 160),
                           Text(
-                            'Your safe space to check in, learn and grow',
+                            context.tr(
+                                'Your safe space to check in, learn and grow',
+                                'Mahali salama pa kujieleza, kujifunza na kukua'),
                             textAlign: TextAlign.center,
                             style: theme.textTheme.headlineSmall?.copyWith(
                                 color: Colors.white,
@@ -112,21 +118,27 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'In English or Kiswahili, whenever you need it.',
+                            context.tr(
+                                'In English or Kiswahili, whenever you need it.',
+                                'Kwa Kiingereza au Kiswahili, wakati wowote unapohitaji.'),
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodyLarge
                                 ?.copyWith(color: Colors.white70),
                           ),
                           const SizedBox(height: 20),
-                          const _Point(
+                          _Point(
                               icon: Icons.chat_bubble_outline,
-                              text: 'Talk it through, any time'),
-                          const _Point(
+                              text: context.tr('Talk it through, any time',
+                                  'Ongea nasi wakati wowote')),
+                          _Point(
                               icon: Icons.emoji_events_outlined,
-                              text: 'Earn XP and badges for self-care'),
-                          const _Point(
+                              text: context.tr(
+                                  'Earn XP and badges for self-care',
+                                  'Pata XP na beji kwa kujitunza')),
+                          _Point(
                               icon: Icons.lock_outline,
-                              text: 'No name or email needed'),
+                              text: context.tr('No name or email needed',
+                                  'Huhitaji jina wala barua pepe')),
                           const Spacer(flex: 2),
                           const SizedBox(height: 16),
                           FilledButton(
@@ -144,7 +156,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                         strokeWidth: 2.5,
                                         color: AppPalette.forest),
                                   )
-                                : const Text('Continue anonymously'),
+                                : Text(context.tr('Continue anonymously',
+                                    'Endelea bila kujitambulisha')),
                           ),
                           const SizedBox(height: 12),
                           GoogleButton(onPressed: _busy ? null : _google, onDark: true),
@@ -158,11 +171,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               side: const BorderSide(
                                   color: Colors.white54, width: 1.5),
                             ),
-                            child: const Text('Sign in or create account with email'),
+                            child: Text(context.tr(
+                                'Sign in or create account with email',
+                                'Ingia au fungua akaunti kwa barua pepe')),
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'MindQuest offers support and information. It does not diagnose or replace professional care.',
+                            context.tr(
+                                'MindQuest offers support and information. It does not diagnose or replace professional care.',
+                                'MindQuest inatoa msaada na taarifa. Haitambui magonjwa wala haichukui nafasi ya huduma ya wataalamu.'),
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodySmall
                                 ?.copyWith(color: Colors.white60),

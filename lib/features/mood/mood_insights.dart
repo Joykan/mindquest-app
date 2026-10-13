@@ -1,3 +1,4 @@
+import '../../core/l10n/tr.dart';
 import '../home/progress_repository.dart';
 import 'mood_tags.dart';
 
@@ -41,6 +42,13 @@ const Map<String, String> chatFeelingNames = <String, String>{
   'feel_anxious': 'Anxiety',
   'feel_sad': 'Feeling low',
   'feel_good': 'Feeling good',
+};
+
+const Map<String, String> chatFeelingNamesSw = <String, String>{
+  'feel_stressed': 'Msongo wa mawazo',
+  'feel_anxious': 'Wasiwasi',
+  'feel_sad': 'Huzuni',
+  'feel_good': 'Kujisikia vizuri',
 };
 
 /// Common words left out of note-word insights (English and Kiswahili).
@@ -145,8 +153,10 @@ List<MoodInsight> buildInsights(
   List<MoodEntry> entries, {
   DateTime? now,
   Map<String, int> chatFeelings = const <String, int>{},
+  String language = 'en',
 }) {
   if (entries.length < insightMinimumCheckIns) return const <MoodInsight>[];
+  String t(String en, String sw) => tr(language, en, sw);
   final DateTime today = _day(now ?? nairobiNow());
   final List<MoodInsight> out = <MoodInsight>[];
 
@@ -170,10 +180,13 @@ List<MoodInsight> buildInsights(
     out.add(MoodInsight(
       id: 'hard_days',
       emoji: '💚',
-      title: "You've had $hardRun hard days in a row",
-      body:
+      title: t("You've had $hardRun hard days in a row",
+          'Umekuwa na siku $hardRun ngumu mfululizo'),
+      body: t(
           "That's a lot to carry on your own. Talking to someone you trust, or to a "
-          'counsellor, can really help. Free helplines are one tap away.',
+              'counsellor, can really help. Free helplines are one tap away.',
+          'Huo ni mzigo mzito kubeba peke yako. Kuongea na mtu unayemwamini, au na '
+              'mshauri, kunaweza kusaidia sana. Nambari za msaada za bure ziko karibu nawe.'),
       needsSupport: true,
     ));
   }
@@ -193,28 +206,32 @@ List<MoodInsight> buildInsights(
   if (thisWeek.length >= 2 && lastWeek.length >= 2) {
     final double change = _average(thisWeek) - _average(lastWeek);
     if (change >= 0.5) {
-      out.add(const MoodInsight(
+      out.add(MoodInsight(
         id: 'trend_up',
         emoji: '📈',
-        title: 'Brighter than last week',
-        body:
+        title: t('Brighter than last week', 'Bora kuliko wiki iliyopita'),
+        body: t(
             'Your moods this week are higher than last week. Notice what has been helping.',
+            'Hisia zako wiki hii ziko juu kuliko wiki iliyopita. Angalia kinachokusaidia.'),
       ));
     } else if (change <= -0.5) {
-      out.add(const MoodInsight(
+      out.add(MoodInsight(
         id: 'trend_down',
         emoji: '🌧️',
-        title: 'A harder week than last',
-        body:
+        title: t('A harder week than last', 'Wiki ngumu kuliko iliyopita'),
+        body: t(
             'Your moods this week are lower than last week. Be gentle with yourself, '
-            'and remember Chipu is here to talk.',
+                'and remember Chipu is here to talk.',
+            'Hisia zako wiki hii ziko chini kuliko wiki iliyopita. Jihurumie, '
+                'na kumbuka Chipu yuko hapa kuongea nawe.'),
       ));
     } else {
-      out.add(const MoodInsight(
+      out.add(MoodInsight(
         id: 'trend_steady',
         emoji: '⚖️',
-        title: 'A steady week',
-        body: 'Your moods this week are about the same as last week.',
+        title: t('A steady week', 'Wiki tulivu'),
+        body: t('Your moods this week are about the same as last week.',
+            'Hisia zako wiki hii ni karibu sawa na wiki iliyopita.'),
       ));
     }
   }
@@ -233,9 +250,12 @@ List<MoodInsight> buildInsights(
     out.add(MoodInsight(
       id: 'weekday',
       emoji: '📅',
-      title: 'Your week has a pattern',
-      body: 'You tend to feel best on ${_weekdayNames[weekdays.first.key - 1]} '
-          'and lowest on ${_weekdayNames[weekdays.last.key - 1]}.',
+      title: t('Your week has a pattern', 'Wiki yako ina mwelekeo'),
+      body: t(
+          'You tend to feel best on ${_weekdayNames[weekdays.first.key - 1]} '
+              'and lowest on ${_weekdayNames[weekdays.last.key - 1]}.',
+          'Mara nyingi unajisikia vizuri zaidi siku ya ${fullDay('sw', weekdays.first.key)} '
+              'na vibaya zaidi siku ya ${fullDay('sw', weekdays.last.key)}.'),
     ));
   }
 
@@ -256,14 +276,21 @@ List<MoodInsight> buildInsights(
   ]..sort((MapEntry<String, double> a, MapEntry<String, double> b) =>
       b.value.compareTo(a.value));
   if (parts.length >= 2 && parts.first.value - parts.last.value >= 0.75) {
+    String partSw(String p) => switch (p) {
+          'mornings' => 'asubuhi',
+          'afternoons' => 'mchana',
+          _ => 'jioni',
+        };
     out.add(MoodInsight(
       id: 'time_of_day',
       emoji: parts.first.key == 'mornings'
           ? '🌅'
           : (parts.first.key == 'evenings' ? '🌙' : '☀️'),
-      title: 'Your ${parts.first.key} feel better',
-      body:
+      title: t('Your ${parts.first.key} feel better',
+          'Wakati bora wa siku yako: ${partSw(parts.first.key)}'),
+      body: t(
           'You usually feel better in the ${parts.first.key} than in the ${parts.last.key}.',
+          'Kwa kawaida unajisikia vizuri zaidi ${partSw(parts.first.key)} kuliko ${partSw(parts.last.key)}.'),
     ));
   }
 
@@ -272,8 +299,8 @@ List<MoodInsight> buildInsights(
     final Map<String, int> counts = <String, int>{};
     for (final MoodEntry e in entries) {
       if (!which(e.mood)) continue;
-      for (final String t in e.tags.toSet()) {
-        counts[t] = (counts[t] ?? 0) + 1;
+      for (final String tagId in e.tags.toSet()) {
+        counts[tagId] = (counts[tagId] ?? 0) + 1;
       }
     }
     final List<MapEntry<String, int>> top = counts.entries
@@ -292,18 +319,22 @@ List<MoodInsight> buildInsights(
     out.add(MoodInsight(
       id: 'low_tag',
       emoji: low.emoji,
-      title: '${low.en} weighs on you',
-      body: 'Your low days are often about ${low.en.toLowerCase()}. '
-          'Talking it through with Chipu or someone you trust can help.',
+      title: t('${low.en} weighs on you', '${low.sw}: jambo linalokulemea'),
+      body: t(
+          'Your low days are often about ${low.en.toLowerCase()}. '
+              'Talking it through with Chipu or someone you trust can help.',
+          'Siku zako ngumu mara nyingi zinahusu ${low.sw.toLowerCase()}. '
+              'Kuongea na Chipu au mtu unayemwamini kunaweza kusaidia.'),
     ));
   }
   if (good != null && goodTag != lowTag) {
     out.add(MoodInsight(
       id: 'good_tag',
       emoji: good.emoji,
-      title: '${good.en} lifts you up',
-      body:
+      title: t('${good.en} lifts you up', '${good.sw}: jambo linalokuinua'),
+      body: t(
           'Your good days are often about ${good.en.toLowerCase()}. Make room for more of it.',
+          'Siku zako nzuri mara nyingi zinahusu ${good.sw.toLowerCase()}. Jipe muda zaidi kwa hilo.'),
     ));
   }
 
@@ -336,18 +367,22 @@ List<MoodInsight> buildInsights(
     out.add(MoodInsight(
       id: 'low_word',
       emoji: '📝',
-      title: 'Something that weighs on you',
-      body: 'Your notes on low days often mention "$lowWord". '
-          'Chipu can help you work through it, or try a breathing exercise.',
+      title: t('Something that weighs on you', 'Jambo linalokulemea'),
+      body: t(
+          'Your notes on low days often mention "$lowWord". '
+              'Chipu can help you work through it, or try a breathing exercise.',
+          'Maelezo yako ya siku ngumu mara nyingi yanataja "$lowWord". '
+              'Chipu anaweza kukusaidia kulipitia, au jaribu zoezi la kupumua.'),
     ));
   }
   if (goodWord != null && goodWord != lowWord && goodWord != goodTag) {
     out.add(MoodInsight(
       id: 'good_word',
       emoji: '🌱',
-      title: 'Something that lifts you',
-      body:
+      title: t('Something that lifts you', 'Jambo linalokuinua'),
+      body: t(
           'Your notes on good days often mention "$goodWord". Make room for more of it.',
+          'Maelezo yako ya siku nzuri mara nyingi yanataja "$goodWord". Jipe muda zaidi kwa hilo.'),
     ));
   }
 
@@ -363,11 +398,16 @@ List<MoodInsight> buildInsights(
     out.add(MoodInsight(
       id: 'chat_feeling',
       emoji: '💬',
-      title: '${chatFeelingNames[top.key]} came up in your chats',
+      title: t('${chatFeelingNames[top.key]} came up in your chats',
+          'Kwenye mazungumzo yako: ${chatFeelingNamesSw[top.key]}'),
       body: top.key == 'feel_good'
-          ? 'You told Chipu you felt good ${top.value} times this week. Nice!'
-          : '${chatFeelingNames[top.key]} came up ${top.value} times in your chats this week. '
-              'A breathing exercise can help. Just ask Chipu.',
+          ? t('You told Chipu you felt good ${top.value} times this week. Nice!',
+              'Ulimwambia Chipu kuwa unajisikia vizuri mara ${top.value} wiki hii. Safi!')
+          : t(
+              '${chatFeelingNames[top.key]} came up ${top.value} times in your chats this week. '
+                  'A breathing exercise can help. Just ask Chipu.',
+              'Ulitaja ${chatFeelingNamesSw[top.key]!.toLowerCase()} mara ${top.value} kwenye mazungumzo yako wiki hii. '
+                  'Zoezi la kupumua linaweza kusaidia. Muombe Chipu tu.'),
     ));
   }
 
@@ -378,9 +418,12 @@ List<MoodInsight> buildInsights(
     out.add(MoodInsight(
       id: 'habit',
       emoji: '🔥',
-      title: 'Great check-in habit',
-      body: 'You checked in on $daysThisWeek of the last 7 days. '
-          'Knowing how you feel is the first step to feeling better.',
+      title: t('Great check-in habit', 'Tabia nzuri ya kurekodi hisia'),
+      body: t(
+          'You checked in on $daysThisWeek of the last 7 days. '
+              'Knowing how you feel is the first step to feeling better.',
+          'Umerekodi hisia siku $daysThisWeek kati ya 7 zilizopita. '
+              'Kujua unavyojisikia ni hatua ya kwanza ya kujisikia vizuri.'),
     ));
   }
 
@@ -393,15 +436,20 @@ List<MoodInsight> buildInsights(
     id: 'mood_mix',
     emoji: nGood * 2 > total ? '🌤️' : (nLow * 2 > total ? '🌧️' : '⛅'),
     title: nGood * 2 > total
-        ? 'Mostly good days'
+        ? t('Mostly good days', 'Siku nyingi nzuri')
         : nLow * 2 > total
-            ? 'A lot of low days lately'
-            : 'A mix of ups and downs',
+            ? t('A lot of low days lately', 'Siku nyingi ngumu hivi karibuni')
+            : t('A mix of ups and downs', 'Mchanganyiko wa juu na chini'),
     body: nGood * 2 > total
-        ? '$nGood of your last $total check-ins were good or great.'
+        ? t('$nGood of your last $total check-ins were good or great.',
+            '$nGood kati ya hisia $total ulizorekodi mwisho zilikuwa nzuri au nzuri sana.')
         : nLow * 2 > total
-            ? '$nLow of your last $total check-ins were low. Chipu is here to talk, and the helplines are always on Home.'
-            : 'Of your last $total check-ins, $nGood were good, $nOkay okay and $nLow low. Ups and downs are normal.',
+            ? t(
+                '$nLow of your last $total check-ins were low. Chipu is here to talk, and the helplines are always on Home.',
+                '$nLow kati ya hisia $total ulizorekodi mwisho zilikuwa chini. Chipu yuko hapa kuongea nawe, na nambari za msaada ziko kwenye Nyumbani daima.')
+            : t(
+                'Of your last $total check-ins, $nGood were good, $nOkay okay and $nLow low. Ups and downs are normal.',
+                'Kati ya hisia $total ulizorekodi mwisho, $nGood zilikuwa nzuri, $nOkay za kawaida na $nLow chini. Kupanda na kushuka ni kawaida.'),
   ));
 
   return out;
@@ -412,7 +460,8 @@ List<MoodInsight> buildInsights(
 /// [history] is newest first and already includes the new check-in.
 List<MoodInsight> checkInInsights(
     int mood, List<String> tags, List<MoodEntry> history,
-    {DateTime? now}) {
+    {DateTime? now, String language = 'en'}) {
+  String t(String en, String sw) => tr(language, en, sw);
   final List<MoodInsight> out = <MoodInsight>[];
   final List<MoodEntry> before =
       history.length > 1 ? history.sublist(1) : const <MoodEntry>[];
@@ -426,33 +475,36 @@ List<MoodInsight> checkInInsights(
       out.add(MoodInsight(
         id: 'above_usual',
         emoji: '📈',
-        title: 'Brighter than usual',
-        body:
+        title: t('Brighter than usual', 'Bora kuliko kawaida'),
+        body: t(
             'Today $face is higher than your usual mood ($avg out of 5). Notice what helped today.',
+            'Leo $face uko juu kuliko hisia zako za kawaida ($avg kati ya 5). Angalia kilichokusaidia leo.'),
       ));
     } else if (usual - mood >= 1) {
       out.add(MoodInsight(
         id: 'below_usual',
         emoji: '📉',
-        title: 'Harder than usual',
-        body:
+        title: t('Harder than usual', 'Ngumu kuliko kawaida'),
+        body: t(
             'Today $face is lower than your usual mood ($avg out of 5). Be gentle with yourself.',
+            'Leo $face uko chini kuliko hisia zako za kawaida ($avg kati ya 5). Jihurumie.'),
       ));
     } else {
       out.add(MoodInsight(
         id: 'near_usual',
         emoji: '⚖️',
-        title: 'About your usual',
-        body: 'Today $face is close to your usual mood ($avg out of 5).',
+        title: t('About your usual', 'Karibu na kawaida yako'),
+        body: t('Today $face is close to your usual mood ($avg out of 5).',
+            'Leo $face uko karibu na hisia zako za kawaida ($avg kati ya 5).'),
       ));
     }
   }
 
   // Big changes within today.
-  final DateTime t = _day(now ?? nairobiNow());
+  final DateTime todayDate = _day(now ?? nairobiNow());
   final List<int> today = <int>[
     for (final MoodEntry e in history)
-      if (_day(e.at) == t) e.mood,
+      if (_day(e.at) == todayDate) e.mood,
   ];
   if (today.length >= 2) {
     final int lo = today.reduce((int a, int b) => a < b ? a : b);
@@ -461,9 +513,12 @@ List<MoodInsight> checkInInsights(
       out.add(MoodInsight(
         id: 'day_swing',
         emoji: '🎢',
-        title: 'Ups and downs today',
-        body: 'Today your mood went from ${moodFace(lo)} to ${moodFace(hi)}. '
-            'Moods can change a lot in one day, and that is normal.',
+        title: t('Ups and downs today', 'Juu na chini leo'),
+        body: t(
+            'Today your mood went from ${moodFace(lo)} to ${moodFace(hi)}. '
+                'Moods can change a lot in one day, and that is normal.',
+            'Leo hisia zako zimetoka ${moodFace(lo)} hadi ${moodFace(hi)}. '
+                'Hisia zinaweza kubadilika sana kwa siku moja, na hilo ni kawaida.'),
       ));
     }
   }
@@ -477,28 +532,34 @@ List<MoodInsight> checkInInsights(
         if (e.tags.contains(id)) e.mood,
     ];
     final String name = tag.en.toLowerCase();
+    final String nameSw = tag.sw.toLowerCase();
     if (withTag.isEmpty) {
       out.add(MoodInsight(
         id: 'tag_first_$id',
         emoji: tag.emoji,
-        title: 'First time you tagged ${tag.en}',
-        body:
+        title: t('First time you tagged ${tag.en}',
+            'Mara ya kwanza kuchagua ${tag.sw}'),
+        body: t(
             'Keep tagging your check-ins and Chipu will show you how $name affects your mood.',
+            'Endelea kuchagua mada unaporekodi hisia na Chipu atakuonyesha jinsi mada ya $nameSw inavyoathiri hisia zako.'),
       ));
     } else {
       final double withAvg = _average(withTag);
       final double overall = _average(before.map((MoodEntry e) => e.mood));
       final String how = withAvg - overall >= 0.5
-          ? 'better than usual'
+          ? t('better than usual', 'bora kuliko kawaida')
           : overall - withAvg >= 0.5
-              ? 'lower than usual'
-              : 'about the same as usual';
+              ? t('lower than usual', 'chini kuliko kawaida')
+              : t('about the same as usual', 'karibu sawa na kawaida');
       out.add(MoodInsight(
         id: 'tag_$id',
         emoji: tag.emoji,
-        title: '${tag.en} and your mood',
-        body: 'You tagged ${tag.en} ${withTag.length + 1} times. '
-            'On those check-ins your mood is $how (${withAvg.toStringAsFixed(1)} vs ${overall.toStringAsFixed(1)}).',
+        title: t('${tag.en} and your mood', '${tag.sw} na hisia zako'),
+        body: t(
+            'You tagged ${tag.en} ${withTag.length + 1} times. '
+                'On those check-ins your mood is $how (${withAvg.toStringAsFixed(1)} vs ${overall.toStringAsFixed(1)}).',
+            'Umechagua ${tag.sw} mara ${withTag.length + 1}. '
+                'Siku hizo hisia zako ziko $how (${withAvg.toStringAsFixed(1)} dhidi ya ${overall.toStringAsFixed(1)}).'),
       ));
     }
   }

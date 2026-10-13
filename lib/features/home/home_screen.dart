@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/logo_mark.dart';
@@ -26,7 +28,6 @@ class HomeScreen extends StatefulWidget {
     this.onOpenArticle,
     this.onSupport,
     this.onMoodHistory,
-    this.language = 'en',
   });
 
   /// For "Recommended for you". Without it the section is hidden.
@@ -38,7 +39,6 @@ class HomeScreen extends StatefulWidget {
 
   /// Opens mood history from the "This week" strip.
   final VoidCallback? onMoodHistory;
-  final String language;
 
   /// Shows the appearance button (System default / Light / Dark) when given.
   final ThemeController? theme;
@@ -128,18 +128,21 @@ class HomeScreenState extends State<HomeScreen> {
       await showCrisisSheet(
         context,
         ChatReply(
-          reply:
+          reply: context.tr(
               'If things feel too heavy right now, talking to someone can help. '
-              'These services are free and confidential.',
+                  'These services are free and confidential.',
+              'Mambo yakikulemea sasa hivi, kuongea na mtu kunaweza kusaidia. '
+                  'Huduma hizi ni bure na za siri.'),
           helplines: lines,
         ),
       );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text(
-                "Couldn't load helplines. In an emergency call 999 or 112.")),
+        SnackBar(
+            content: Text(context.tr(
+                "Couldn't load helplines. In an emergency call 999 or 112.",
+                'Imeshindikana kupakia nambari za msaada. Katika dharura piga 999 au 112.'))),
       );
     }
   }
@@ -172,7 +175,6 @@ class HomeScreenState extends State<HomeScreen> {
                   onHelplines: widget.onSupport ?? _showHelplines,
                   onMoodHistory: widget.onMoodHistory,
                   onOpenArticle: widget.onOpenArticle,
-                  language: widget.language,
                   theme: widget.theme,
                 ),
               ),
@@ -184,32 +186,6 @@ class HomeScreenState extends State<HomeScreen> {
   }
 }
 
-String _dateLine(DateTime d) {
-  const List<String> days = <String>[
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday'
-  ];
-  const List<String> months = <String>[
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  return '${days[d.weekday - 1]}, ${d.day} ${months[d.month - 1]}';
-}
 
 class _HomeBody extends StatelessWidget {
   const _HomeBody({
@@ -221,14 +197,12 @@ class _HomeBody extends StatelessWidget {
     required this.onHelplines,
     this.onMoodHistory,
     this.onOpenArticle,
-    this.language = 'en',
     this.theme,
   });
 
   final HomeExtras extras;
   final VoidCallback? onMoodHistory;
   final ValueChanged<Article>? onOpenArticle;
-  final String language;
 
   final ThemeController? theme;
   final HomeSummary summary;
@@ -243,6 +217,7 @@ class _HomeBody extends StatelessWidget {
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     final LevelProgress level = LevelProgress(summary.xp);
     final LevelTitle title = levelTitle(level.level);
+    final String lang = context.lang;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
@@ -257,16 +232,17 @@ class _HomeBody extends StatelessWidget {
             const SizedBox(width: 4),
             IconButton.filledTonal(
               key: const Key('open-profile'),
-              tooltip: 'Profile and settings',
+              tooltip: context.tr('Profile and settings', 'Wasifu na mipangilio'),
               onPressed: onProfile,
               icon: const Icon(Icons.person_outline),
             ),
           ],
         ),
         const SizedBox(height: 16),
-        Text('Hi, ${summary.username}', style: theme.textTheme.headlineSmall),
+        Text(context.tr('Hi, ${summary.username}', 'Habari, ${summary.username}'),
+            style: theme.textTheme.headlineSmall),
         Text(
-          _dateLine(nairobiNow()),
+          longDate(lang, nairobiNow()),
           style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
         ),
         const SizedBox(height: 16),
@@ -285,10 +261,13 @@ class _HomeBody extends StatelessWidget {
                     Expanded(
                       child: Text(
                         summary.streak == 0
-                            ? 'Start your streak today'
-                            : summary.streak == 1
-                                ? '1-day streak'
-                                : '${summary.streak}-day streak',
+                            ? context.tr('Start your streak today',
+                                'Anza mfululizo wako leo')
+                            : context.tr(
+                                summary.streak == 1
+                                    ? '1-day streak'
+                                    : '${summary.streak}-day streak',
+                                'Mfululizo wa siku ${summary.streak}'),
                         style: theme.textTheme.titleMedium,
                       ),
                     ),
@@ -299,7 +278,7 @@ class _HomeBody extends StatelessWidget {
                           color: mq.reward,
                           borderRadius: BorderRadius.circular(12)),
                       child: Text(
-                        'Level ${level.level} · ${title.emoji} ${title.name(language)}',
+                        '${context.tr('Level', 'Kiwango')} ${level.level} · ${title.emoji} ${title.name(lang)}',
                         style: theme.textTheme.labelSmall
                             ?.copyWith(color: mq.onReward),
                       ),
@@ -318,7 +297,9 @@ class _HomeBody extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '${level.earned} / ${level.needed} XP to Level ${level.level + 1}',
+                  context.tr(
+                      '${level.earned} / ${level.needed} XP to Level ${level.level + 1}',
+                      'XP ${level.earned} / ${level.needed} kufikia Kiwango ${level.level + 1}'),
                   style:
                       theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
                 ),
@@ -337,8 +318,8 @@ class _HomeBody extends StatelessWidget {
               children: <Widget>[
                 Text(
                   summary.todayMood == null
-                      ? 'How are you feeling today?'
-                      : 'Today you felt',
+                      ? context.tr('How are you feeling today?', 'Unajisikiaje leo?')
+                      : context.tr('Today you felt', 'Leo ulijisikia'),
                   style: theme.textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
@@ -372,7 +353,7 @@ class _HomeBody extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     Expanded(
-                        child: Text("Today's quests",
+                        child: Text(context.tr("Today's quests", 'Changamoto za leo'),
                             style: theme.textTheme.titleMedium)),
                     Text(
                       '${_questsDone(summary)} / 3',
@@ -383,15 +364,15 @@ class _HomeBody extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 _Quest(
-                    label: 'Log your mood',
+                    label: context.tr('Log your mood', 'Rekodi hisia zako'),
                     xp: 10,
                     done: summary.doneToday.contains('mood_checkin')),
                 _Quest(
-                    label: 'Chat with Chipu',
+                    label: context.tr('Chat with Chipu', 'Ongea na Chipu'),
                     xp: 2,
                     done: summary.doneToday.contains('chat_message')),
                 _Quest(
-                    label: 'Read one article',
+                    label: context.tr('Read one article', 'Soma makala moja'),
                     xp: 5,
                     done: summary.doneToday.contains('article_read')),
                 const Divider(height: 20),
@@ -399,7 +380,8 @@ class _HomeBody extends StatelessWidget {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        'Weekly quest: check in on 5 days',
+                        context.tr('Weekly quest: check in on 5 days',
+                            'Changamoto ya wiki: rekodi hisia siku 5'),
                         style: theme.textTheme.bodyMedium,
                       ),
                     ),
@@ -418,7 +400,8 @@ class _HomeBody extends StatelessWidget {
         ),
         if (extras.picks.isNotEmpty && onOpenArticle != null) ...<Widget>[
           const SizedBox(height: 16),
-          Text('Recommended for you', style: theme.textTheme.titleMedium),
+          Text(context.tr('Recommended for you', 'Tunakupendekezea'),
+              style: theme.textTheme.titleMedium),
           const SizedBox(height: 4),
           for (final Recommendation r in extras.picks)
             Card(
@@ -428,9 +411,11 @@ class _HomeBody extends StatelessWidget {
                 key: Key('recommended-${r.article.id}'),
                 leading: Text(categoryEmoji[r.article.category] ?? '📄',
                     style: const TextStyle(fontSize: 26)),
-                title: Text(r.article.title(language),
+                title: Text(r.article.title(lang),
                     style: theme.textTheme.titleSmall),
-                subtitle: Text('${r.reason} · ${r.article.minutes} min'),
+                subtitle: Text(context.tr(
+                    '${r.reason} · ${r.article.minutes} min',
+                    '${r.reasonIn('sw')} · dakika ${r.article.minutes}')),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => onOpenArticle!(r.article),
               ),
@@ -442,7 +427,7 @@ class _HomeBody extends StatelessWidget {
           key: const Key('talk'),
           onPressed: onTalk,
           icon: const Icon(Icons.chat_bubble_outline),
-          label: const Text('Talk to Chipu'),
+          label: Text(context.tr('Talk to Chipu', 'Ongea na Chipu')),
         ),
         const SizedBox(height: 12),
         Card(
@@ -450,9 +435,10 @@ class _HomeBody extends StatelessWidget {
           child: ListTile(
             key: const Key('helplines'),
             leading: Icon(Icons.phone_in_talk_outlined, color: mq.crisis),
-            title: const Text('Need support?',
-                style: TextStyle(fontWeight: FontWeight.w700)),
-            subtitle: const Text('Helplines and calming exercises'),
+            title: Text(context.tr('Need support?', 'Unahitaji msaada?'),
+                style: const TextStyle(fontWeight: FontWeight.w700)),
+            subtitle: Text(context.tr('Helplines and calming exercises',
+                'Nambari za msaada na mazoezi ya kutuliza')),
             trailing: const Icon(Icons.chevron_right),
             onTap: onHelplines,
           ),
@@ -482,7 +468,7 @@ class _MoodFace extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      label: option.label,
+      label: option.name(context.lang),
       child: InkWell(
         key: Key('mood-${option.value}'),
         borderRadius: BorderRadius.circular(28),
@@ -581,13 +567,15 @@ class _Problem extends StatelessWidget {
           children: <Widget>[
             const Icon(Icons.cloud_off, size: 40),
             const SizedBox(height: 12),
-            const Text("Couldn't load your progress. Check your connection.",
+            Text(
+                context.tr("Couldn't load your progress. Check your connection.",
+                    'Imeshindikana kupakia maendeleo yako. Angalia mtandao wako.'),
                 textAlign: TextAlign.center),
             const SizedBox(height: 12),
             OutlinedButton(
               style: OutlinedButton.styleFrom(minimumSize: const Size(140, 48)),
               onPressed: onRetry,
-              child: const Text('Try again'),
+              child: Text(context.tr('Try again', 'Jaribu tena')),
             ),
           ],
         ),
@@ -609,7 +597,7 @@ class _AppearanceButton extends StatelessWidget {
       builder: (BuildContext context, ThemeMode mode, _) =>
           PopupMenuButton<ThemeMode>(
         key: const Key('appearance-button'),
-        tooltip: 'Appearance',
+        tooltip: context.tr('Appearance', 'Mwonekano'),
         initialValue: mode,
         onSelected: controller.set,
         icon: Icon(switch (mode) {
@@ -617,14 +605,16 @@ class _AppearanceButton extends StatelessWidget {
           ThemeMode.dark => Icons.dark_mode_outlined,
           ThemeMode.system => Icons.brightness_auto_outlined,
         }),
-        itemBuilder: (BuildContext context) =>
-            const <PopupMenuEntry<ThemeMode>>[
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<ThemeMode>>[
           PopupMenuItem<ThemeMode>(
-              value: ThemeMode.system, child: Text('System default')),
+              value: ThemeMode.system,
+              child: Text(context.tr('System default', 'Kama simu yako'))),
           PopupMenuItem<ThemeMode>(
-              value: ThemeMode.light, child: Text('Light mode')),
+              value: ThemeMode.light,
+              child: Text(context.tr('Light mode', 'Mwanga'))),
           PopupMenuItem<ThemeMode>(
-              value: ThemeMode.dark, child: Text('Dark mode')),
+              value: ThemeMode.dark,
+              child: Text(context.tr('Dark mode', 'Giza'))),
         ],
       ),
     );
@@ -650,15 +640,6 @@ class _WeekStrip extends StatelessWidget {
       latest.putIfAbsent(
           '${e.at.year}-${e.at.month}-${e.at.day}', () => e.mood);
     }
-    const List<String> names = <String>[
-      'Mon',
-      'Tue',
-      'Wed',
-      'Thu',
-      'Fri',
-      'Sat',
-      'Sun'
-    ];
     return Card(
       key: const Key('week-strip'),
       clipBehavior: Clip.antiAlias,
@@ -671,10 +652,10 @@ class _WeekStrip extends StatelessWidget {
               Row(
                 children: <Widget>[
                   Expanded(
-                      child: Text('This week',
+                      child: Text(context.tr('This week', 'Wiki hii'),
                           style: theme.textTheme.titleMedium)),
                   if (onTap != null)
-                    Text('History →',
+                    Text(context.tr('History →', 'Historia →'),
                         style: theme.textTheme.labelLarge
                             ?.copyWith(color: theme.colorScheme.primary)),
                 ],
@@ -714,7 +695,7 @@ class _WeekStrip extends StatelessWidget {
                                     fontSize: 20, color: mq.textMuted),
                               ),
                               const SizedBox(height: 2),
-                              Text(names[i],
+                              Text(shortDay(context.lang, d.weekday),
                                   style: theme.textTheme.labelSmall
                                       ?.copyWith(fontSize: 10)),
                             ],

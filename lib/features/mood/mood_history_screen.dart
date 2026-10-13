@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/mascot.dart';
 import '../home/progress_repository.dart';
@@ -22,30 +23,6 @@ class MoodHistoryScreen extends StatefulWidget {
   @override
   State<MoodHistoryScreen> createState() => _MoodHistoryScreenState();
 }
-
-const List<String> _weekdays = <String>[
-  'Mon',
-  'Tue',
-  'Wed',
-  'Thu',
-  'Fri',
-  'Sat',
-  'Sun'
-];
-const List<String> _months = <String>[
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
 
 String _dayKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
 
@@ -78,18 +55,20 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
   }
 
   Future<void> _delete(MoodEntry e) async {
+    final String lang = context.lang;
     final bool? sure = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('Delete this check-in?'),
-        content: const Text('Your XP and streak stay as they are.'),
+        title: Text(context.tr('Delete this check-in?', 'Futa rekodi hii?')),
+        content: Text(context.tr('Your XP and streak stay as they are.',
+            'XP yako na mfululizo wako vitabaki kama vilivyo.')),
         actions: <Widget>[
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
+              child: Text(context.tr('Cancel', 'Ghairi'))),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Delete')),
+              child: Text(context.tr('Delete', 'Futa'))),
         ],
       ),
     );
@@ -101,9 +80,11 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text("Couldn't delete. Check your connection and try again.")),
+        SnackBar(
+            content: Text(tr(
+                lang,
+                "Couldn't delete. Check your connection and try again.",
+                'Imeshindikana kufuta. Angalia mtandao wako kisha ujaribu tena.'))),
       );
     }
   }
@@ -111,7 +92,7 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mood history')),
+      appBar: AppBar(title: Text(context.tr('Mood history', 'Historia ya hisia'))),
       body: FutureBuilder<List<MoodEntry>>(
         future: _entries,
         builder: (BuildContext context, AsyncSnapshot<List<MoodEntry>> snap) {
@@ -119,8 +100,9 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
             return Center(
               child: TextButton(
                 onPressed: _reload,
-                child:
-                    const Text("Couldn't load your history. Tap to try again."),
+                child: Text(context.tr(
+                    "Couldn't load your history. Tap to try again.",
+                    'Imeshindikana kupakia historia yako. Gusa ujaribu tena.')),
               ),
             );
           }
@@ -131,11 +113,13 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
               .where((MoodEntry e) => !_removed.contains(e.id))
               .toList();
           if (entries.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(32),
+                padding: const EdgeInsets.all(32),
                 child: Text(
-                  'No check-ins yet. Log how you feel and your history will show here.',
+                  context.tr(
+                      'No check-ins yet. Log how you feel and your history will show here.',
+                      'Bado hujarekodi hisia. Rekodi unavyojisikia na historia yako itaonekana hapa.'),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -150,7 +134,7 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
                 const SizedBox(height: 12),
                 _Summary(entries: entries),
                 const SizedBox(height: 20),
-                Text('Insights',
+                Text(context.tr('Insights', 'Maarifa'),
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 8),
                 FutureBuilder<Map<String, int>>(
@@ -164,7 +148,7 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text('Last 30 days',
+                Text(context.tr('Last 30 days', 'Siku 30 zilizopita'),
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 8),
                 for (final MoodEntry e in entries)
@@ -205,7 +189,8 @@ class _WeekChart extends StatelessWidget {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(left: 4, bottom: 12),
-              child: Text('Last 7 days', style: theme.textTheme.titleMedium),
+              child: Text(context.tr('Last 7 days', 'Siku 7 zilizopita'),
+                  style: theme.textTheme.titleMedium),
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -217,8 +202,8 @@ class _WeekChart extends StatelessWidget {
                       final MoodEntry? e = latestByDay[_dayKey(day)];
                       return Semantics(
                         label: e == null
-                            ? '${_weekdays[day.weekday - 1]}: no check-in'
-                            : '${_weekdays[day.weekday - 1]}: ${_option(e.mood).label}',
+                            ? '${fullDay(context.lang, day.weekday)}: ${context.tr('no check-in', 'hakuna rekodi')}'
+                            : '${fullDay(context.lang, day.weekday)}: ${_option(e.mood).name(context.lang)}',
                         child: Column(
                           children: <Widget>[
                             Text(e == null ? ' ' : _option(e.mood).emoji,
@@ -236,7 +221,9 @@ class _WeekChart extends StatelessWidget {
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              i == 0 ? 'Today' : _weekdays[day.weekday - 1],
+                              i == 0
+                                  ? context.tr('Today', 'Leo')
+                                  : shortDay(context.lang, day.weekday),
                               style: theme.textTheme.labelSmall
                                   ?.copyWith(color: mq.textMuted),
                             ),
@@ -303,13 +290,24 @@ class _Summary extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         child: Row(
           children: <Widget>[
-            stat('$days / 7', 'days checked in\nthis week'),
+            stat(
+                '$days / 7',
+                context.tr('days checked in\nthis week',
+                    'siku ulizorekodi\nwiki hii')),
             if (mixed)
-              stat('🎢', 'most common mood\n(mixed)')
+              stat(
+                  '🎢',
+                  context.tr('most common mood\n(mixed)',
+                      'hisia za mara nyingi\n(mchanganyiko)'))
             else
-              stat(_option(leaders.first).emoji,
-                  'most common mood\n(${_option(leaders.first).label.toLowerCase()})'),
-            stat('${entries.length}', 'check-ins in\n30 days'),
+              stat(
+                  _option(leaders.first).emoji,
+                  context.tr(
+                      'most common mood\n(${_option(leaders.first).label.toLowerCase()})',
+                      'hisia za mara nyingi\n(${_option(leaders.first).labelSw.toLowerCase()})')),
+            stat(
+                '${entries.length}',
+                context.tr('check-ins in\n30 days', 'rekodi katika\nsiku 30')),
           ],
         ),
       ),
@@ -329,15 +327,15 @@ class _EntryTile extends StatelessWidget {
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     final MoodOption m = _option(entry.mood);
     final DateTime d = entry.at;
+    final String lang = context.lang;
     final String when =
-        '${_weekdays[d.weekday - 1]} ${d.day} ${_months[d.month - 1]} · '
-        '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+        '${shortDay(lang, d.weekday)} ${shortDate(lang, d)} · ${clock(d)}';
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Card(
         child: ListTile(
           leading: Text(m.emoji, style: const TextStyle(fontSize: 28)),
-          title: Text(m.label, style: theme.textTheme.titleMedium),
+          title: Text(m.name(lang), style: theme.textTheme.titleMedium),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -351,7 +349,7 @@ class _EntryTile extends StatelessWidget {
                     <String>[
                       for (final String id in entry.tags)
                         if (moodTagById(id) != null)
-                          '${moodTagById(id)!.emoji} ${moodTagById(id)!.en}',
+                          '${moodTagById(id)!.emoji} ${moodTagById(id)!.label(lang)}',
                     ].join('  '),
                     style: theme.textTheme.labelSmall,
                   ),
@@ -365,7 +363,7 @@ class _EntryTile extends StatelessWidget {
           ),
           trailing: IconButton(
             key: Key('delete-${entry.id}'),
-            tooltip: 'Delete check-in',
+            tooltip: context.tr('Delete check-in', 'Futa rekodi'),
             icon: const Icon(Icons.delete_outline),
             onPressed: onDelete,
           ),
@@ -398,8 +396,11 @@ class _Insights extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Check in $insightMinimumCheckIns times and Chipu will start spotting '
-                  'patterns in your moods (${entries.length}/$insightMinimumCheckIns).',
+                  context.tr(
+                      'Check in $insightMinimumCheckIns times and Chipu will start spotting '
+                          'patterns in your moods (${entries.length}/$insightMinimumCheckIns).',
+                      'Rekodi hisia mara $insightMinimumCheckIns na Chipu ataanza kugundua '
+                          'mwelekeo wa hisia zako (${entries.length}/$insightMinimumCheckIns).'),
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
@@ -409,13 +410,16 @@ class _Insights extends StatelessWidget {
       );
     }
     final List<MoodInsight> insights =
-        buildInsights(entries, chatFeelings: chatFeelings);
+        buildInsights(entries,
+            chatFeelings: chatFeelings, language: context.lang);
     if (insights.isEmpty) {
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Text(
-            'No clear patterns yet. Keep checking in and Chipu will spot them.',
+            context.tr(
+                'No clear patterns yet. Keep checking in and Chipu will spot them.',
+                'Bado hakuna mwelekeo wazi. Endelea kurekodi hisia na Chipu atauona.'),
             style: theme.textTheme.bodyMedium?.copyWith(color: mq.textMuted),
           ),
         ),
@@ -459,7 +463,8 @@ class _Insights extends StatelessWidget {
                               style: FilledButton.styleFrom(
                                   minimumSize: const Size(0, 44)),
                               icon: const Icon(Icons.phone_in_talk_outlined),
-                              label: const Text('See helplines'),
+                              label: Text(context.tr(
+                                  'See helplines', 'Ona nambari za msaada')),
                             ),
                           ],
                         ],
@@ -471,7 +476,8 @@ class _Insights extends StatelessWidget {
             ),
           ),
         Text(
-          'Insights are patterns in what you logged, not a diagnosis.',
+          context.tr('Insights are patterns in what you logged, not a diagnosis.',
+              'Maarifa haya ni mwelekeo wa ulichorekodi, si utambuzi wa ugonjwa.'),
           style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
         ),
       ],

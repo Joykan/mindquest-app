@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/tr.dart';
 import '../theme/app_colors.dart';
 
 /// The MindQuest logo: the brain on a green gradient tile (same as the app
@@ -13,7 +14,7 @@ class LogoMark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'MindQuest logo',
+      label: context.tr('MindQuest logo', 'Nembo ya MindQuest'),
       image: true,
       child: Container(
         width: size,

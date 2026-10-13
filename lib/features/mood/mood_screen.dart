@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../home/progress_repository.dart';
 import 'check_in_summary.dart';
@@ -18,7 +19,6 @@ class MoodScreen extends StatefulWidget {
     this.onHistory,
     this.onSupport,
     this.onTalk,
-    this.language = 'en',
   });
 
   /// Opens the Support screen (offered after a low mood).
@@ -26,7 +26,6 @@ class MoodScreen extends StatefulWidget {
 
   /// Opens the chat (offered after a low mood).
   final VoidCallback? onTalk;
-  final String language;
 
   final ProgressRepository repository;
 
@@ -73,6 +72,7 @@ class _MoodScreenState extends State<MoodScreen> {
       for (final MoodTag t in moodTags)
         if (_tags.contains(t.id)) t.id,
     ];
+    final String lang = context.lang;
     setState(() => _saving = true);
     final MoodSaved saved;
     try {
@@ -82,9 +82,11 @@ class _MoodScreenState extends State<MoodScreen> {
       if (mounted) {
         setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content:
-                  Text("Couldn't save. Check your connection and try again.")),
+          SnackBar(
+              content: Text(tr(
+                  lang,
+                  "Couldn't save. Check your connection and try again.",
+                  'Imeshindikana kuhifadhi. Angalia mtandao wako kisha ujaribu tena.'))),
         );
       }
       return;
@@ -125,7 +127,7 @@ class _MoodScreenState extends State<MoodScreen> {
       appBar: AppBar(
         leading:
             widget.onBack == null ? null : BackButton(onPressed: widget.onBack),
-        title: const Text('Mood check-in'),
+        title: Text(context.tr('Mood check-in', 'Rekodi hisia')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -133,25 +135,35 @@ class _MoodScreenState extends State<MoodScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Text('How are you feeling right now?',
+              Text(
+                  context.tr('How are you feeling right now?',
+                      'Unajisikiaje sasa hivi?'),
                   style: theme.textTheme.titleMedium),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  for (final MoodOption m in moodOptions)
-                    _MoodChoice(
-                      option: m,
-                      selected: _mood == m.value,
-                      onTap: () => setState(() => _mood = m.value),
-                    ),
-                ],
+              // Same height for every box, even when a label wraps
+              // ("Vibaya sana").
+              IntrinsicHeight(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    for (final MoodOption m in moodOptions)
+                      _MoodChoice(
+                        option: m,
+                        selected: _mood == m.value,
+                        onTap: () => setState(() => _mood = m.value),
+                      ),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
-              Text("What's it about?", style: theme.textTheme.titleMedium),
+              Text(context.tr("What's it about?", 'Inahusu nini?'),
+                  style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Text(
-                'Optional. Pick any that fit. Chipu uses them to spot patterns.',
+                context.tr(
+                    'Optional. Pick any that fit. Chipu uses them to spot patterns.',
+                    'Si lazima. Chagua zinazofaa. Chipu huzitumia kugundua mwelekeo.'),
                 style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
               ),
               const SizedBox(height: 8),
@@ -162,7 +174,7 @@ class _MoodScreenState extends State<MoodScreen> {
                   for (final MoodTag t in moodTags)
                     FilterChip(
                       key: Key('tag-${t.id}'),
-                      label: Text('${t.emoji} ${t.label(widget.language)}'),
+                      label: Text('${t.emoji} ${t.label(context.lang)}'),
                       selected: _tags.contains(t.id),
                       onSelected: (bool on) => setState(
                           () => on ? _tags.add(t.id) : _tags.remove(t.id)),
@@ -170,10 +182,12 @@ class _MoodScreenState extends State<MoodScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-              Text('Want to add a note?', style: theme.textTheme.titleMedium),
+              Text(context.tr('Want to add a note?', 'Ungependa kuongeza maelezo?'),
+                  style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Text(
-                'Optional. Only you can see it.',
+                context.tr('Optional. Only you can see it.',
+                    'Si lazima. Ni wewe tu unayeweza kuyaona.'),
                 style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
               ),
               const SizedBox(height: 8),
@@ -183,11 +197,11 @@ class _MoodScreenState extends State<MoodScreen> {
                 minLines: 3,
                 maxLines: 5,
                 maxLength: 200,
-                decoration: const InputDecoration(
-                  hintText: "What's on your mind?",
-                  border: OutlineInputBorder(
+                decoration: InputDecoration(
+                  hintText: context.tr("What's on your mind?", 'Unawaza nini?'),
+                  border: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(16))),
-                  enabledBorder: OutlineInputBorder(
+                  enabledBorder: const OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(16))),
                 ),
               ),
@@ -200,11 +214,13 @@ class _MoodScreenState extends State<MoodScreen> {
                         width: 22,
                         height: 22,
                         child: CircularProgressIndicator(strokeWidth: 2.5))
-                    : const Text('Save check-in'),
+                    : Text(context.tr('Save check-in', 'Hifadhi')),
               ),
               const SizedBox(height: 8),
               Text(
-                'Your first check-in each day earns +10 XP and keeps your streak going.',
+                context.tr(
+                    'Your first check-in each day earns +10 XP and keeps your streak going.',
+                    'Rekodi yako ya kwanza kila siku inakupa +10 XP na kuendeleza mfululizo wako.'),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
               ),
@@ -214,7 +230,7 @@ class _MoodScreenState extends State<MoodScreen> {
                   key: const Key('view-history'),
                   onPressed: widget.onHistory,
                   icon: const Icon(Icons.history),
-                  label: const Text('View mood history'),
+                  label: Text(context.tr('View mood history', 'Ona historia ya hisia')),
                 ),
               ],
             ],
@@ -239,7 +255,7 @@ class _MoodChoice extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      label: option.label,
+      label: option.name(context.lang),
       child: InkWell(
         key: Key('choose-mood-${option.value}'),
         borderRadius: BorderRadius.circular(16),
@@ -261,10 +277,11 @@ class _MoodChoice extends StatelessWidget {
             ),
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(option.emoji, style: const TextStyle(fontSize: 28)),
               const SizedBox(height: 4),
-              Text(option.label,
+              Text(option.name(context.lang),
                   style: theme.textTheme.labelSmall,
                   textAlign: TextAlign.center),
             ],

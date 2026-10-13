@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/widgets/mascot.dart';
 import 'badges.dart';
 
@@ -12,7 +13,10 @@ Future<void> showNewBadges(
     builder: (BuildContext context) => AlertDialog(
       key: const Key('new-badge-dialog'),
       icon: const Mascot(pose: MascotPose.happy, size: 96),
-      title: Text(badges.length == 1 ? 'New badge!' : 'New badges!',
+      title: Text(
+          badges.length == 1
+              ? tr(language, 'New badge!', 'Beji mpya!')
+              : tr(language, 'New badges!', 'Beji mpya!'),
           textAlign: TextAlign.center),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -25,7 +29,7 @@ Future<void> showNewBadges(
                   Text(b.emoji, style: const TextStyle(fontSize: 40)),
                   Text(b.displayName(language),
                       style: theme.textTheme.titleMedium),
-                  Text(b.description,
+                  Text(b.describe(language),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium),
                 ],
@@ -36,7 +40,7 @@ Future<void> showNewBadges(
       actions: <Widget>[
         TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Nice!')),
+            child: Text(tr(language, 'Nice!', 'Safi!'))),
       ],
     ),
   );

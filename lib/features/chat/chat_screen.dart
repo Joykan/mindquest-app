@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/mascot.dart';
 import '../home/progress_repository.dart';
@@ -54,30 +55,54 @@ const List<String> quickReplies = <String>[
   "I'm doing great",
 ];
 
+/// The same suggestions in Kiswahili (all close to the training phrases).
+const List<String> quickRepliesSw = <String>[
+  'Nina msongo wa mawazo',
+  'Nina wasiwasi',
+  'Nisaidie kupumua',
+  'Niko poa',
+];
+
 /// Chip that asks for a mood check-in in the chat.
 const String checkInChip = 'Check in my mood';
-
-const String _greeting =
-    "Hi, I'm Chipu, your MindQuest buddy. How are you feeling right now?";
+const String checkInChipSw = 'Rekodi hisia zangu';
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _input = TextEditingController();
-  late final List<ChatMessage> _messages = <ChatMessage>[_firstMessage()];
+  final List<ChatMessage> _messages = <ChatMessage>[];
 
-  ChatMessage _firstMessage() => widget.progress == null
-      ? const ChatMessage(
-          text:
-              "Hi, I'm Chipu, your MindQuest buddy. How are you feeling today? "
-              'You can also ask me for a breathing exercise.',
-          fromUser: false,
-        )
-      : const ChatMessage(
-          text: _greeting, fromUser: false, kind: ChatItemKind.moodPicker);
+  ChatMessage _firstMessage() {
+    final String lang = context.lang;
+    return widget.progress == null
+        ? ChatMessage(
+            text: tr(
+                lang,
+                "Hi, I'm Chipu, your MindQuest buddy. How are you feeling today? "
+                    'You can also ask me for a breathing exercise.',
+                'Habari, mimi ni Chipu, rafiki yako wa MindQuest. Unajisikiaje leo? '
+                    'Unaweza pia kuniomba zoezi la kupumua.'),
+            fromUser: false,
+          )
+        : ChatMessage(
+            text: tr(
+                lang,
+                "Hi, I'm Chipu, your MindQuest buddy. How are you feeling right now?",
+                'Habari, mimi ni Chipu, rafiki yako wa MindQuest. Unajisikiaje sasa hivi?'),
+            fromUser: false,
+            kind: ChatItemKind.moodPicker);
+  }
 
   @override
   void initState() {
     super.initState();
     _restore();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // The greeting needs the language, which is only known here.
+    if (_messages.isEmpty) _messages.add(_firstMessage());
   }
 
   /// Picks up the last conversation if it was recent.
@@ -86,14 +111,13 @@ class _ChatScreenState extends State<ChatScreen> {
       final RestoredChat? chat = await widget.backend.restore();
       // Only if the user hasn't started typing in the meantime.
       if (chat == null || !mounted || _messages.length > 1 || _sending) return;
-      final DateTime t = chat.startedAt;
-      final String time =
-          '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+      final String time = clock(chat.startedAt);
       setState(() {
         _messages
           ..clear()
           ..add(ChatMessage(
-              text: 'Continuing your chat from $time',
+              text: context.tr('Continuing your chat from $time',
+                  'Unaendelea na mazungumzo ya saa $time'),
               fromUser: false,
               kind: ChatItemKind.note))
           ..addAll(chat.messages);
@@ -111,17 +135,18 @@ class _ChatScreenState extends State<ChatScreen> {
       final bool? sure = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: const Text('Start a new chat?'),
-          content: const Text(
-              'This conversation is saved. You can read it again in Past chats.'),
+          title: Text(context.tr('Start a new chat?', 'Anza mazungumzo mapya?')),
+          content: Text(context.tr(
+              'This conversation is saved. You can read it again in Past chats.',
+              'Mazungumzo haya yamehifadhiwa. Unaweza kuyasoma tena kwenye Mazungumzo ya awali.')),
           actions: <Widget>[
             TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel')),
+                child: Text(context.tr('Cancel', 'Ghairi'))),
             TextButton(
               key: const Key('confirm-new-chat'),
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('New chat'),
+              child: Text(context.tr('New chat', 'Mazungumzo mapya')),
             ),
           ],
         ),
@@ -158,6 +183,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _send([String? preset]) async {
     final String text = (preset ?? _input.text).trim();
     if (text.isEmpty || _sending) return;
+    final String lang = context.lang;
 
     setState(() {
       _messages.add(ChatMessage(text: text, fromUser: true));
@@ -177,18 +203,25 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     } catch (_) {
       if (!mounted) return;
-      _showError(
-          "Couldn't send your message. Check your connection and try again.");
+      _showError(tr(
+          lang,
+          "Couldn't send your message. Check your connection and try again.",
+          'Imeshindikana kutuma ujumbe wako. Angalia mtandao wako kisha ujaribu tena.'));
     } finally {
       if (mounted) setState(() => _sending = false);
     }
   }
 
+  static bool _isCheckIn(String chip) =>
+      chip == checkInChip || chip == checkInChipSw;
+
   void _askMood() {
     if (_sending) return;
     setState(() {
-      _messages.add(const ChatMessage(text: checkInChip, fromUser: true));
-      _addBot('How are you feeling right now?', ChatItemKind.moodPicker);
+      _messages.add(ChatMessage(
+          text: context.tr(checkInChip, checkInChipSw), fromUser: true));
+      _addBot(context.tr('How are you feeling right now?', 'Unajisikiaje sasa hivi?'),
+          ChatItemKind.moodPicker);
     });
   }
 
@@ -196,9 +229,11 @@ class _ChatScreenState extends State<ChatScreen> {
     final ProgressRepository? progress = widget.progress;
     if (progress == null || _picked.containsKey(index) || _sending) return;
     final MoodOption m = moodOptions[mood - 1];
+    final String lang = context.lang;
     setState(() {
       _picked[index] = mood;
-      _messages.add(ChatMessage(text: '${m.emoji} ${m.label}', fromUser: true));
+      _messages.add(
+          ChatMessage(text: '${m.emoji} ${m.name(lang)}', fromUser: true));
       _sending = true;
     });
     try {
@@ -212,16 +247,18 @@ class _ChatScreenState extends State<ChatScreen> {
         // The graph and insight are a bonus; the check-in is already saved.
       }
       final List<MoodInsight> insights =
-          buildInsights(week, chatFeelings: feelings);
+          buildInsights(week, chatFeelings: feelings, language: lang);
       if (!mounted) return;
       widget.onMoodSaved?.call();
       setState(() {
         _week = week;
-        _addBot(moodReply(mood));
+        _addBot(moodReply(mood, lang));
         _addBot(
           saved.xpEarned > 0
-              ? "I've added that to your graph. +${saved.xpEarned} XP"
-              : "I've added that to your graph.",
+              ? tr(lang, "I've added that to your graph. +${saved.xpEarned} XP",
+                  'Nimeiongeza kwenye grafu yako. +${saved.xpEarned} XP')
+              : tr(lang, "I've added that to your graph.",
+                  'Nimeiongeza kwenye grafu yako.'),
           ChatItemKind.moodGraph,
         );
         // Share the most important thing Chipu noticed, if anything.
@@ -230,7 +267,8 @@ class _ChatScreenState extends State<ChatScreen> {
           if (top.needsSupport) {
             _addBot('${top.title}. ${top.body}', ChatItemKind.support);
           } else {
-            _addBot('Something I noticed: ${top.body}');
+            _addBot(tr(lang, 'Something I noticed: ${top.body}',
+                'Nimegundua jambo: ${top.body}'));
           }
         }
       });
@@ -240,8 +278,10 @@ class _ChatScreenState extends State<ChatScreen> {
         _picked.remove(index);
         _messages.removeLast();
       });
-      _showError(
-          "Couldn't save your mood. Check your connection and try again.");
+      _showError(tr(
+          lang,
+          "Couldn't save your mood. Check your connection and try again.",
+          'Imeshindikana kuhifadhi hisia zako. Angalia mtandao wako kisha ujaribu tena.'));
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -255,8 +295,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     final List<String> chips = <String>[
-      if (widget.progress != null) checkInChip,
-      ...quickReplies,
+      if (widget.progress != null) context.tr(checkInChip, checkInChipSw),
+      ...(context.isSw ? quickRepliesSw : quickReplies),
     ];
     // Newest first, because the list is reversed. Index 0 may be "typing".
     final int extra = _sending ? 1 : 0;
@@ -276,7 +316,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   const Text('Chipu',
                       maxLines: 1, overflow: TextOverflow.ellipsis),
                   Text(
-                    'AI companion · not a therapist',
+                    context.tr('AI companion · not a therapist',
+                        'Rafiki wa AI · si mtaalamu wa tiba'),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.labelSmall
@@ -291,13 +332,13 @@ class _ChatScreenState extends State<ChatScreen> {
           if (widget.onPastChats != null)
             IconButton(
               key: const Key('past-chats'),
-              tooltip: 'Past chats',
+              tooltip: context.tr('Past chats', 'Mazungumzo ya awali'),
               onPressed: widget.onPastChats,
               icon: const Icon(Icons.history),
             ),
           IconButton(
             key: const Key('new-chat'),
-            tooltip: 'New chat',
+            tooltip: context.tr('New chat', 'Mazungumzo mapya'),
             onPressed: _sending ? null : _newChat,
             icon: const Icon(Icons.add_comment_outlined),
           ),
@@ -341,11 +382,11 @@ class _ChatScreenState extends State<ChatScreen> {
                 separatorBuilder: (BuildContext context, int i) =>
                     const SizedBox(width: 8),
                 itemBuilder: (BuildContext context, int i) => ActionChip(
-                  avatar: chips[i] == checkInChip ? const Text('📝') : null,
+                  avatar: _isCheckIn(chips[i]) ? const Text('📝') : null,
                   label: Text(chips[i]),
                   onPressed: _sending
                       ? null
-                      : chips[i] == checkInChip
+                      : _isCheckIn(chips[i])
                           ? _askMood
                           : () => _send(chips[i]),
                 ),
@@ -374,8 +415,11 @@ class _ChatIntro extends StatelessWidget {
           const Mascot(pose: MascotPose.wave, size: 120),
           const SizedBox(height: 4),
           Text(
-            'I listen, suggest exercises and track your moods.\n'
-            "I'm not a therapist. If you're in danger, please call emergency services.",
+            context.tr(
+                'I listen, suggest exercises and track your moods.\n'
+                    "I'm not a therapist. If you're in danger, please call emergency services.",
+                'Ninasikiliza, napendekeza mazoezi na kufuatilia hisia zako.\n'
+                    'Mimi si mtaalamu wa tiba. Ukiwa hatarini, tafadhali piga simu ya dharura.'),
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
           ),
@@ -446,7 +490,7 @@ class _ChatItem extends StatelessWidget {
                   onPressed: onHelplines,
                   style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
                   icon: const Icon(Icons.phone_in_talk_outlined),
-                  label: const Text('See helplines'),
+                  label: Text(context.tr('See helplines', 'Ona nambari za msaada')),
                 ),
               ),
           ],
@@ -485,7 +529,7 @@ class _MoodFaces extends StatelessWidget {
             Semantics(
               button: true,
               selected: picked == m.value,
-              label: m.label,
+              label: m.name(context.lang),
               child: InkWell(
                 key: Key('chat-mood-${m.value}'),
                 borderRadius: BorderRadius.circular(14),
@@ -496,7 +540,7 @@ class _MoodFaces extends StatelessWidget {
                   duration: const Duration(milliseconds: 200),
                   opacity: picked == null || picked == m.value ? 1 : 0.35,
                   child: Container(
-                    width: 52,
+                    width: 60,
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
                       color: picked == m.value
@@ -513,7 +557,7 @@ class _MoodFaces extends StatelessWidget {
                     child: Column(
                       children: <Widget>[
                         Text(m.emoji, style: const TextStyle(fontSize: 22)),
-                        Text(m.label,
+                        Text(m.name(context.lang),
                             style: theme.textTheme.labelSmall
                                 ?.copyWith(fontSize: 10),
                             textAlign: TextAlign.center,
@@ -557,7 +601,8 @@ class _GraphCard extends StatelessWidget {
           Row(
             children: <Widget>[
               Expanded(
-                  child: Text('Your week', style: theme.textTheme.titleSmall)),
+                  child: Text(context.tr('Your week', 'Wiki yako'),
+                      style: theme.textTheme.titleSmall)),
               if (happy) const Mascot(pose: MascotPose.happy, size: 34),
             ],
           ),
@@ -633,7 +678,7 @@ class _TypingBubbleState extends State<_TypingBubble>
   Widget build(BuildContext context) {
     final MindQuestColors mq = Theme.of(context).extension<MindQuestColors>()!;
     return Semantics(
-      label: 'Chipu is typing',
+      label: context.tr('Chipu is typing', 'Chipu anaandika'),
       child: Row(
         key: const Key('typing'),
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -712,12 +757,12 @@ class _Composer extends StatelessWidget {
                 maxLength: 1000,
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => onSend(),
-                decoration: const InputDecoration(
-                  hintText: 'Type a message...',
+                decoration: InputDecoration(
+                  hintText: context.tr('Type a message...', 'Andika ujumbe...'),
                   counterText: '',
                   filled: false,
                   isDense: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 12),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
@@ -729,7 +774,7 @@ class _Composer extends StatelessWidget {
               key: const Key('chat-send'),
               onPressed: sending ? null : onSend,
               icon: const Icon(Icons.arrow_upward_rounded),
-              tooltip: 'Send',
+              tooltip: context.tr('Send', 'Tuma'),
               style: IconButton.styleFrom(minimumSize: const Size(44, 44)),
             ),
           ],

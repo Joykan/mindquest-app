@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/mascot.dart';
 import '../home/progress_repository.dart';
@@ -67,6 +68,8 @@ class _CheckInSummaryState extends State<CheckInSummary> {
   late final Future<(List<MoodEntry>, List<MoodInsight>)> _insights = _load();
 
   Future<(List<MoodEntry>, List<MoodInsight>)> _load() async {
+    // Runs during the first build, so the language can be read here.
+    final String lang = context.lang;
     final Future<void> wait = Future<void>.delayed(CheckInSummary.thinking);
     List<MoodEntry> history = const <MoodEntry>[];
     Map<String, int> feelings = const <String, int>{};
@@ -79,16 +82,18 @@ class _CheckInSummaryState extends State<CheckInSummary> {
     await wait;
     return (
       history,
-      pickSummaryInsights(widget.mood, widget.tags, history, feelings)
+      pickSummaryInsights(widget.mood, widget.tags, history, feelings,
+          language: lang)
     );
   }
 
-  String get _title => switch (widget.mood) {
-        5 => 'Amazing!',
-        4 => "Glad you're feeling good",
-        3 => 'Thanks for checking in',
-        2 => "Sorry it's a tough day",
-        _ => "I'm here for you",
+  String _title(BuildContext context) => switch (widget.mood) {
+        5 => context.tr('Amazing!', 'Safi sana!'),
+        4 => context.tr("Glad you're feeling good",
+            'Nafurahi unajisikia vizuri'),
+        3 => context.tr('Thanks for checking in', 'Asante kwa kurekodi hisia'),
+        2 => context.tr("Sorry it's a tough day", 'Pole kwa siku ngumu'),
+        _ => context.tr("I'm here for you", 'Niko hapa kwa ajili yako'),
       };
 
   @override
@@ -110,7 +115,9 @@ class _CheckInSummaryState extends State<CheckInSummary> {
                 const SizedBox(height: 16),
                 const CircularProgressIndicator(),
                 const SizedBox(height: 16),
-                Text('Chipu is looking at your moods…',
+                Text(
+                    context.tr('Chipu is looking at your moods…',
+                        'Chipu anaangalia hisia zako…'),
                     style: theme.textTheme.titleMedium),
               ],
             ),
@@ -136,7 +143,7 @@ class _CheckInSummaryState extends State<CheckInSummary> {
                 ),
               ),
               const SizedBox(height: 8),
-              Text('${m.emoji}  $_title',
+              Text('${m.emoji}  ${_title(context)}',
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineSmall),
               const SizedBox(height: 10),
@@ -149,23 +156,25 @@ class _CheckInSummaryState extends State<CheckInSummary> {
                     _Pill(
                         text: '+${widget.saved.xpEarned} XP', color: mq.reward),
                   _Pill(
-                    text: '🔥 ${widget.saved.streak}-day streak',
+                    text: context.tr('🔥 ${widget.saved.streak}-day streak',
+                        '🔥 Mfululizo wa siku ${widget.saved.streak}'),
                     color: theme.colorScheme.primary.withValues(alpha: 0.15),
                   ),
                   for (final String id in widget.tags)
                     if (moodTagById(id) != null)
                       _Pill(
                           text:
-                              '${moodTagById(id)!.emoji} ${moodTagById(id)!.en}',
+                              '${moodTagById(id)!.emoji} ${moodTagById(id)!.label(context.lang)}',
                           color: mq.surfaceSoft),
                 ],
               ),
               const SizedBox(height: 14),
-              Text(moodReply(widget.mood),
+              Text(moodReply(widget.mood, context.lang),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge),
               const SizedBox(height: 18),
-              Text('What Chipu noticed', style: theme.textTheme.titleMedium),
+              Text(context.tr('What Chipu noticed', 'Alichogundua Chipu'),
+                  style: theme.textTheme.titleMedium),
               const SizedBox(height: 8),
               for (final MoodInsight i in insights)
                 _NoteCard(
@@ -176,23 +185,27 @@ class _CheckInSummaryState extends State<CheckInSummary> {
               if (history.length < insightMinimumCheckIns)
                 _NoteCard(
                   emoji: '🔒',
-                  text:
+                  text: context.tr(
                       'Check in ${insightMinimumCheckIns - history.length} more '
-                      '${insightMinimumCheckIns - history.length == 1 ? 'time' : 'times'} '
-                      'and Chipu will start spotting patterns across your days.',
+                          '${insightMinimumCheckIns - history.length == 1 ? 'time' : 'times'} '
+                          'and Chipu will start spotting patterns across your days.',
+                      'Rekodi hisia mara ${insightMinimumCheckIns - history.length} zaidi '
+                          'na Chipu ataanza kugundua mwelekeo wa siku zako.'),
                 )
               else if (insights.isEmpty)
-                const _NoteCard(
+                _NoteCard(
                     emoji: '🔍',
-                    text:
-                        'No clear patterns yet. Keep checking in and Chipu will spot them.'),
+                    text: context.tr(
+                        'No clear patterns yet. Keep checking in and Chipu will spot them.',
+                        'Bado hakuna mwelekeo wazi. Endelea kurekodi hisia na Chipu atauona.')),
               const SizedBox(height: 16),
               if (low && widget.canOpenSupport)
                 FilledButton.icon(
                   key: const Key('summary-support'),
                   onPressed: () => Navigator.pop(context, CheckInNext.support),
                   icon: const Icon(Icons.spa_outlined),
-                  label: const Text('Try a breathing exercise'),
+                  label: Text(context.tr(
+                      'Try a breathing exercise', 'Jaribu zoezi la kupumua')),
                 ),
               if (low && widget.canTalk) ...<Widget>[
                 const SizedBox(height: 8),
@@ -200,14 +213,14 @@ class _CheckInSummaryState extends State<CheckInSummary> {
                   key: const Key('summary-talk'),
                   onPressed: () => Navigator.pop(context, CheckInNext.talk),
                   icon: const Icon(Icons.chat_bubble_outline),
-                  label: const Text('Talk to Chipu'),
+                  label: Text(context.tr('Talk to Chipu', 'Ongea na Chipu')),
                 ),
               ],
               const SizedBox(height: 8),
               TextButton(
                 key: const Key('summary-done'),
                 onPressed: () => Navigator.pop(context, CheckInNext.done),
-                child: const Text('Done'),
+                child: Text(context.tr('Done', 'Sawa')),
               ),
             ],
           ),
@@ -278,13 +291,14 @@ List<MoodInsight> pickSummaryInsights(
   int mood,
   List<String> tags,
   List<MoodEntry> history,
-  Map<String, int> chatFeelings,
-) {
-  final List<MoodInsight> patterns =
-      buildInsights(history, chatFeelings: chatFeelings);
+  Map<String, int> chatFeelings, {
+  String language = 'en',
+}) {
+  final List<MoodInsight> patterns = buildInsights(history,
+      chatFeelings: chatFeelings, language: language);
   final List<MoodInsight> out = <MoodInsight>[
     ...patterns.where((MoodInsight i) => i.needsSupport),
-    ...checkInInsights(mood, tags, history).take(2),
+    ...checkInInsights(mood, tags, history, language: language).take(2),
   ];
   for (final MoodInsight i in patterns) {
     if (out.length >= 3) break;

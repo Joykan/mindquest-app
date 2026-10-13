@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import 'chat_models.dart';
 
@@ -27,7 +28,9 @@ Future<void> callHelpline(BuildContext context, Helpline line) async {
   final bool opened = await launchUrl(uri);
   if (!opened && context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Please dial ${line.phone}')),
+      SnackBar(
+          content: Text(context.tr(
+              'Please dial ${line.phone}', 'Tafadhali piga ${line.phone}'))),
     );
   }
 }
@@ -64,7 +67,8 @@ class CrisisSheet extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          "You don't have to go through this alone",
+                          context.tr("You don't have to go through this alone",
+                              'Huhitaji kupitia hili peke yako'),
                           style: theme.textTheme.titleMedium,
                         ),
                       ),
@@ -84,7 +88,8 @@ class CrisisSheet extends StatelessWidget {
               style:
                   TextButton.styleFrom(minimumSize: const Size.fromHeight(48)),
               child: Text(
-                "I'm safe, continue chatting",
+                context.tr("I'm safe, continue chatting",
+                    'Niko salama, tuendelee kuongea'),
                 style: theme.textTheme.labelLarge
                     ?.copyWith(color: theme.colorScheme.onSurface),
               ),
@@ -108,10 +113,10 @@ class HelplineRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
+    final String? description = line.describe(context.lang);
     final String details = <String>[
       line.phone,
-      if (line.description != null && line.description!.isNotEmpty)
-        line.description!,
+      if (description != null && description.isNotEmpty) description,
     ].join(' · ');
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -124,7 +129,7 @@ class HelplineRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(line.name, style: theme.textTheme.titleMedium),
+                Text(line.nameIn(context.lang), style: theme.textTheme.titleMedium),
                 const SizedBox(height: 2),
                 Text(details,
                     style: theme.textTheme.bodySmall
@@ -136,7 +141,7 @@ class HelplineRow extends StatelessWidget {
           FilledButton.icon(
             onPressed: () => onCall(context, line),
             icon: const Icon(Icons.call, size: 18),
-            label: const Text('Call'),
+            label: Text(context.tr('Call', 'Piga')),
             style: FilledButton.styleFrom(
               minimumSize: const Size(96, 44),
               backgroundColor: mq.crisis,

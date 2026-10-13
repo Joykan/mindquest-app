@@ -1,37 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/mascot.dart';
 import 'chat_backend.dart';
 import 'chat_models.dart';
 
-const List<String> _days = <String>[
-  'Mon',
-  'Tue',
-  'Wed',
-  'Thu',
-  'Fri',
-  'Sat',
-  'Sun'
-];
-const List<String> _months = <String>[
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-
-String chatDate(DateTime d) =>
-    '${_days[d.weekday - 1]} ${d.day} ${_months[d.month - 1]} · '
-    '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+/// "Tue 13 Oct · 10:23" / "Jnn 13 Okt · 10:23".
+String chatDate(DateTime d, [String language = 'en']) =>
+    '${shortDay(language, d.weekday)} ${shortDate(language, d)} · ${clock(d)}';
 
 /// Past chats: recent conversations, newest first. Tap one to read it.
 class PastChatsScreen extends StatelessWidget {
@@ -46,15 +23,17 @@ class PastChatsScreen extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Past chats')),
+      appBar: AppBar(
+          title: Text(context.tr('Past chats', 'Mazungumzo ya awali'))),
       body: FutureBuilder<List<ChatSessionSummary>>(
         future: backend.loadPastChats(),
         builder: (BuildContext context,
             AsyncSnapshot<List<ChatSessionSummary>> snap) {
           if (snap.hasError) {
-            return const Center(
-                child:
-                    Text("Couldn't load your chats. Check your connection."));
+            return Center(
+                child: Text(context.tr(
+                    "Couldn't load your chats. Check your connection.",
+                    'Imeshindikana kupakia mazungumzo yako. Angalia mtandao wako.')));
           }
           if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -69,7 +48,9 @@ class PastChatsScreen extends StatelessWidget {
                   children: <Widget>[
                     const Mascot(size: 96),
                     const SizedBox(height: 12),
-                    Text('No chats yet. Say hi to Chipu!',
+                    Text(
+                        context.tr('No chats yet. Say hi to Chipu!',
+                            'Bado hakuna mazungumzo. Msalimie Chipu!'),
                         style: theme.textTheme.titleMedium),
                   ],
                 ),
@@ -84,7 +65,8 @@ class PastChatsScreen extends StatelessWidget {
             itemBuilder: (BuildContext context, int i) {
               if (i == chats.length) {
                 return Text(
-                  'Only you can see your chats.',
+                  context.tr('Only you can see your chats.',
+                      'Ni wewe tu unayeweza kuona mazungumzo yako.'),
                   textAlign: TextAlign.center,
                   style:
                       theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
@@ -97,14 +79,18 @@ class PastChatsScreen extends StatelessWidget {
                   key: Key('past-chat-${c.id}'),
                   leading: const MascotAvatar(size: 40),
                   title: Text(
-                    c.preview.isEmpty ? 'Chat with Chipu' : c.preview,
+                    c.preview.isEmpty
+                        ? context.tr('Chat with Chipu', 'Mazungumzo na Chipu')
+                        : c.preview,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleSmall,
                   ),
-                  subtitle: Text(
+                  subtitle: Text(context.tr(
                       '${chatDate(c.startedAt)} · ${c.messageCount} messages'
-                      '${c.open ? ' · current' : ''}'),
+                          '${c.open ? ' · current' : ''}',
+                      '${chatDate(c.startedAt, 'sw')} · jumbe ${c.messageCount}'
+                          '${c.open ? ' · ya sasa' : ''}')),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => onOpen(c),
                 ),
@@ -130,12 +116,14 @@ class ChatTranscriptScreen extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     return Scaffold(
-      appBar: AppBar(title: Text(chatDate(chat.startedAt))),
+      appBar: AppBar(title: Text(chatDate(chat.startedAt, context.lang))),
       body: FutureBuilder<List<ChatMessage>>(
         future: backend.loadTranscript(chat.id),
         builder: (BuildContext context, AsyncSnapshot<List<ChatMessage>> snap) {
           if (snap.hasError) {
-            return const Center(child: Text("Couldn't load this chat."));
+            return Center(
+                child: Text(context.tr("Couldn't load this chat.",
+                    'Imeshindikana kupakia mazungumzo haya.')));
           }
           if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());

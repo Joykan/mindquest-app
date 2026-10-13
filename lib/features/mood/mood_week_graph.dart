@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../home/progress_repository.dart';
 import 'moods.dart';
-
-const List<String> _weekdays = <String>[
-  'Mon',
-  'Tue',
-  'Wed',
-  'Thu',
-  'Fri',
-  'Sat',
-  'Sun'
-];
 
 String _dayKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
 
@@ -47,14 +38,16 @@ class MoodWeekGraph extends StatelessWidget {
       for (final DateTime d in days) latest[_dayKey(d)]
     ];
 
+    final String lang = context.lang;
     final String summary = <String>[
       for (int i = 0; i < 7; i++)
-        '${_weekdays[days[i].weekday - 1]}: '
-            '${moods[i] == null ? 'no check-in' : moodOptions[moods[i]! - 1].label}',
+        '${fullDay(lang, days[i].weekday)}: '
+            '${moods[i] == null ? tr(lang, 'no check-in', 'hakuna rekodi') : moodOptions[moods[i]! - 1].name(lang)}',
     ].join(', ');
 
     return Semantics(
-      label: 'Your moods this week. $summary',
+      label: tr(lang, 'Your moods this week. $summary',
+          'Hisia zako wiki hii. $summary'),
       excludeSemantics: true,
       child: SizedBox(
         height: height,
@@ -102,7 +95,9 @@ class MoodWeekGraph extends StatelessWidget {
                     bottom: 0,
                     height: labelHeight,
                     child: Text(
-                      i == 6 ? 'Today' : _weekdays[days[i].weekday - 1],
+                      i == 6
+                          ? tr(lang, 'Today', 'Leo')
+                          : shortDay(lang, days[i].weekday),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color:
