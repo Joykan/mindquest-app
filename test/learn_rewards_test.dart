@@ -169,7 +169,8 @@ void main() {
     expect(readCalls, 1);
     expect(find.byKey(const Key('new-badge-dialog')), findsOneWidget);
     expect(find.text('Akili Dadisi'), findsOneWidget);
-    await tester.tap(find.text('Nice!'));
+    // The article was switched to Kiswahili, so the pop-up is in Kiswahili too.
+    await tester.tap(find.text('Safi!'));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('article-read')), findsOneWidget);
     expect(find.byKey(const Key('mark-read')), findsNothing);
