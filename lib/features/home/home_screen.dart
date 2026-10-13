@@ -271,16 +271,23 @@ class _HomeBody extends StatelessWidget {
                         style: theme.textTheme.titleMedium,
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                          color: mq.reward,
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Text(
-                        '${context.tr('Level', 'Kiwango')} ${level.level} · ${title.emoji} ${title.name(lang)}',
-                        style: theme.textTheme.labelSmall
-                            ?.copyWith(color: mq.onReward),
+                    const SizedBox(width: 8),
+                    // Flexible so a long level name in Kiswahili or a big
+                    // system font shortens with "..." instead of overflowing.
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                            color: mq.reward,
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Text(
+                          '${context.tr('Level', 'Kiwango')} ${level.level} · ${title.emoji} ${title.name(lang)}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelSmall
+                              ?.copyWith(color: mq.onReward),
+                        ),
                       ),
                     ),
                   ],
