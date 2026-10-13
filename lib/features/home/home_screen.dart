@@ -259,7 +259,11 @@ class _HomeBody extends StatelessWidget {
                 // Streak on the left, level pill on the right. When both
                 // don't fit (long Kiswahili text or a big system font), the
                 // pill moves to the next line instead of being cut off.
-                Wrap(
+                // Full width, so spaceBetween can push the pill to the right
+                // (a Wrap is otherwise only as wide as its children).
+                SizedBox(
+                  width: double.infinity,
+                  child: Wrap(
                   alignment: WrapAlignment.spaceBetween,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   spacing: 8,
@@ -298,6 +302,7 @@ class _HomeBody extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
                 ),
                 const SizedBox(height: 12),
                 ClipRRect(
