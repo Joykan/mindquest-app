@@ -156,6 +156,7 @@ void main() {
     await tester.pump();
     expect(find.text('Makala 7'), findsOneWidget);
     expect(find.text('Aya ya pili ya 7.'), findsOneWidget);
+    expect(find.text('Nimeisoma · +5 XP'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('mark-read')));
     await tester.pumpAndSettle();

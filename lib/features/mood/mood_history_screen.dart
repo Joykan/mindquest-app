@@ -276,11 +276,14 @@ class _Summary extends StatelessWidget {
     for (final MoodEntry e in entries) {
       counts[e.mood] = (counts[e.mood] ?? 0) + 1;
     }
-    final int common =
-        counts.entries.reduce((MapEntry<int, int> a, MapEntry<int, int> b) {
-      if (a.value != b.value) return a.value > b.value ? a : b;
-      return a.key > b.key ? a : b; // on a tie, show the better mood
-    }).key;
+    final int top = counts.values.reduce((int a, int b) => a > b ? a : b);
+    final List<int> leaders = <int>[
+      for (final MapEntry<int, int> c in counts.entries)
+        if (c.value == top) c.key,
+    ];
+    // A tie (for example one low, one great and one very low) is shown as
+    // "mixed" rather than picking one mood that is not really the most common.
+    final bool mixed = leaders.length > 1;
 
     Widget stat(String value, String label) => Expanded(
           child: Column(
@@ -301,8 +304,11 @@ class _Summary extends StatelessWidget {
         child: Row(
           children: <Widget>[
             stat('$days / 7', 'days checked in\nthis week'),
-            stat(_option(common).emoji,
-                'most common mood\n(${_option(common).label.toLowerCase()})'),
+            if (mixed)
+              stat('🎢', 'most common mood\n(mixed)')
+            else
+              stat(_option(leaders.first).emoji,
+                  'most common mood\n(${_option(leaders.first).label.toLowerCase()})'),
             stat('${entries.length}', 'check-ins in\n30 days'),
           ],
         ),

@@ -32,6 +32,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
   late bool _read = widget.article.read;
   bool _saving = false;
 
+  /// The labels around the article follow the article's language.
+  bool get _sw => _lang == 'sw';
+
   Future<void> _markRead() async {
     setState(() => _saving = true);
     try {
@@ -43,8 +46,8 @@ class _ArticleScreenState extends State<ArticleScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result.xpEarned > 0
-              ? 'Nice work! +${result.xpEarned} XP'
-              : 'Marked as read'),
+              ? '${_sw ? 'Kazi nzuri!' : 'Nice work!'} +${result.xpEarned} XP'
+              : (_sw ? 'Imewekwa kama imesomwa' : 'Marked as read')),
         ),
       );
       if (result.newBadges.isNotEmpty) {
@@ -89,7 +92,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '${categoryName(a.category, _lang)} · ${a.minutes} min read',
+                    _sw
+                        ? '${categoryName(a.category, _lang)} · dakika ${a.minutes} za kusoma'
+                        : '${categoryName(a.category, _lang)} · ${a.minutes} min read',
                     style: theme.textTheme.labelLarge
                         ?.copyWith(color: theme.colorScheme.primary),
                   ),
@@ -119,7 +124,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
                   children: <Widget>[
                     Icon(Icons.check_circle, color: theme.colorScheme.primary),
                     const SizedBox(width: 10),
-                    const Expanded(child: Text('You have read this article.')),
+                    Expanded(
+                        child: Text(_sw
+                            ? 'Umesoma makala hii.'
+                            : 'You have read this article.')),
                   ],
                 ),
               )
@@ -134,12 +142,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2.5),
                       )
                     : const Icon(Icons.check),
-                label: const Text("I've read this · +5 XP"),
+                label: Text(_sw ? 'Nimeisoma · +5 XP' : "I've read this · +5 XP"),
               ),
             const SizedBox(height: 16),
             Text(
-              'MindQuest articles share general information. They are not medical advice. '
-              'If you need help, talk to a counsellor or use the helplines on Home.',
+              _sw
+                  ? 'Makala za MindQuest zinatoa taarifa za jumla. Si ushauri wa kitabibu. '
+                      'Ukihitaji msaada, ongea na mshauri au tumia nambari za msaada zilizo kwenye Home.'
+                  : 'MindQuest articles share general information. They are not medical advice. '
+                      'If you need help, talk to a counsellor or use the helplines on Home.',
               style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
             ),
           ],

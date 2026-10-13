@@ -276,6 +276,8 @@ void main() {
 
     expect(repo.deleted, <String>['a']);
     expect(find.text('good lecture'), findsNothing);
+    // One low and one good left: a tie is shown as mixed.
+    expect(find.textContaining('(mixed)'), findsOneWidget);
   });
 
   testWidgets('Mood screen links to the history', (tester) async {
