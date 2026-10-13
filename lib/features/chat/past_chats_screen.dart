@@ -56,8 +56,9 @@ class PastChatsScreen extends StatelessWidget {
                 child:
                     Text("Couldn't load your chats. Check your connection."));
           }
-          if (!snap.hasData)
+          if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           final List<ChatSessionSummary> chats = snap.data!;
           if (chats.isEmpty) {
             return Center(
@@ -136,8 +137,9 @@ class ChatTranscriptScreen extends StatelessWidget {
           if (snap.hasError) {
             return const Center(child: Text("Couldn't load this chat."));
           }
-          if (!snap.hasData)
+          if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: <Widget>[

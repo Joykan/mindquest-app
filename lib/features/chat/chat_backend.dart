@@ -159,8 +159,9 @@ class SupabaseChatBackend extends ChatBackend {
             messageCount: (r['messages'] as List<dynamic>).length,
             preview: () {
               for (final dynamic m in r['messages'] as List<dynamic>) {
-                if ((m as Map<String, dynamic>)['sender'] == 'user')
+                if ((m as Map<String, dynamic>)['sender'] == 'user') {
                   return m['content'] as String;
+                }
               }
               return '';
             }(),

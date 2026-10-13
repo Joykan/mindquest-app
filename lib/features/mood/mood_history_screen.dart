@@ -124,8 +124,9 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
               ),
             );
           }
-          if (!snap.hasData)
+          if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           final List<MoodEntry> entries = snap.data!
               .where((MoodEntry e) => !_removed.contains(e.id))
               .toList();

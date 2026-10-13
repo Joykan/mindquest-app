@@ -38,16 +38,18 @@ class _SignInScreenState extends State<SignInScreen> {
   static String? validateEmail(String? v) {
     final String value = (v ?? '').trim();
     if (value.isEmpty) return 'Enter your email';
-    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value))
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value)) {
       return "That email doesn't look right";
+    }
     return null;
   }
 
   String? _validatePassword(String? v) {
     final String value = v ?? '';
     if (value.isEmpty) return 'Enter your password';
-    if (widget.createAccount && value.length < 8)
+    if (widget.createAccount && value.length < 8) {
       return 'Use at least 8 characters';
+    }
     return null;
   }
 
@@ -119,7 +121,9 @@ class _SignInScreenState extends State<SignInScreen> {
                   const Expanded(child: Divider()),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text('or with email', style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
+                    child: Text('or with email',
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: mq.textMuted)),
                   ),
                   const Expanded(child: Divider()),
                 ],

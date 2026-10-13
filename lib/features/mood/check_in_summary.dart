@@ -290,7 +290,8 @@ List<MoodInsight> pickSummaryInsights(
     if (out.length >= 3) break;
     if (!i.needsSupport && i.id != 'mood_mix') out.add(i);
   }
-  if (out.isEmpty)
+  if (out.isEmpty) {
     out.addAll(patterns.where((MoodInsight i) => i.id == 'mood_mix'));
+  }
   return out.take(3).toList();
 }

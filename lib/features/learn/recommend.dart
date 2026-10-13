@@ -43,22 +43,25 @@ List<Recommendation> recommendArticles(
             .map((MoodEntry e) => e.mood)
             .reduce((int a, int b) => a + b) /
         recentMoods.length;
-    if (avg <= 2.5)
+    if (avg <= 2.5) {
       wanted.add(('support', 'Because your recent moods have been low'));
+    }
     final bool sleep =
         recentMoods.any((MoodEntry e) => e.tags.contains('sleep'));
-    if (sleep)
+    if (sleep) {
       wanted.add((
         'title:Sleep and your mood',
         'Because sleep came up in your check-ins'
       ));
+    }
     final bool school = recentMoods
         .any((MoodEntry e) => e.tags.contains('school') && e.mood <= 3);
-    if (school)
+    if (school) {
       wanted.add((
         'title:Exam stress: a survival plan',
         'Because school has been on your mind'
       ));
+    }
   }
   wanted.add(('mindfulness', 'A calm moment for your day'));
 
@@ -73,8 +76,9 @@ List<Recommendation> recommendArticles(
     for (final (String key, String reason) in wanted) {
       if (out.length >= count) return out;
       for (final Article a in articles) {
-        if (used.contains(a.id) || (unreadOnly && a.read) || !matches(a, key))
+        if (used.contains(a.id) || (unreadOnly && a.read) || !matches(a, key)) {
           continue;
+        }
         out.add(Recommendation(a, reason));
         used.add(a.id);
         break;

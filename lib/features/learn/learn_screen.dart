@@ -75,8 +75,9 @@ class _LearnScreenState extends State<LearnScreen> {
               ),
             );
           }
-          if (!snap.hasData)
+          if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           final List<Article> all = snap.data!;
           final List<Article> shown = _category == null
               ? all

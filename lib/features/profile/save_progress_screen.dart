@@ -101,7 +101,8 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
     return message;
   }
 
-  bool get _emailOk => RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(_email.text.trim());
+  bool get _emailOk =>
+      RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(_email.text.trim());
 
   Future<void> _sendCode() => _run(() async {
         await _account.linkEmail(_email.text.trim());
@@ -109,7 +110,8 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
       });
 
   Future<void> _confirmCode() => _run(() async {
-        await _account.confirmEmailCode(email: _email.text.trim(), code: _code.text.trim());
+        await _account.confirmEmailCode(
+            email: _email.text.trim(), code: _code.text.trim());
         await widget.session.accountChanged();
         if (mounted) setState(() => _step = _Step.password);
       });
@@ -121,7 +123,8 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
           await widget.session.accountChanged();
           if (mounted) setState(() => _step = _Step.password);
         } else {
-          setState(() => _error = "Not confirmed yet. Open the email and tap the link, or type the code.");
+          setState(() => _error =
+              'Not confirmed yet. Open the email and tap the link, or type the code.');
         }
       });
 
@@ -157,11 +160,14 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: <Widget>[
           Center(
-            child: Mascot(pose: _step == _Step.done ? MascotPose.happy : MascotPose.wave, size: 96),
+            child: Mascot(
+                pose: _step == _Step.done ? MascotPose.happy : MascotPose.wave,
+                size: 96),
           ),
           const SizedBox(height: 8),
           if (_step != _Step.done)
-            Text('Step $stepNumber of 3', textAlign: TextAlign.center, style: theme.textTheme.labelLarge),
+            Text('Step $stepNumber of 3',
+                textAlign: TextAlign.center, style: theme.textTheme.labelLarge),
           const SizedBox(height: 8),
           ..._body(theme, mq),
           if (_error != null) ...<Widget>[
@@ -169,7 +175,9 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
             Container(
               key: const Key('save-error'),
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: mq.crisisSurface, borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                  color: mq.crisisSurface,
+                  borderRadius: BorderRadius.circular(12)),
               child: Text(_error!, style: theme.textTheme.bodyMedium),
             ),
           ],
@@ -179,17 +187,22 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
   }
 
   List<Widget> _body(ThemeData theme, MindQuestColors mq) {
-    Widget button(String key, String label, VoidCallback? onPressed) => FilledButton(
+    Widget button(String key, String label, VoidCallback? onPressed) =>
+        FilledButton(
           key: Key(key),
           onPressed: _busy ? null : onPressed,
           child: _busy
-              ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5))
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(strokeWidth: 2.5))
               : Text(label),
         );
     switch (_step) {
       case _Step.email:
         return <Widget>[
-          Text('Keep your XP, moods and chats', textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
+          Text('Keep your XP, moods and chats',
+              textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             'Right now your account lives only on this phone. Link Google or an email and you can '
@@ -198,14 +211,18 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
             style: theme.textTheme.bodyMedium?.copyWith(color: mq.textMuted),
           ),
           const SizedBox(height: 20),
-          GoogleButton(label: 'Save with Google', onPressed: _busy ? null : _saveWithGoogle),
+          GoogleButton(
+              label: 'Save with Google',
+              onPressed: _busy ? null : _saveWithGoogle),
           const SizedBox(height: 16),
           Row(
             children: <Widget>[
               const Expanded(child: Divider()),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text('or with email', style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted)),
+                child: Text('or with email',
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: mq.textMuted)),
               ),
               const Expanded(child: Divider()),
             ],
@@ -220,11 +237,13 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
             decoration: const InputDecoration(labelText: 'Email'),
           ),
           const SizedBox(height: 16),
-          button('send-code', 'Send confirmation email', _emailOk ? _sendCode : null),
+          button('send-code', 'Send confirmation email',
+              _emailOk ? _sendCode : null),
         ];
       case _Step.confirm:
         return <Widget>[
-          Text('Check your email', textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
+          Text('Check your email',
+              textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             'We sent an email to ${_email.text.trim()}. Open it on this phone and tap the link '
@@ -236,7 +255,8 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
           const SizedBox(height: 20),
           button('tapped-link', "I've tapped the link", _checkLink),
           const SizedBox(height: 20),
-          Text('Got a 6-digit code instead?', style: theme.textTheme.titleSmall),
+          Text('Got a 6-digit code instead?',
+              style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           TextField(
             key: const Key('save-code'),
@@ -244,12 +264,14 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
             keyboardType: TextInputType.number,
             maxLength: 6,
             onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(labelText: '6-digit code', counterText: ''),
+            decoration: const InputDecoration(
+                labelText: '6-digit code', counterText: ''),
           ),
           const SizedBox(height: 8),
           OutlinedButton(
             key: const Key('confirm-code'),
-            onPressed: _busy || _code.text.trim().length != 6 ? null : _confirmCode,
+            onPressed:
+                _busy || _code.text.trim().length != 6 ? null : _confirmCode,
             child: const Text('Confirm code'),
           ),
           TextButton(
@@ -259,7 +281,8 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
         ];
       case _Step.password:
         return <Widget>[
-          Text('Choose a password', textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
+          Text('Choose a password',
+              textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             'Your email is confirmed. Pick a password with at least 8 characters.',
@@ -286,7 +309,9 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
       case _Step.done:
         return <Widget>[
           Text('Your progress is saved! 🎉',
-              key: const Key('save-done'), textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
+              key: const Key('save-done'),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             _viaGoogle

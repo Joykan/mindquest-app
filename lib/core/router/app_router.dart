@@ -40,11 +40,13 @@ const Set<String> _signedOutPages = <String>{
 /// - Otherwise: the app, starting at Home.
 String? redirectFor(SessionController? session, String location) {
   if (session == null) return location == '/setup' ? null : '/setup';
-  if (!session.signedIn)
+  if (!session.signedIn) {
     return _signedOutPages.contains(location) ? null : '/welcome';
+  }
   if (session.loading) return location == '/loading' ? null : '/loading';
-  if (!session.onboarded)
+  if (!session.onboarded) {
     return location == '/onboarding' ? null : '/onboarding';
+  }
   if (_signedOutPages.contains(location) ||
       location == '/onboarding' ||
       location == '/loading' ||

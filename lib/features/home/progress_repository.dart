@@ -138,8 +138,9 @@ class SupabaseProgressRepository implements ProgressRepository {
       final DateTime at = DateTime.parse(m['created_at'] as String).toUtc();
       final DateTime local = at.add(const Duration(hours: 3));
       days.add('${local.year}-${local.month}-${local.day}');
-      if (todayMood == null && !at.isBefore(todayStart))
+      if (todayMood == null && !at.isBefore(todayStart)) {
         todayMood = m['mood'] as int;
+      }
     }
 
     return HomeSummary(

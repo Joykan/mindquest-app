@@ -86,8 +86,9 @@ class _RewardsScreenState extends State<RewardsScreen> {
               ),
             );
           }
-          if (!snap.hasData)
+          if (!snap.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           final RewardsSummary s = snap.data!;
           return RefreshIndicator(
             onRefresh: _reload,
