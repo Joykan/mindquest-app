@@ -86,4 +86,16 @@ class LocalNotificationScheduler implements ReminderScheduler {
       );
     }
   }
+
+  @override
+  Future<void> showNow(PlannedReminder reminder) async {
+    if (!supported || _nairobi == null) return;
+    await _plugin.show(
+      id: reminder.id,
+      title: reminder.title,
+      body: reminder.body,
+      notificationDetails: const NotificationDetails(android: _android),
+      payload: _payload,
+    );
+  }
 }

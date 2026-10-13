@@ -22,6 +22,9 @@ abstract class ReminderScheduler {
 
   /// Cancels the reminders already scheduled and schedules [reminders].
   Future<void> replaceAll(List<PlannedReminder> reminders);
+
+  /// Shows one reminder now ("Send a test reminder" in Profile).
+  Future<void> showNow(PlannedReminder reminder);
 }
 
 /// The daily check-in reminder (step 10).
@@ -121,6 +124,21 @@ class ReminderController extends ChangeNotifier {
     _signedIn = signedIn;
     _language = language;
     await reschedule();
+  }
+
+  /// Shows today's reminder straight away, to see what it looks like.
+  Future<void> sendTest() async {
+    final DateTime n = nairobiNow(_now());
+    final PlannedReminder r = planReminders(
+      hour: 23,
+      minute: 59,
+      checkedInToday: false,
+      language: _language,
+      now: DateTime.utc(n.year, n.month, n.day).subtract(const Duration(hours: 3)),
+      days: 1,
+    ).first;
+    await scheduler.showNow(PlannedReminder(
+        id: 999, at: r.at, title: r.title, body: r.body));
   }
 
   /// Plans the next two weeks again (also on every app start).

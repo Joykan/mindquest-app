@@ -58,7 +58,7 @@ Put the Supabase URL and publishable key in `config/dev.json`. That file is in
 - [x] Chat backend and crisis detection
 - [x] Login, chat and mood screens
 - [x] Rewards and learning articles
-- [ ] Offline mode and reminders
+- [x] Offline mode and reminders (see `docs/offline-and-reminders.md`)
 - [ ] Admin dashboard
 - [ ] Testing with users
 - [ ] Final report and presentation

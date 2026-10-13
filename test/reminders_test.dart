@@ -35,6 +35,11 @@ class FakeScheduler implements ReminderScheduler {
   @override
   Future<void> replaceAll(List<PlannedReminder> reminders) async =>
       scheduled = reminders;
+
+  final List<PlannedReminder> shown = <PlannedReminder>[];
+
+  @override
+  Future<void> showNow(PlannedReminder reminder) async => shown.add(reminder);
 }
 
 // Tuesday 13 Oct 2026, 10:00 in Nairobi.
@@ -239,5 +244,9 @@ void main() {
     expect(c.enabled, isTrue);
     expect(find.byKey(const Key('reminder-time')), findsOneWidget);
     expect(find.text('19:00'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('reminder-test')));
+    await tester.pump();
+    expect(s.shown.single.body, reminderMessages[1].$2);
   });
 }

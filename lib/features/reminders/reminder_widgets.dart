@@ -144,6 +144,20 @@ class ReminderSettingsTile extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium),
                 onTap: () => _pickTime(context),
               ),
+            if (on)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8, bottom: 4),
+                  child: TextButton.icon(
+                    key: const Key('reminder-test'),
+                    onPressed: reminders.sendTest,
+                    icon: const Icon(Icons.notifications_active_outlined),
+                    label: Text(context.tr(
+                        'Send a test reminder', 'Tuma kikumbusho cha majaribio')),
+                  ),
+                ),
+              ),
           ],
         );
       },
