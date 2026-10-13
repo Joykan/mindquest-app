@@ -39,10 +39,12 @@ class _SignInScreenState extends State<SignInScreen> {
 
   String? _validateEmail(String? v) {
     final String value = (v ?? '').trim();
-    if (value.isEmpty) return context.tr('Enter your email', 'Andika barua pepe yako');
+    if (value.isEmpty) {
+      return context.tr('Enter your email', 'Andika barua pepe yako');
+    }
     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value)) {
-      return context.tr("That email doesn't look right",
-          'Barua pepe hiyo haionekani sahihi');
+      return context.tr(
+          "That email doesn't look right", 'Barua pepe hiyo haionekani sahihi');
     }
     return null;
   }
@@ -71,7 +73,8 @@ class _SignInScreenState extends State<SignInScreen> {
         final bool signedIn = await widget.session.account
             .signUp(email: _email.text, password: _password.text);
         if (!signedIn && mounted) {
-          setState(() => _notice = tr(lang,
+          setState(() => _notice = tr(
+              lang,
               'Almost there! We sent a link to ${_email.text.trim()}. '
                   'Open it to confirm your email, then sign in.',
               'Karibu umalize! Tumetuma kiungo kwa ${_email.text.trim()}. '
@@ -127,8 +130,8 @@ class _SignInScreenState extends State<SignInScreen> {
                           await widget.session.account.signInWithGoogle();
                         } on AccountException catch (e) {
                           if (mounted) {
-                            setState(() =>
-                                _error = accountError(e.message, lang));
+                            setState(
+                                () => _error = accountError(e.message, lang));
                           }
                         }
                       },
@@ -139,7 +142,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   const Expanded(child: Divider()),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(context.tr('or with email', 'au kwa barua pepe'),
+                    child: Text(
+                        context.tr('or with email', 'au kwa barua pepe'),
                         style: theme.textTheme.bodySmall
                             ?.copyWith(color: mq.textMuted)),
                   ),
@@ -223,7 +227,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: <Widget>[
                   Text(create
-                      ? context.tr('Already have an account?', 'Tayari una akaunti?')
+                      ? context.tr(
+                          'Already have an account?', 'Tayari una akaunti?')
                       : context.tr('New here?', 'Mgeni hapa?')),
                   TextButton(
                     onPressed: () => context

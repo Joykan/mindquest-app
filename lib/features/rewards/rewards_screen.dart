@@ -25,7 +25,6 @@ class RewardsScreen extends StatefulWidget {
   State<RewardsScreen> createState() => _RewardsScreenState();
 }
 
-
 class _RewardsScreenState extends State<RewardsScreen> {
   late Future<RewardsSummary> _summary = widget.repository.loadRewards();
 
@@ -86,9 +85,8 @@ class _RewardsScreenState extends State<RewardsScreen> {
                 Row(
                   children: <Widget>[
                     Expanded(
-                        child:
-                            Text(context.tr('Badges', 'Beji'),
-                                style: theme.textTheme.titleMedium)),
+                        child: Text(context.tr('Badges', 'Beji'),
+                            style: theme.textTheme.titleMedium)),
                     Text(
                         context.tr('${s.badgesEarned} of ${s.badges.length}',
                             '${s.badgesEarned} kati ya ${s.badges.length}'),
@@ -119,8 +117,12 @@ class _RewardsScreenState extends State<RewardsScreen> {
                 Card(
                   child: Column(
                     children: <Widget>[
-                      for (final (String emoji, String what, String whatSw, int xp)
-                          in xpRules)
+                      for (final (
+                            String emoji,
+                            String what,
+                            String whatSw,
+                            int xp
+                          ) in xpRules)
                         ListTile(
                           dense: true,
                           leading:
@@ -244,7 +246,8 @@ class _QuestCard extends StatelessWidget {
                 const Text('🎯', style: TextStyle(fontSize: 24)),
                 const SizedBox(width: 10),
                 Expanded(
-                    child: Text(context.tr('Weekly quest', 'Changamoto ya wiki'),
+                    child: Text(
+                        context.tr('Weekly quest', 'Changamoto ya wiki'),
                         style: theme.textTheme.titleMedium)),
                 Text(
                     summary.weeklyQuestDone
@@ -258,7 +261,8 @@ class _QuestCard extends StatelessWidget {
               summary.weeklyQuestDone
                   ? context.tr('You checked in on 5 days this week. Well done!',
                       'Umerekodi hisia siku 5 wiki hii. Hongera!')
-                  : context.tr('Check in on 5 days this week (Monday to Sunday).',
+                  : context.tr(
+                      'Check in on 5 days this week (Monday to Sunday).',
                       'Rekodi hisia siku 5 wiki hii (Jumatatu hadi Jumapili).'),
               style: theme.textTheme.bodyMedium,
             ),
@@ -342,7 +346,9 @@ class _BadgeTile extends StatelessWidget {
               const SizedBox(height: 8),
               if (earned)
                 Text(
-                  tr(language, 'Earned ${shortDate(language, status.earnedAt!)}',
+                  tr(
+                      language,
+                      'Earned ${shortDate(language, status.earnedAt!)}',
                       'Umeipata ${shortDate(language, status.earnedAt!)}'),
                   style: theme.textTheme.labelSmall
                       ?.copyWith(color: theme.colorScheme.primary),

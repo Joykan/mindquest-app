@@ -22,7 +22,8 @@ class Mascot extends StatelessWidget {
       MascotPose.wave => 'mascot_wave',
     };
     return Semantics(
-      label: context.tr('Chipu, the MindQuest mascot', 'Chipu, mhusika wa MindQuest'),
+      label: context.tr(
+          'Chipu, the MindQuest mascot', 'Chipu, mhusika wa MindQuest'),
       image: true,
       child: Image.asset('assets/images/$file.png', width: size, height: size),
     );

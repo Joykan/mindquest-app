@@ -210,11 +210,13 @@ class _BoxBreathingCardState extends State<BoxBreathingCard>
                 const Text('🌬️', style: TextStyle(fontSize: 24)),
                 const SizedBox(width: 10),
                 Expanded(
-                    child: Text(context.tr('Box breathing', 'Kupumua kwa mraba'),
+                    child: Text(
+                        context.tr('Box breathing', 'Kupumua kwa mraba'),
                         style: theme.textTheme.titleMedium)),
                 if (_running)
                   Text(
-                      context.tr('Round ${_round + 1} of ${BoxBreathingCard.rounds}',
+                      context.tr(
+                          'Round ${_round + 1} of ${BoxBreathingCard.rounds}',
                           'Mzunguko ${_round + 1} kati ya ${BoxBreathingCard.rounds}'),
                       style: theme.textTheme.labelLarge),
               ],
@@ -253,7 +255,9 @@ class _BoxBreathingCardState extends State<BoxBreathingCard>
                           ? Column(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                Text(context.tr(_phases[phase].$1, _phases[phase].$2),
+                                Text(
+                                    context.tr(
+                                        _phases[phase].$1, _phases[phase].$2),
                                     style: theme.textTheme.titleSmall
                                         ?.copyWith(color: Colors.white)),
                                 Text('$secondsLeft',
@@ -306,7 +310,8 @@ class GroundingCard extends StatefulWidget {
 }
 
 class _GroundingCardState extends State<GroundingCard> {
-  static const List<(String, String, String)> _steps = <(String, String, String)>[
+  static const List<(String, String, String)> _steps =
+      <(String, String, String)>[
     ('👀', '5 things you can see', 'Vitu 5 unavyoweza kuona'),
     ('✋', '4 things you can touch', 'Vitu 4 unavyoweza kugusa'),
     ('👂', '3 things you can hear', 'Vitu 3 unavyoweza kusikia'),
@@ -332,7 +337,9 @@ class _GroundingCardState extends State<GroundingCard> {
                 const Text('🌿', style: TextStyle(fontSize: 24)),
                 const SizedBox(width: 10),
                 Expanded(
-                    child: Text(context.tr('5-4-3-2-1 grounding', 'Kutuliza akili 5-4-3-2-1'),
+                    child: Text(
+                        context.tr(
+                            '5-4-3-2-1 grounding', 'Kutuliza akili 5-4-3-2-1'),
                         style: theme.textTheme.titleMedium)),
               ],
             ),

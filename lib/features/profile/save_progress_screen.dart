@@ -160,8 +160,8 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
       return;
     }
     if (_password.text != _password2.text) {
-      setState(() => _error =
-          _t("The passwords don't match.", 'Manenosiri hayalingani.'));
+      setState(() =>
+          _error = _t("The passwords don't match.", 'Manenosiri hayalingani.'));
       return;
     }
     await _run(() async {
@@ -230,8 +230,11 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
     switch (_step) {
       case _Step.email:
         return <Widget>[
-          Text(_t('Keep your XP, moods and chats', 'Linda XP, hisia na mazungumzo yako'),
-              textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
+          Text(
+              _t('Keep your XP, moods and chats',
+                  'Linda XP, hisia na mazungumzo yako'),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             _t(
@@ -269,7 +272,9 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
             decoration: InputDecoration(labelText: _t('Email', 'Barua pepe')),
           ),
           const SizedBox(height: 16),
-          button('send-code', _t('Send confirmation email', 'Tuma barua pepe ya uthibitisho'),
+          button(
+              'send-code',
+              _t('Send confirmation email', 'Tuma barua pepe ya uthibitisho'),
               _emailOk ? _sendCode : null),
         ];
       case _Step.confirm:
@@ -292,7 +297,9 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
           button('tapped-link', _t("I've tapped the link", 'Nimegusa kiungo'),
               _checkLink),
           const SizedBox(height: 20),
-          Text(_t('Got a 6-digit code instead?', 'Umepata nambari ya tarakimu 6 badala yake?'),
+          Text(
+              _t('Got a 6-digit code instead?',
+                  'Umepata nambari ya tarakimu 6 badala yake?'),
               style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           TextField(
@@ -350,7 +357,9 @@ class _SaveProgressScreenState extends State<SaveProgressScreen> {
         ];
       case _Step.done:
         return <Widget>[
-          Text(_t('Your progress is saved! 🎉', 'Maendeleo yako yamehifadhiwa! 🎉'),
+          Text(
+              _t('Your progress is saved! 🎉',
+                  'Maendeleo yako yamehifadhiwa! 🎉'),
               key: const Key('save-done'),
               textAlign: TextAlign.center,
               style: theme.textTheme.titleLarge),

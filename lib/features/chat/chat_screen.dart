@@ -135,7 +135,8 @@ class _ChatScreenState extends State<ChatScreen> {
       final bool? sure = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: Text(context.tr('Start a new chat?', 'Anza mazungumzo mapya?')),
+          title:
+              Text(context.tr('Start a new chat?', 'Anza mazungumzo mapya?')),
           content: Text(context.tr(
               'This conversation is saved. You can read it again in Past chats.',
               'Mazungumzo haya yamehifadhiwa. Unaweza kuyasoma tena kwenye Mazungumzo ya awali.')),
@@ -220,7 +221,9 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _messages.add(ChatMessage(
           text: context.tr(checkInChip, checkInChipSw), fromUser: true));
-      _addBot(context.tr('How are you feeling right now?', 'Unajisikiaje sasa hivi?'),
+      _addBot(
+          context.tr(
+              'How are you feeling right now?', 'Unajisikiaje sasa hivi?'),
           ChatItemKind.moodPicker);
     });
   }
@@ -232,8 +235,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final String lang = context.lang;
     setState(() {
       _picked[index] = mood;
-      _messages.add(
-          ChatMessage(text: '${m.emoji} ${m.name(lang)}', fromUser: true));
+      _messages
+          .add(ChatMessage(text: '${m.emoji} ${m.name(lang)}', fromUser: true));
       _sending = true;
     });
     try {
@@ -490,7 +493,8 @@ class _ChatItem extends StatelessWidget {
                   onPressed: onHelplines,
                   style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
                   icon: const Icon(Icons.phone_in_talk_outlined),
-                  label: Text(context.tr('See helplines', 'Ona nambari za msaada')),
+                  label: Text(
+                      context.tr('See helplines', 'Ona nambari za msaada')),
                 ),
               ),
           ],

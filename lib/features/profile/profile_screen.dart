@@ -79,8 +79,9 @@ class ProfileScreen extends StatelessWidget {
               'Akaunti yako na data yako yote imefutwa.'))));
     } on AccountException catch (e) {
       messenger.showSnackBar(SnackBar(
-          content: Text(tr(lang, "Couldn't delete: ", 'Imeshindikana kufuta: ') +
-              accountError(e.message, lang))));
+          content: Text(
+              tr(lang, "Couldn't delete: ", 'Imeshindikana kufuta: ') +
+                  accountError(e.message, lang))));
     }
   }
 
@@ -118,7 +119,8 @@ class ProfileScreen extends StatelessWidget {
                         Text(name, style: t.textTheme.headlineSmall),
                         Text(
                           session.account.isAnonymous
-                              ? context.tr('Anonymous account (only on this phone)',
+                              ? context.tr(
+                                  'Anonymous account (only on this phone)',
                                   'Akaunti bila jina (kwenye simu hii tu)')
                               : session.account.email ??
                                   context.tr('Signed in with email',
@@ -157,19 +159,21 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              if (session.account.isAnonymous && onSaveProgress != null) ...<Widget>[
+              if (session.account.isAnonymous &&
+                  onSaveProgress != null) ...<Widget>[
                 Card(
                   clipBehavior: Clip.antiAlias,
                   color: mq.surfaceSoft,
                   child: ListTile(
                     key: const Key('open-save-progress'),
                     leading: const Text('💾', style: TextStyle(fontSize: 24)),
-                    title: Text(context.tr('Save your progress', 'Hifadhi maendeleo yako'),
-                        style: const TextStyle(fontWeight: FontWeight.w700)),
-                    subtitle: Text(
+                    title: Text(
                         context.tr(
-                            "Add Google or an email so you don't lose your XP, moods and chats if you change phones.",
-                            'Ongeza Google au barua pepe ili usipoteze XP, hisia na mazungumzo yako ukibadilisha simu.')),
+                            'Save your progress', 'Hifadhi maendeleo yako'),
+                        style: const TextStyle(fontWeight: FontWeight.w700)),
+                    subtitle: Text(context.tr(
+                        "Add Google or an email so you don't lose your XP, moods and chats if you change phones.",
+                        'Ongeza Google au barua pepe ili usipoteze XP, hisia na mazungumzo yako ukibadilisha simu.')),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: onSaveProgress,
                   ),
@@ -194,7 +198,8 @@ class ProfileScreen extends StatelessWidget {
                           key: const Key('open-quests'),
                           leading:
                               const Text('🎯', style: TextStyle(fontSize: 22)),
-                          title: Text(context.tr('My quests', 'Changamoto zangu')),
+                          title:
+                              Text(context.tr('My quests', 'Changamoto zangu')),
                           trailing: const Icon(Icons.chevron_right),
                           onTap: onRewards,
                         ),
@@ -220,8 +225,8 @@ class ProfileScreen extends StatelessWidget {
                     ListTile(
                       leading: const Icon(Icons.translate),
                       title: Text(context.tr('Language', 'Lugha')),
-                      subtitle: Text(context.tr('For the app and Chipu',
-                          'Kwa programu na Chipu')),
+                      subtitle: Text(context.tr(
+                          'For the app and Chipu', 'Kwa programu na Chipu')),
                       trailing: LanguageToggle(
                           value: session.language,
                           onChanged: session.changeLanguage),
@@ -267,7 +272,8 @@ class ProfileScreen extends StatelessWidget {
                         Icon(Icons.phone_in_talk_outlined, color: mq.crisis),
                     title: Text(context.tr('Support and helplines',
                         'Msaada na nambari za msaada')),
-                    subtitle: Text(context.tr('Call for help, breathing, grounding',
+                    subtitle: Text(context.tr(
+                        'Call for help, breathing, grounding',
                         'Piga simu kupata msaada, kupumua, kutuliza akili')),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: onHelplines,
@@ -368,7 +374,8 @@ class _DeleteDialogState extends State<_DeleteDialog> {
                 'Haiwezi kurudishwa.',
           )),
           const SizedBox(height: 12),
-          Text(context.tr('Type DELETE to confirm.', 'Andika FUTA kuthibitisha.')),
+          Text(context.tr(
+              'Type DELETE to confirm.', 'Andika FUTA kuthibitisha.')),
           const SizedBox(height: 8),
           TextField(
             key: const Key('delete-confirm-field'),

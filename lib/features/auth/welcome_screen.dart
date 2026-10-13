@@ -46,7 +46,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       await widget.session.account.signInWithGoogle();
     } on AccountException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(accountError(e.message, lang))));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(accountError(e.message, lang))));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -160,7 +161,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                     'Endelea bila kujitambulisha')),
                           ),
                           const SizedBox(height: 12),
-                          GoogleButton(onPressed: _busy ? null : _google, onDark: true),
+                          GoogleButton(
+                              onPressed: _busy ? null : _google, onDark: true),
                           const SizedBox(height: 12),
                           OutlinedButton(
                             key: const Key('go-sign-in'),

@@ -30,7 +30,8 @@ String moodReply(int mood, [String language = 'en']) => switch (mood) {
       5 => tr(language, "That's wonderful! I'm so glad to hear it.",
           'Hiyo ni habari njema sana! Nafurahi kusikia hivyo.'),
       4 => tr(language, "I'm glad to hear that!", 'Nafurahi kusikia hivyo!'),
-      3 => tr(language,
+      3 => tr(
+          language,
           'Thanks for checking in. Want to tell me more about your day?',
           'Asante kwa kurekodi hisia zako. Ungependa kuniambia zaidi kuhusu siku yako?'),
       _ => tr(

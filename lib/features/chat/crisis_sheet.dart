@@ -129,7 +129,8 @@ class HelplineRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(line.nameIn(context.lang), style: theme.textTheme.titleMedium),
+                Text(line.nameIn(context.lang),
+                    style: theme.textTheme.titleMedium),
                 const SizedBox(height: 2),
                 Text(details,
                     style: theme.textTheme.bodySmall

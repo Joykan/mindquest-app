@@ -100,7 +100,8 @@ class _LearnScreenState extends State<LearnScreen> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                context.tr('You have read $read of ${all.length}',
+                                context.tr(
+                                    'You have read $read of ${all.length}',
                                     'Umesoma $read kati ya ${all.length}'),
                                 style: theme.textTheme.titleMedium,
                               ),

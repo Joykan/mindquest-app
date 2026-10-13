@@ -143,7 +143,8 @@ class _ArticleScreenState extends State<ArticleScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2.5),
                       )
                     : const Icon(Icons.check),
-                label: Text(_sw ? 'Nimeisoma · +5 XP' : "I've read this · +5 XP"),
+                label:
+                    Text(_sw ? 'Nimeisoma · +5 XP' : "I've read this · +5 XP"),
               ),
             const SizedBox(height: 16),
             Text(

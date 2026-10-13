@@ -444,11 +444,9 @@ List<MoodInsight> buildInsights(
         ? t('$nGood of your last $total check-ins were good or great.',
             '$nGood kati ya hisia $total ulizorekodi mwisho zilikuwa nzuri au nzuri sana.')
         : nLow * 2 > total
-            ? t(
-                '$nLow of your last $total check-ins were low. Chipu is here to talk, and the helplines are always on Home.',
+            ? t('$nLow of your last $total check-ins were low. Chipu is here to talk, and the helplines are always on Home.',
                 '$nLow kati ya hisia $total ulizorekodi mwisho zilikuwa chini. Chipu yuko hapa kuongea nawe, na nambari za msaada ziko kwenye Nyumbani daima.')
-            : t(
-                'Of your last $total check-ins, $nGood were good, $nOkay okay and $nLow low. Ups and downs are normal.',
+            : t('Of your last $total check-ins, $nGood were good, $nOkay okay and $nLow low. Ups and downs are normal.',
                 'Kati ya hisia $total ulizorekodi mwisho, $nGood zilikuwa nzuri, $nOkay za kawaida na $nLow chini. Kupanda na kushuka ni kawaida.'),
   ));
 

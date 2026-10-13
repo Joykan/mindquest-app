@@ -116,14 +116,13 @@ void main() {
   testWidgets('Support is in Kiswahili, emergency numbers included',
       (tester) async {
     tall(tester);
-    await tester.pumpWidget(inLanguage(
-        'sw',
-        SupportScreen(
-            loadHelplines: () async => throw Exception('offline'))));
+    await tester.pumpWidget(inLanguage('sw',
+        SupportScreen(loadHelplines: () async => throw Exception('offline'))));
     await tester.pumpAndSettle();
     expect(find.text('Msaada'), findsOneWidget);
     expect(find.text('Huduma za dharura'), findsNWidgets(2));
-    expect(find.textContaining('Polisi, ambulensi na zimamoto'), findsOneWidget);
+    expect(
+        find.textContaining('Polisi, ambulensi na zimamoto'), findsOneWidget);
     expect(find.text('Anza kupumua'), findsOneWidget);
   });
 }

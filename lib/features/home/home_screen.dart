@@ -186,7 +186,6 @@ class HomeScreenState extends State<HomeScreen> {
   }
 }
 
-
 class _HomeBody extends StatelessWidget {
   const _HomeBody({
     required this.summary,
@@ -232,14 +231,17 @@ class _HomeBody extends StatelessWidget {
             const SizedBox(width: 4),
             IconButton.filledTonal(
               key: const Key('open-profile'),
-              tooltip: context.tr('Profile and settings', 'Wasifu na mipangilio'),
+              tooltip:
+                  context.tr('Profile and settings', 'Wasifu na mipangilio'),
               onPressed: onProfile,
               icon: const Icon(Icons.person_outline),
             ),
           ],
         ),
         const SizedBox(height: 16),
-        Text(context.tr('Hi, ${summary.username}', 'Habari, ${summary.username}'),
+        Text(
+            context.tr(
+                'Hi, ${summary.username}', 'Habari, ${summary.username}'),
             style: theme.textTheme.headlineSmall),
         Text(
           longDate(lang, nairobiNow()),
@@ -325,7 +327,8 @@ class _HomeBody extends StatelessWidget {
               children: <Widget>[
                 Text(
                   summary.todayMood == null
-                      ? context.tr('How are you feeling today?', 'Unajisikiaje leo?')
+                      ? context.tr(
+                          'How are you feeling today?', 'Unajisikiaje leo?')
                       : context.tr('Today you felt', 'Leo ulijisikia'),
                   style: theme.textTheme.titleMedium,
                 ),
@@ -360,7 +363,8 @@ class _HomeBody extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     Expanded(
-                        child: Text(context.tr("Today's quests", 'Changamoto za leo'),
+                        child: Text(
+                            context.tr("Today's quests", 'Changamoto za leo'),
                             style: theme.textTheme.titleMedium)),
                     Text(
                       '${_questsDone(summary)} / 3',
@@ -575,7 +579,8 @@ class _Problem extends StatelessWidget {
             const Icon(Icons.cloud_off, size: 40),
             const SizedBox(height: 12),
             Text(
-                context.tr("Couldn't load your progress. Check your connection.",
+                context.tr(
+                    "Couldn't load your progress. Check your connection.",
                     'Imeshindikana kupakia maendeleo yako. Angalia mtandao wako.'),
                 textAlign: TextAlign.center),
             const SizedBox(height: 12),

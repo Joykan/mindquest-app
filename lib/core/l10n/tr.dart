@@ -7,7 +7,8 @@ const List<String> appLanguages = <String>['en', 'sw'];
 /// Puts the current language above every screen, dialog and bottom sheet.
 /// Widgets read it with `context.tr(...)` and rebuild when it changes.
 class LanguageScope extends InheritedWidget {
-  const LanguageScope({super.key, required this.language, required super.child});
+  const LanguageScope(
+      {super.key, required this.language, required super.child});
 
   final String language;
 
@@ -23,8 +24,7 @@ class LanguageScope extends InheritedWidget {
 
 /// Picks the English or Kiswahili text. Used outside widgets, e.g. when
 /// building insights or reply texts.
-String tr(String language, String en, String sw) =>
-    language == 'sw' ? sw : en;
+String tr(String language, String en, String sw) => language == 'sw' ? sw : en;
 
 extension Translate on BuildContext {
   /// 'en' or 'sw'.
@@ -60,10 +60,12 @@ const List<String> _daysSw = <String>[
   'Jtt', 'Jnn', 'Jtn', 'Alh', 'Iju', 'Jmo', 'Jpi', //
 ];
 const List<String> _daysFullEn = <String>[
-  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', //
+  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+  'Sunday', //
 ];
 const List<String> _daysFullSw = <String>[
-  'Jumatatu', 'Jumanne', 'Jumatano', 'Alhamisi', 'Ijumaa', 'Jumamosi', 'Jumapili', //
+  'Jumatatu', 'Jumanne', 'Jumatano', 'Alhamisi', 'Ijumaa', 'Jumamosi',
+  'Jumapili', //
 ];
 
 /// "Mon" / "Jtt" for a weekday (DateTime.monday = 1).

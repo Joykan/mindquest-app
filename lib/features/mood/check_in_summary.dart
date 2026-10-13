@@ -89,8 +89,8 @@ class _CheckInSummaryState extends State<CheckInSummary> {
 
   String _title(BuildContext context) => switch (widget.mood) {
         5 => context.tr('Amazing!', 'Safi sana!'),
-        4 => context.tr("Glad you're feeling good",
-            'Nafurahi unajisikia vizuri'),
+        4 =>
+          context.tr("Glad you're feeling good", 'Nafurahi unajisikia vizuri'),
         3 => context.tr('Thanks for checking in', 'Asante kwa kurekodi hisia'),
         2 => context.tr("Sorry it's a tough day", 'Pole kwa siku ngumu'),
         _ => context.tr("I'm here for you", 'Niko hapa kwa ajili yako'),
@@ -294,8 +294,8 @@ List<MoodInsight> pickSummaryInsights(
   Map<String, int> chatFeelings, {
   String language = 'en',
 }) {
-  final List<MoodInsight> patterns = buildInsights(history,
-      chatFeelings: chatFeelings, language: language);
+  final List<MoodInsight> patterns =
+      buildInsights(history, chatFeelings: chatFeelings, language: language);
   final List<MoodInsight> out = <MoodInsight>[
     ...patterns.where((MoodInsight i) => i.needsSupport),
     ...checkInInsights(mood, tags, history, language: language).take(2),

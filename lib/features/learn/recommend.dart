@@ -119,8 +119,8 @@ List<Recommendation> recommendArticles(
   for (final Article a in articles) {
     if (out.length >= count) break;
     if (used.add(a.id)) {
-      out.add(Recommendation(
-          a, 'Something new to read', 'Kitu kipya cha kusoma'));
+      out.add(
+          Recommendation(a, 'Something new to read', 'Kitu kipya cha kusoma'));
     }
   }
   return out;

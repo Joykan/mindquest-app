@@ -182,7 +182,9 @@ class _MoodScreenState extends State<MoodScreen> {
                 ],
               ),
               const SizedBox(height: 24),
-              Text(context.tr('Want to add a note?', 'Ungependa kuongeza maelezo?'),
+              Text(
+                  context.tr(
+                      'Want to add a note?', 'Ungependa kuongeza maelezo?'),
                   style: theme.textTheme.titleMedium),
               const SizedBox(height: 4),
               Text(
@@ -230,7 +232,8 @@ class _MoodScreenState extends State<MoodScreen> {
                   key: const Key('view-history'),
                   onPressed: widget.onHistory,
                   icon: const Icon(Icons.history),
-                  label: Text(context.tr('View mood history', 'Ona historia ya hisia')),
+                  label: Text(
+                      context.tr('View mood history', 'Ona historia ya hisia')),
                 ),
               ],
             ],

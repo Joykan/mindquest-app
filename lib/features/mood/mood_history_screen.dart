@@ -92,7 +92,8 @@ class _MoodHistoryScreenState extends State<MoodHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.tr('Mood history', 'Historia ya hisia'))),
+      appBar:
+          AppBar(title: Text(context.tr('Mood history', 'Historia ya hisia'))),
       body: FutureBuilder<List<MoodEntry>>(
         future: _entries,
         builder: (BuildContext context, AsyncSnapshot<List<MoodEntry>> snap) {
@@ -305,8 +306,7 @@ class _Summary extends StatelessWidget {
                   context.tr(
                       'most common mood\n(${_option(leaders.first).label.toLowerCase()})',
                       'hisia za mara nyingi\n(${_option(leaders.first).labelSw.toLowerCase()})')),
-            stat(
-                '${entries.length}',
+            stat('${entries.length}',
                 context.tr('check-ins in\n30 days', 'rekodi katika\nsiku 30')),
           ],
         ),
@@ -409,9 +409,8 @@ class _Insights extends StatelessWidget {
         ),
       );
     }
-    final List<MoodInsight> insights =
-        buildInsights(entries,
-            chatFeelings: chatFeelings, language: context.lang);
+    final List<MoodInsight> insights = buildInsights(entries,
+        chatFeelings: chatFeelings, language: context.lang);
     if (insights.isEmpty) {
       return Card(
         child: Padding(
@@ -476,7 +475,8 @@ class _Insights extends StatelessWidget {
             ),
           ),
         Text(
-          context.tr('Insights are patterns in what you logged, not a diagnosis.',
+          context.tr(
+              'Insights are patterns in what you logged, not a diagnosis.',
               'Maarifa haya ni mwelekeo wa ulichorekodi, si utambuzi wa ugonjwa.'),
           style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
         ),

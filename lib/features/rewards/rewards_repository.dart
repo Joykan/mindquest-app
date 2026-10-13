@@ -38,8 +38,8 @@ class XpEvent {
         'mood_checkin' => tr(language, 'Mood check-in', 'Kurekodi hisia'),
         'chat_message' => tr(language, 'Chat message', 'Ujumbe kwa Chipu'),
         'article_read' => tr(language, 'Article read', 'Makala imesomwa'),
-        'weekly_quest' =>
-          tr(language, 'Weekly quest complete', 'Changamoto ya wiki imekamilika'),
+        'weekly_quest' => tr(language, 'Weekly quest complete',
+            'Changamoto ya wiki imekamilika'),
         _ => reason,
       };
 }

@@ -85,7 +85,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 maxLength: 30,
                 textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
-                  hintText: context.tr('A nickname is fine', 'Jina la utani linatosha'),
+                  hintText: context.tr(
+                      'A nickname is fine', 'Jina la utani linatosha'),
                   prefixIcon: const Icon(Icons.person_outline),
                 ),
               ),
@@ -93,9 +94,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Row(
                 children: <Widget>[
                   Expanded(
-                      child:
-                          Text(context.tr('Language', 'Lugha'),
-                              style: theme.textTheme.titleMedium)),
+                      child: Text(context.tr('Language', 'Lugha'),
+                          style: theme.textTheme.titleMedium)),
                   LanguageToggle(
                       value: _language,
                       onChanged: (String v) {
@@ -155,7 +155,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onChanged: (bool? v) => setState(() => _agreed = v ?? false),
                 controlAffinity: ListTileControlAffinity.leading,
                 contentPadding: EdgeInsets.zero,
-                title: Text(context.tr('I understand and agree', 'Ninaelewa na ninakubali')),
+                title: Text(context.tr(
+                    'I understand and agree', 'Ninaelewa na ninakubali')),
               ),
               const SizedBox(height: 12),
               FilledButton(

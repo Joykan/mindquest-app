@@ -23,8 +23,8 @@ class PastChatsScreen extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     return Scaffold(
-      appBar: AppBar(
-          title: Text(context.tr('Past chats', 'Mazungumzo ya awali'))),
+      appBar:
+          AppBar(title: Text(context.tr('Past chats', 'Mazungumzo ya awali'))),
       body: FutureBuilder<List<ChatSessionSummary>>(
         future: backend.loadPastChats(),
         builder: (BuildContext context,

@@ -12,6 +12,7 @@ class GoogleButton extends StatelessWidget {
   });
 
   final VoidCallback? onPressed;
+
   /// Defaults to "Continue with Google".
   final String? label;
 
@@ -25,12 +26,13 @@ class GoogleButton extends StatelessWidget {
       key: const Key('google'),
       onPressed: onPressed,
       icon: const Icon(Icons.g_mobiledata, size: 30),
-      label: Text(label ??
-          context.tr('Continue with Google', 'Endelea na Google')),
+      label: Text(
+          label ?? context.tr('Continue with Google', 'Endelea na Google')),
       style: OutlinedButton.styleFrom(
         backgroundColor: onDark ? Colors.white : scheme.surface,
         foregroundColor: onDark ? const Color(0xFF1C2B25) : scheme.onSurface,
-        side: BorderSide(color: onDark ? Colors.white : scheme.outline, width: 1.5),
+        side: BorderSide(
+            color: onDark ? Colors.white : scheme.outline, width: 1.5),
       ),
     );
   }

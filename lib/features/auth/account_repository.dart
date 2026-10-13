@@ -167,12 +167,15 @@ class SupabaseAccountRepository implements AccountRepository {
   }
 
   @override
-  Future<void> linkEmail(String email) =>
-      _guard(() => _client.auth.updateUser(UserAttributes(email: email.trim())));
+  Future<void> linkEmail(String email) => _guard(
+      () => _client.auth.updateUser(UserAttributes(email: email.trim())));
 
   @override
-  Future<void> confirmEmailCode({required String email, required String code}) => _guard(
-        () => _client.auth.verifyOTP(type: OtpType.emailChange, email: email.trim(), token: code.trim()),
+  Future<void> confirmEmailCode(
+          {required String email, required String code}) =>
+      _guard(
+        () => _client.auth.verifyOTP(
+            type: OtpType.emailChange, email: email.trim(), token: code.trim()),
       );
 
   @override
@@ -199,14 +202,20 @@ class SupabaseAccountRepository implements AccountRepository {
 
   @override
   Future<void> signInWithGoogle() => _guard(() async {
-        final bool opened = await _client.auth.signInWithOAuth(OAuthProvider.google, redirectTo: authRedirect);
-        if (!opened) throw const AccountException("Couldn't open Google sign-in.");
+        final bool opened = await _client.auth
+            .signInWithOAuth(OAuthProvider.google, redirectTo: authRedirect);
+        if (!opened) {
+          throw const AccountException("Couldn't open Google sign-in.");
+        }
       });
 
   @override
   Future<void> linkGoogle() => _guard(() async {
-        final bool opened = await _client.auth.linkIdentity(OAuthProvider.google, redirectTo: authRedirect);
-        if (!opened) throw const AccountException("Couldn't open Google sign-in.");
+        final bool opened = await _client.auth
+            .linkIdentity(OAuthProvider.google, redirectTo: authRedirect);
+        if (!opened) {
+          throw const AccountException("Couldn't open Google sign-in.");
+        }
       });
 
   @override
