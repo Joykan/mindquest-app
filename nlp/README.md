@@ -4,8 +4,8 @@ Example phrases the Rasa model learns from, in English and Kiswahili (with some 
 
 ```
 nlp/
-  rasa/data/nlu.yml          training examples (569)
-  rasa/tests/test_nlu.yml    held-out test examples (44), never used for training
+  rasa/data/nlu.yml          training examples (619)
+  rasa/tests/test_nlu.yml    held-out test examples (48), never used for training
   rasa/tests/test_names.yml  held-out test for names vs feelings (12)
   rasa/results/              output of each test run (reports, confusion matrices)
   review/kiswahili_review.csv  sheet for a Kiswahili speaker to check every phrase
@@ -29,8 +29,9 @@ handle the "Accept the breathing exercise?" step.
 | `feel_good` | Good mood | 33 + 30 | 4 + 4 (names test) |
 | `ask_breathing` | Wants a calming or breathing exercise | 21 + 19 | 4 |
 | `ask_about_bot` | Asks what MindQuest is or about privacy | 21 + 21 | 4 |
+| `ask_ideas` | Asks for ideas of things to do (keep busy, lift their mood), added in v4 | 25 + 25 | 4 |
 | `tell_name` | Says their name; the name is extracted | 21 + 20 | 8 (names test) |
-| **Total** | | **569** | **44 + 12** |
+| **Total** | | **619** | **48 + 12** |
 
 ## How the data was put together
 
@@ -167,6 +168,34 @@ remaining name/feeling mix-ups are handled in the chat logic instead (step 7):
 3. If Rasa says "name" but extracts no name, and the message contains a
    happy word (joy, happy, furaha, amani...), it is read as feeling good.
    Without this, "I feel joy today" got the fallback reply in testing.
+
+## v4: a new intent from app testing
+
+While testing the app, "what do you advise I should do to keep my mind busy?"
+was read as ask_about_bot (0.68 confidence, above the 0.5 cut-off), so Chipu
+introduced itself instead of answering. None of the 12 intents covered asking
+for ideas of things to do, so the model picked the nearest one.
+
+v4 adds one intent, `ask_ideas` (25 English + 25 Kiswahili examples, 4 new
+test phrases). Chipu answers with a few small, practical ideas (a short walk,
+texting a friend, music, an article in Learn, the grounding exercise). The other
+intents and their test phrases are unchanged, so v3 and v4 compare fairly on the
+original 44 phrases.
+
+To train and test v4 (on the PC that runs Rasa, in `nlp/rasa` with the venv
+active):
+
+```
+rasa train nlu --out models
+rasa test nlu --nlu tests/test_nlu.yml --model models --out results/v4
+rasa test nlu --nlu tests/test_names.yml --model models --out results/names_v4
+rasa test nlu --nlu data/nlu.yml --cross-validation --folds 5 --out results/cv_v4
+```
+
+Then restart `serve.ps1` so the app uses the new model.
+
+Results (v4): to be filled in from `results/v4`, `results/names_v4` and
+`results/cv_v4`.
 
 ## Rasa vs Dialogflow
 

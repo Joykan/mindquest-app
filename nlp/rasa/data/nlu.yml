@@ -573,6 +573,60 @@ nlu:
     - MindQuest inafanya nini
     - wewe ni mshauri
 
+- intent: ask_ideas
+  # User asks for ideas of things to do (keep busy, distract themselves, lift their mood)
+  examples: |
+    - what should I do to keep my mind busy
+    - what do you advise me to do
+    - give me ideas of things to do
+    - I'm bored, what can I do
+    - suggest something to do
+    - how can I take my mind off things
+    - what can I do to distract myself
+    - give me some self-care ideas
+    - what can I do to cheer myself up
+    - any ideas to lift my mood
+    - what activities can help me feel better
+    - how do I keep busy
+    - suggest a hobby I can try
+    - what can I do this evening
+    - I don't know what to do with myself
+    - any advice on what I should do
+    - what are some healthy things to do when I'm down
+    - recommend something to do today
+    - how can I stop thinking about it
+    - what can I do instead of staying in bed all day
+    - give me something to do
+    - what helps when I'm bored
+    - tips to stay busy
+    - how can I make today a better day
+    - what should I do now
+    - nifanye nini ili akili yangu iwe na shughuli
+    - unanishauri nifanye nini
+    - nipe mawazo ya vitu vya kufanya
+    - nimeboeka, nifanye nini
+    - nipendekezee kitu cha kufanya
+    - nitaondoaje mawazo haya akilini
+    - nifanye nini nisahau mambo haya
+    - nipe mawazo ya kujitunza
+    - nifanye nini kujipa moyo
+    - nipe njia za kuinua hali yangu
+    - ni shughuli gani zitanisaidia
+    - nitajishughulisha vipi
+    - nipendekezee burudani ya kujaribu
+    - jioni hii nifanye nini
+    - sijui nifanye nini
+    - una ushauri gani kwangu
+    - ni mambo gani mazuri ya kufanya nikiwa na huzuni
+    - nipe kitu cha kufanya leo
+    - nitaachaje kufikiria jambo hili
+    - badala ya kulala siku nzima nifanye nini
+    - nipe kitu cha kufanya
+    - nifanye nini nikiboeka
+    - nipe mbinu za kujishughulisha
+    - nifanye nini sasa
+    - leo nifanye nini iwe siku nzuri
+
 - intent: tell_name
   # User says their name (name is extracted as an entity)
   examples: |

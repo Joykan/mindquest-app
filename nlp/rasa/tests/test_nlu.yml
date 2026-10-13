@@ -77,3 +77,10 @@ nlu:
     - is this a bot
     - wewe ni AI
     - unanisaidiaje
+
+- intent: ask_ideas
+  examples: |
+    - I need ideas to keep myself busy
+    - what could I do to feel less bored
+    - nipe wazo la kitu cha kufanya
+    - nifanye nini kupitisha muda

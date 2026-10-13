@@ -131,6 +131,13 @@ Deno.test("asking for breathing goes straight to the exercise", () => {
   assertEquals(decide(parse("ask_breathing", 0.8), null, "sw", first).replyKey, "breathing");
 });
 
+Deno.test("asking for ideas gives ideas of things to do in both languages", () => {
+  const en = decide(parse("ask_ideas", 0.8), null, "en", first);
+  assertEquals(en.replyKey, "ask_ideas");
+  assert(en.text.includes("walk"));
+  assert(decide(parse("ask_ideas", 0.8), null, "sw", first).text.includes("tembea"));
+});
+
 Deno.test("low confidence and nlu_fallback give the fallback reply", () => {
   assertEquals(decide(parse("feel_sad", 0.4), null, "en", first).replyKey, "fallback");
   assertEquals(decide(parse("nlu_fallback", 0.9), null, "en", first).replyKey, "fallback");
@@ -155,6 +162,7 @@ Deno.test("every intent the model knows has a reply in both languages", async ()
     "feel_sad",
     "feel_good",
     "ask_about_bot",
+    "ask_ideas",
   ];
   for (
     const key of [

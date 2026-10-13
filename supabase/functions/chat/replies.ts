@@ -65,6 +65,16 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
       "Mimi ni Chipu, chatbot ya MindQuest inayokusaidia kutunza afya yako ya akili kwa kurekodi hisia, vidokezo na mazoezi ya kupumua. Mimi si mtaalamu wa tiba na siwezi kutambua ugonjwa. Mazungumzo yako ni siri yako.",
     ],
   },
+  ask_ideas: {
+    en: [
+      "Here are a few ideas: take a 10-minute walk, text a friend you trust, put on music you like, or read a short article in Learn. Small things count. Which one feels doable right now?",
+      "Keeping busy can really help. You could tidy one small space, try a hobby like drawing or a game, cook something simple, or try the 5-4-3-2-1 grounding exercise on the Support page. What do you feel like trying?",
+    ],
+    sw: [
+      "Haya ni baadhi ya mawazo: tembea kwa dakika 10, mtumie ujumbe rafiki unayemwamini, sikiliza muziki unaoupenda, au soma makala fupi kwenye sehemu ya Jifunze. Hata mambo madogo yanasaidia. Lipi unaweza kufanya sasa hivi?",
+      "Kujishughulisha kunaweza kusaidia sana. Unaweza kupanga sehemu ndogo ya chumba chako, kujaribu burudani kama kuchora au mchezo, kupika kitu rahisi, au kufanya zoezi la kutuliza la 5-4-3-2-1 kwenye ukurasa wa Msaada. Ungependa kujaribu lipi?",
+    ],
+  },
   breathing: {
     en: [
       "Let's breathe together. Breathe in through your nose for 4 seconds, hold for 4, then breathe out slowly for 6. Repeat this 5 times. How do you feel now?",
