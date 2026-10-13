@@ -44,6 +44,12 @@ cp config/dev.json.example config/dev.json
 flutter run --dart-define-from-file=config/dev.json
 ```
 
+The admin dashboard is a second web app in the same project:
+
+```
+flutter run -d chrome -t lib/main_admin.dart --web-port 5050 --dart-define-from-file=config/dev.json
+```
+
 Put the Supabase URL and publishable key in `config/dev.json`. That file is in
 `.gitignore`, so keys don't end up on GitHub.
 
@@ -59,6 +65,6 @@ Put the Supabase URL and publishable key in `config/dev.json`. That file is in
 - [x] Login, chat and mood screens
 - [x] Rewards and learning articles
 - [x] Offline mode and reminders (see `docs/offline-and-reminders.md`)
-- [ ] Admin dashboard
+- [x] Admin dashboard (see `docs/admin-dashboard.md`)
 - [ ] Testing with users
 - [ ] Final report and presentation
