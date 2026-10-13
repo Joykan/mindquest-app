@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/l10n/tr.dart';
 import '../../core/offline/offline_store.dart';
@@ -26,7 +27,11 @@ class ProfileScreen extends StatelessWidget {
       this.onSaveProgress,
       this.progress,
       this.reminders,
-      this.connection});
+      this.connection,
+      this.feedbackUrl});
+
+  /// The testers' questionnaire (shown as "Give feedback" when set).
+  final String? feedbackUrl;
 
   /// The daily reminder setting (hidden where reminders aren't supported).
   final ReminderController? reminders;
@@ -289,6 +294,24 @@ class ProfileScreen extends StatelessWidget {
                 Card(
                   clipBehavior: Clip.antiAlias,
                   child: ReminderSettingsTile(reminders: reminders!),
+                ),
+                const SizedBox(height: 12),
+              ],
+              if ((feedbackUrl ?? '').isNotEmpty) ...<Widget>[
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  child: ListTile(
+                    key: const Key('give-feedback'),
+                    leading: const Text('📝', style: TextStyle(fontSize: 22)),
+                    title: Text(context.tr(
+                        'Give feedback on MindQuest', 'Toa maoni kuhusu MindQuest')),
+                    subtitle: Text(context.tr(
+                        'A short questionnaire (about 10 minutes)',
+                        'Dodoso fupi (kama dakika 10)')),
+                    trailing: const Icon(Icons.open_in_new),
+                    onTap: () => launchUrl(Uri.parse(feedbackUrl!),
+                        mode: LaunchMode.externalApplication),
+                  ),
                 ),
                 const SizedBox(height: 12),
               ],

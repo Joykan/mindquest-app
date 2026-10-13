@@ -383,4 +383,20 @@ void main() {
     expect(find.byKey(const Key('save-done')), findsOneWidget);
     expect(find.textContaining('Continue with Google'), findsOneWidget);
   });
+
+  testWidgets('Profile shows Give feedback only when a form link is set',
+      (tester) async {
+    tallScreen(tester);
+    final (FakeAccount _, SessionController s) = await anonymousUser();
+    await tester.pumpWidget(wrap(ProfileScreen(
+        session: s, theme: ThemeController(), feedbackUrl: '')));
+    expect(find.byKey(const Key('give-feedback')), findsNothing);
+
+    await tester.pumpWidget(wrap(ProfileScreen(
+        session: s,
+        theme: ThemeController(),
+        feedbackUrl: 'https://forms.gle/example')));
+    expect(find.byKey(const Key('give-feedback')), findsOneWidget);
+    expect(find.text('Give feedback on MindQuest'), findsOneWidget);
+  });
 }

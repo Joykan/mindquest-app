@@ -264,7 +264,8 @@ class _OverviewPageState extends State<OverviewPage> {
       SectionCard(
         key: const Key('chart-mood'),
         title: 'Average mood per day',
-        subtitle: '1 very low · 3 okay · 5 very good',
+        subtitle:
+            '1 very low · 3 okay · 5 very good. Days with fewer than ${s.minGroup} check-ins are hidden.',
         child: DayBars(
           values: <double?>[for (final DailyStat d in s.daily) d.averageMood],
           max: 5,
@@ -273,7 +274,7 @@ class _OverviewPageState extends State<OverviewPage> {
           tooltips: <String>[
             for (final DailyStat d in s.daily)
               '${longDate('en', d.day)}: '
-                  '${d.averageMood == null ? 'no check-ins' : '${_mood(d.averageMood)} ${_moodEmoji(d.averageMood)}'}',
+                  '${d.averageMood != null ? '${_mood(d.averageMood)} ${_moodEmoji(d.averageMood)}' : d.checkIns == 0 ? 'no check-ins' : 'hidden (fewer than ${s.minGroup} check-ins)'}',
           ],
         ),
       ),
@@ -297,7 +298,8 @@ class _OverviewPageState extends State<OverviewPage> {
       SectionCard(
         key: const Key('card-tags'),
         title: 'What check-ins were about',
-        subtitle: 'Tags students chose, with their average mood',
+        subtitle:
+            'Tags students chose, with their average mood (shown from ${s.minGroup} check-ins)',
         child: s.tags.isEmpty
             ? const Text('No tags in this period.')
             : Column(

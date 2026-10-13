@@ -86,6 +86,7 @@ class AdminStats {
     this.crisisEvents = 0,
     this.notUnderstood = 0,
     this.unavailable = 0,
+    this.minGroup = 5,
     this.daily = const <DailyStat>[],
     this.moodSplit = const <int, int>{},
     this.tags = const <TagStat>[],
@@ -111,6 +112,7 @@ class AdminStats {
         crisisEvents: _int(j['crisis_events']),
         notUnderstood: _int(j['not_understood']),
         unavailable: _int(j['unavailable']),
+        minGroup: j['min_group'] == null ? 5 : _int(j['min_group']),
         daily: <DailyStat>[
           for (final dynamic d in j['daily'] as List<dynamic>? ?? <dynamic>[])
             DailyStat(
@@ -165,6 +167,9 @@ class AdminStats {
   final int crisisEvents;
   final int notUnderstood;
   final int unavailable;
+
+  /// Averages from fewer check-ins than this are hidden (null).
+  final int minGroup;
   final List<DailyStat> daily;
 
   /// Check-ins per mood, 1 (very low) to 5 (very good).

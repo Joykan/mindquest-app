@@ -23,6 +23,7 @@ import '../../features/rewards/rewards_repository.dart';
 import '../../features/rewards/rewards_screen.dart';
 import '../../features/setup/setup_status_screen.dart';
 import '../../features/support/support_screen.dart';
+import '../config/env.dart';
 import '../l10n/tr.dart';
 import '../offline/offline_store.dart';
 import '../theme/theme_controller.dart';
@@ -144,6 +145,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
             progress: progress,
             reminders: reminders,
             connection: offline?.status,
+            feedbackUrl: Env.feedbackUrl,
             onHelplines: () => showHelplines(context),
             onMoodHistory: () => context.go('/mood/history'),
             onRewards: () => context.go('/rewards'),
