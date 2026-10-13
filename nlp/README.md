@@ -154,7 +154,7 @@ The two small tests went down by 3 phrases and 1 phrase:
 
 With 4 phrases per intent, three phrases is a 7% swing, so these tests are too
 small to rank v2 and v3 on their own. Cross-validation uses all 569 phrases,
-which makes it the better guide. **v3 is the model used in the app.**
+which makes it the better guide. **v3 was the model used in the app until v4 (see below).**
 
 Data changes stop here, so the test sets are not tuned any further. The
 remaining name/feeling mix-ups are handled in the chat logic instead (step 7):
@@ -194,8 +194,45 @@ rasa test nlu --nlu data/nlu.yml --cross-validation --folds 5 --out results/cv_v
 
 Then restart `serve.ps1` so the app uses the new model.
 
-Results (v4): to be filled in from `results/v4`, `results/names_v4` and
-`results/cv_v4`.
+### Results (v4)
+
+| Test | v3 | v4 |
+|---|---|---|
+| 5-fold cross-validation (accuracy / macro F1) | 75.7% / 0.77 (569 phrases, 12 intents) | 73.7% / 0.75 (619 phrases, 13 intents) |
+| `test_nlu.yml`, original 44 phrases | 86.4% (38 of 44) | 95.5% (42 of 44) |
+| `test_nlu.yml`, all 48 phrases | n/a | 95.8% / 0.96 |
+| `ask_ideas`, 4 new test phrases | n/a | 4 of 4 |
+| `test_names.yml`, 12 phrases | 83.3% / 0.78 | 83.3% / 0.78 |
+| Name extraction F1, names test | 0.94 | 0.94 |
+| Name extraction F1, cross-validation | 0.94 | 0.87 |
+
+What the numbers show:
+
+- **The new intent works on new wording.** All 4 held-out ask_ideas phrases
+  were right, in both languages. In cross-validation ask_ideas scores F1 0.74,
+  in the same range as the other intents.
+- **Cross-validation dropped by 2 points.** Asking for ideas overlaps with
+  asking for a calming exercise ("how can I take my mind off things" was read
+  as ask_breathing) and with asking about the bot ("what do you advise me to
+  do" was read as ask_about_bot). Most of the new mix-ups are between these
+  three intents: ask_breathing and ask_ideas swapped 11 times, ask_about_bot
+  and ask_ideas 8 times. In the app these mistakes are mild: both breathing and
+  ideas replies are helpful answers to "what can I do?".
+- **The original 44 phrases went from 38 to 42 correct**, even though the data
+  for those intents did not change. Part of this is run-to-run variation (DIET
+  starts from random weights each time it is trained), so it should not be read
+  as a real improvement. The 2 remaining errors are old ones: "good day" (read
+  as feel_good) and "akili haitulii" (read as ask_breathing).
+- **Names are unchanged**: the same 2 feeling phrases ("I feel joy", "so much
+  joy today") are read as tell_name. The chat logic handles these (rule 3:
+  no name found plus a happy word means feeling good).
+- Name extraction in cross-validation fell from 0.94 to 0.87 (recall 0.90 to
+  0.80). With one more intent, each fold has fewer name examples to learn
+  from. The names test, which checks the real use, is unchanged at 0.94.
+
+**v4 is the model used in the app** from 13 Oct 2026, because without
+ask_ideas a real question from testing got a wrong answer. Cross-validation
+remains the figure to quote in the report (73.7%, macro F1 0.75).
 
 ## Rasa vs Dialogflow
 
