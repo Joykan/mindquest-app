@@ -66,6 +66,10 @@ jobs:
       - name: Build web
         run: flutter build web --release
 
+      # The admin dashboard (lib/main_admin.dart) is a second web app.
+      - name: Build admin dashboard (web)
+        run: flutter build web --release -t lib/main_admin.dart
+
       # Retries once: the first Android build downloads Gradle and SDK parts,
       # and a brief network error there shouldn't fail the whole run.
       - name: Build Android APK (debug)
