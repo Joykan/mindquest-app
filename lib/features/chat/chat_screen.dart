@@ -545,7 +545,8 @@ class _MoodFaces extends StatelessWidget {
                   opacity: picked == null || picked == m.value ? 1 : 0.35,
                   child: Container(
                     width: 60,
-                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 6, horizontal: 3),
                     decoration: BoxDecoration(
                       color: picked == m.value
                           ? theme.colorScheme.primary.withValues(alpha: 0.15)
@@ -561,12 +562,16 @@ class _MoodFaces extends StatelessWidget {
                     child: Column(
                       children: <Widget>[
                         Text(m.emoji, style: const TextStyle(fontSize: 22)),
-                        Text(m.name(context.lang),
-                            style: theme.textTheme.labelSmall
-                                ?.copyWith(fontSize: 10),
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
+                        // Shrinks a little for long names ("Vibaya sana")
+                        // instead of cutting them off.
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(m.name(context.lang),
+                              style: theme.textTheme.labelSmall
+                                  ?.copyWith(fontSize: 10),
+                              textAlign: TextAlign.center,
+                              maxLines: 1),
+                        ),
                       ],
                     ),
                   ),

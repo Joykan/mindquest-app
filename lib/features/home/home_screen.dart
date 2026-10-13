@@ -256,40 +256,45 @@ class _HomeBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Row(
+                // Streak on the left, level pill on the right. When both
+                // don't fit (long Kiswahili text or a big system font), the
+                // pill moves to the next line instead of being cut off.
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 6,
                   children: <Widget>[
-                    const Text('🔥', style: TextStyle(fontSize: 20)),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        summary.streak == 0
-                            ? context.tr('Start your streak today',
-                                'Anza mfululizo wako leo')
-                            : context.tr(
-                                summary.streak == 1
-                                    ? '1-day streak'
-                                    : '${summary.streak}-day streak',
-                                'Mfululizo wa siku ${summary.streak}'),
-                        style: theme.textTheme.titleMedium,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    // Flexible so a long level name in Kiswahili or a big
-                    // system font shortens with "..." instead of overflowing.
-                    Flexible(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                            color: mq.reward,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Text(
-                          '${context.tr('Level', 'Kiwango')} ${level.level} · ${title.emoji} ${title.name(lang)}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall
-                              ?.copyWith(color: mq.onReward),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        const Text('🔥', style: TextStyle(fontSize: 20)),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            summary.streak == 0
+                                ? context.tr('Start your streak today',
+                                    'Anza mfululizo wako leo')
+                                : context.tr(
+                                    summary.streak == 1
+                                        ? '1-day streak'
+                                        : '${summary.streak}-day streak',
+                                    'Mfululizo wa siku ${summary.streak}'),
+                            style: theme.textTheme.titleMedium,
+                          ),
                         ),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                          color: mq.reward,
+                          borderRadius: BorderRadius.circular(12)),
+                      child: Text(
+                        '${context.tr('Level', 'Kiwango')} ${level.level} · ${title.emoji} ${title.name(lang)}',
+                        style: theme.textTheme.labelSmall
+                            ?.copyWith(color: mq.onReward),
                       ),
                     ),
                   ],
