@@ -325,5 +325,8 @@ Future<bool> confirmDelete(BuildContext context,
   return ok ?? false;
 }
 
+/// Shows a short message, replacing the one already showing.
 void showMessage(BuildContext context, String text) =>
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(text)));
