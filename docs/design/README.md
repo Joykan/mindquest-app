@@ -4,6 +4,7 @@
 |---|---|---|
 | Wireframes: 12 mobile + 2 admin screens, user flow | Figma | https://www.figma.com/design/50eKXCZIvp0hkz4bOa9K7F |
 | Hi-fi: screenshots of the real app (English, Kiswahili, light and dark) under the wireframes | Figma | https://www.figma.com/design/50eKXCZIvp0hkz4bOa9K7F/?node-id=22-251 |
+| Hi-fi export (all 23 screens in one image) | PNG | `hifi/MindQuest_hifi_2026-10-13.png` (this folder) |
 | Style guide: colours, type, mascot, components | SVG / PNG | `style-guide/` (this folder) |
 | Visual design decisions | Markdown | `visual-design.md` (this folder) |
 | System architecture | Lucidchart | https://lucid.app/lucidchart/2347f3d7-b019-4796-bdcb-bef9cab39438/edit |
