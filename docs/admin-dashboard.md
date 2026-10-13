@@ -64,9 +64,11 @@ check-ins never leave the database for the dashboard, and crisis events
 are stored without the message and are only counted. Topics come from the
 intent labels the NLU model gave, not from the messages.
 
-With very few students, an average can still point to one person (for
-example a single check-in on one day). Before real use beyond the pilot,
-small numbers (under 5) should be hidden; this is noted for step 12.
+With very few students, an average could point to one person (for example
+a single check-in on one day). So averages that come from fewer than 5
+check-ins are hidden (shown as "–"); counts are still shown. This was added
+before testing with students (migration
+`20261013164017_admin_hide_small_averages`).
 
 ## Database
 

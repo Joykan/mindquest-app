@@ -66,5 +66,5 @@ Put the Supabase URL and publishable key in `config/dev.json`. That file is in
 - [x] Rewards and learning articles
 - [x] Offline mode and reminders (see `docs/offline-and-reminders.md`)
 - [x] Admin dashboard (see `docs/admin-dashboard.md`)
-- [ ] Testing with users
+- [ ] Testing with users (plan, test cases and form: `docs/testing/`)
 - [ ] Final report and presentation

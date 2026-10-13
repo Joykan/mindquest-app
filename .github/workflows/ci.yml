@@ -75,6 +75,11 @@ jobs:
       - name: Build Android APK (debug)
         run: flutter build apk --debug || (echo "Retrying after a build error..." && sleep 30 && flutter build apk --debug)
 
+      # Testers get a release APK, which shrinks the code and resources, so
+      # make sure it builds too.
+      - name: Build Android APK (release, arm64)
+        run: flutter build apk --release --target-platform android-arm64
+
       - name: Upload APK
         uses: actions/upload-artifact@v5
         with:

@@ -1,0 +1,7 @@
+.venv/
+models/
+results/
+.rasa/
+.rasa-token
+tests/
+*.ps1

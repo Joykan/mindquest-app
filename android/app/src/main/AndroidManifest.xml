@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Needed by release builds (debug builds add it automatically): Supabase,
+         the chatbot and Google sign-in all use the internet. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Daily reminders: shown with permission (asked when the user turns them
          on; POST_NOTIFICATIONS comes from flutter_local_notifications) and
          scheduled again after the phone restarts. -->
