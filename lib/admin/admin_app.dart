@@ -21,12 +21,12 @@ ThemeData adminTheme([ThemeData? base]) {
   final ThemeData t = base ?? AppTheme.light();
   return t.copyWith(
     filledButtonTheme: FilledButtonThemeData(
-      style: t.filledButtonTheme.style
-          ?.copyWith(minimumSize: const WidgetStatePropertyAll<Size>(Size(64, 44))),
+      style: t.filledButtonTheme.style?.copyWith(
+          minimumSize: const WidgetStatePropertyAll<Size>(Size(64, 44))),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
-      style: t.outlinedButtonTheme.style
-          ?.copyWith(minimumSize: const WidgetStatePropertyAll<Size>(Size(64, 44))),
+      style: t.outlinedButtonTheme.style?.copyWith(
+          minimumSize: const WidgetStatePropertyAll<Size>(Size(64, 44))),
     ),
   );
 }
@@ -172,8 +172,8 @@ class _AdminSignInState extends State<AdminSignIn> {
 
   Future<void> _signIn() async {
     if (!_form.currentState!.validate()) return;
-    await _run(() => widget.repository
-        .signIn(email: _email.text, password: _password.text));
+    await _run(() =>
+        widget.repository.signIn(email: _email.text, password: _password.text));
   }
 
   @override
@@ -368,8 +368,8 @@ class _AdminShellState extends State<AdminShell> {
               child: Center(
                 child: Text(
                   '${widget.profile.username} · ${roleNames[widget.profile.role] ?? widget.profile.role}',
-                  style: theme.textTheme.labelLarge
-                      ?.copyWith(color: mq.textMuted),
+                  style:
+                      theme.textTheme.labelLarge?.copyWith(color: mq.textMuted),
                 ),
               ),
             ),

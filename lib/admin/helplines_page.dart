@@ -30,7 +30,8 @@ class _HelplinesPageState extends State<HelplinesPage> {
           HelplineEditor(repository: widget.repository, helpline: line),
     );
     if (saved == true && mounted) {
-      showMessage(context, line == null ? 'Helpline added.' : 'Helpline saved.');
+      showMessage(
+          context, line == null ? 'Helpline added.' : 'Helpline saved.');
       _reload();
     }
   }
@@ -71,8 +72,7 @@ class _HelplinesPageState extends State<HelplinesPage> {
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     return FutureBuilder<List<AdminHelpline>>(
       future: _lines,
-      builder:
-          (BuildContext context, AsyncSnapshot<List<AdminHelpline>> snap) {
+      builder: (BuildContext context, AsyncSnapshot<List<AdminHelpline>> snap) {
         if (snap.hasError) {
           return LoadProblem(message: '${snap.error}', onRetry: _reload);
         }
@@ -80,7 +80,8 @@ class _HelplinesPageState extends State<HelplinesPage> {
           return const Center(child: CircularProgressIndicator());
         }
         final List<AdminHelpline> lines = snap.data!;
-        final int verified = lines.where((AdminHelpline h) => h.verified).length;
+        final int verified =
+            lines.where((AdminHelpline h) => h.verified).length;
         return ListView(
           padding: const EdgeInsets.all(24),
           children: <Widget>[
@@ -286,10 +287,12 @@ class _HelplineEditorState extends State<HelplineEditor> {
                   controller: _order,
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                      labelText: 'Order', helperText: 'Lower numbers show first'),
-                  validator: (String? v) => int.tryParse((v ?? '').trim()) == null
-                      ? 'A whole number'
-                      : null,
+                      labelText: 'Order',
+                      helperText: 'Lower numbers show first'),
+                  validator: (String? v) =>
+                      int.tryParse((v ?? '').trim()) == null
+                          ? 'A whole number'
+                          : null,
                 ),
                 SwitchListTile(
                   key: const Key('helpline-verified'),

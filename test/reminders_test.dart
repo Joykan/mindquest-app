@@ -219,8 +219,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(s.scheduled, isNotEmpty);
     expect(find.byKey(const Key('reminder-prompt')), findsNothing);
-    expect(find.textContaining('Chipu will remind you at 19:00'),
-        findsOneWidget);
+    expect(
+        find.textContaining('Chipu will remind you at 19:00'), findsOneWidget);
   });
 
   testWidgets('Profile setting in Kiswahili shows the time when on',

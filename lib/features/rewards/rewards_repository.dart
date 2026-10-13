@@ -203,8 +203,7 @@ class SupabaseRewardsRepository implements RewardsRepository {
               .limit(8)),
     ]);
 
-    final Map<String, dynamic> profile =
-        Map<String, dynamic>.from(r[0] as Map);
+    final Map<String, dynamic> profile = Map<String, dynamic>.from(r[0] as Map);
     final List<RewardBadge> badges = <RewardBadge>[
       for (final dynamic b in r[1] as List<dynamic>)
         RewardBadge.fromJson(b as Map<String, dynamic>),
@@ -227,8 +226,8 @@ class SupabaseRewardsRepository implements RewardsRepository {
     };
     final Set<DateTime> days = <DateTime>{
       for (final dynamic m in r[7] as List<dynamic>)
-        nairobiDay(DateTime.parse(
-            (m as Map<String, dynamic>)['logged_at'] as String)),
+        nairobiDay(
+            DateTime.parse((m as Map<String, dynamic>)['logged_at'] as String)),
       ...pendingDays,
     }.where((DateTime d) => !d.isBefore(nairobiDay(weekStart))).toSet();
 

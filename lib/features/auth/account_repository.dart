@@ -156,7 +156,8 @@ class SupabaseAccountRepository implements AccountRepository {
         final dynamic found =
             store == null ? await query() : await store.load('profile', query);
         if (found == null) return null;
-        final Map<String, dynamic> row = Map<String, dynamic>.from(found as Map);
+        final Map<String, dynamic> row =
+            Map<String, dynamic>.from(found as Map);
         return Profile(
           username: row['username'] as String? ?? 'Friend',
           language: row['language'] as String? ?? 'en',

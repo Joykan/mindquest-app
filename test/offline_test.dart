@@ -35,8 +35,7 @@ class OfflineBackend extends ChatBackend {
 
 /// Like FakeProgress, but the check-in is kept on the phone (no internet).
 class OfflineProgress extends FakeProgress {
-  OfflineProgress()
-      : super(const HomeSummary(username: 'A', xp: 0, streak: 0));
+  OfflineProgress() : super(const HomeSummary(username: 'A', xp: 0, streak: 0));
 
   @override
   Future<MoodSaved> logMood(
@@ -53,8 +52,8 @@ void main() {
 
   group('isOfflineError', () {
     test('no internet and timeouts are offline', () {
-      expect(isOfflineError(const SocketException('Failed host lookup')),
-          isTrue);
+      expect(
+          isOfflineError(const SocketException('Failed host lookup')), isTrue);
       expect(isOfflineError(TimeoutException('slow')), isTrue);
       expect(
           isOfflineError(Exception(
@@ -63,8 +62,8 @@ void main() {
     });
 
     test('an answer from the server is not offline', () {
-      expect(isOfflineError(const PostgrestException(message: 'denied')),
-          isFalse);
+      expect(
+          isOfflineError(const PostgrestException(message: 'denied')), isFalse);
       expect(isOfflineError(const AuthException('bad password')), isFalse);
       expect(isOfflineError(StateError('bug')), isFalse);
     });
@@ -100,8 +99,8 @@ void main() {
 
     test('offline with nothing saved still fails', () async {
       final OfflineStore store = await newStore();
-      await expectLater(store.load('rewards', noInternet),
-          throwsA(isA<SocketException>()));
+      await expectLater(
+          store.load('rewards', noInternet), throwsA(isA<SocketException>()));
       expect(store.status.offline, isTrue);
     });
 
@@ -155,7 +154,8 @@ void main() {
 
       expect(await store.flush(), 1);
       expect(sent, <String>['a']);
-      expect(store.pending().map((PendingAction a) => a.id), <String>['b', 'c']);
+      expect(
+          store.pending().map((PendingAction a) => a.id), <String>['b', 'c']);
       expect(store.status.offline, isTrue);
       expect(store.status.pending, 2);
 
@@ -202,15 +202,12 @@ void main() {
     DateTime day(int d) => DateTime.utc(2026, 10, d);
 
     test('a streak that ended yesterday or today still counts', () {
-      expect(
-          currentStreak(streak: 4, lastCheckin: day(13), now: now), 4);
-      expect(
-          currentStreak(streak: 4, lastCheckin: day(12), now: now), 4);
+      expect(currentStreak(streak: 4, lastCheckin: day(13), now: now), 4);
+      expect(currentStreak(streak: 4, lastCheckin: day(12), now: now), 4);
     });
 
     test('a streak that ended before yesterday is over', () {
-      expect(
-          currentStreak(streak: 5, lastCheckin: day(11), now: now), 0);
+      expect(currentStreak(streak: 5, lastCheckin: day(11), now: now), 0);
       expect(currentStreak(streak: 0, now: now), 0);
     });
 
@@ -224,8 +221,7 @@ void main() {
               now: now),
           5);
       expect(
-          currentStreak(
-              streak: 0, pendingDays: <DateTime>{day(13)}, now: now),
+          currentStreak(streak: 0, pendingDays: <DateTime>{day(13)}, now: now),
           1);
     });
   });
@@ -234,8 +230,8 @@ void main() {
     test('uses the same phrases as the chat Edge Function', () {
       final String ts =
           File('supabase/functions/chat/crisis.ts').readAsStringSync();
-      final String list = ts.substring(
-          ts.indexOf('CRISIS_PHRASES'), ts.indexOf('];'));
+      final String list =
+          ts.substring(ts.indexOf('CRISIS_PHRASES'), ts.indexOf('];'));
       final List<String> server = <String>[
         for (final RegExpMatch m in RegExp(r'"([^"]+)"').allMatches(list))
           m.group(1)!,
@@ -272,16 +268,16 @@ void main() {
       theme: AppTheme.light(),
       home: ChatScreen(
           backend: OfflineBackend(),
-          progress: FakeProgress(
-              const HomeSummary(username: 'A', xp: 0, streak: 0))),
+          progress:
+              FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0))),
     ));
     await tester.enterText(
         find.byKey(const Key('chat-input')), 'I want to end it all');
     await tester.tap(find.byKey(const Key('chat-send')));
     await tester.pumpAndSettle();
 
-    expect(find.text("You don't have to go through this alone"),
-        findsOneWidget);
+    expect(
+        find.text("You don't have to go through this alone"), findsOneWidget);
     expect(find.textContaining('Kenya Red Cross'), findsOneWidget);
     expect(find.text('Call'), findsOneWidget);
   });
@@ -292,7 +288,8 @@ void main() {
       theme: AppTheme.light(),
       home: ChatScreen(backend: OfflineBackend()),
     ));
-    await tester.enterText(find.byKey(const Key('chat-input')), 'nataka kujiua');
+    await tester.enterText(
+        find.byKey(const Key('chat-input')), 'nataka kujiua');
     await tester.tap(find.byKey(const Key('chat-send')));
     await tester.pumpAndSettle();
     expect(find.textContaining('999'), findsOneWidget);
@@ -334,8 +331,8 @@ void main() {
           theme: AppTheme.light(),
           home: LanguageScope(
             language: language,
-            child: Scaffold(
-                body: OfflineBanner(status: status, onRetry: () {})),
+            child:
+                Scaffold(body: OfflineBanner(status: status, onRetry: () {})),
           ),
         );
 
@@ -375,9 +372,11 @@ void main() {
 
     test('an older save shows the date too', () {
       final DateTime now = DateTime.utc(2026, 10, 13, 7);
-      expect(OfflineBanner.savedTime('en', DateTime.utc(2026, 10, 13, 6, 5), now),
+      expect(
+          OfflineBanner.savedTime('en', DateTime.utc(2026, 10, 13, 6, 5), now),
           '09:05');
-      expect(OfflineBanner.savedTime('en', DateTime.utc(2026, 10, 12, 6, 5), now),
+      expect(
+          OfflineBanner.savedTime('en', DateTime.utc(2026, 10, 12, 6, 5), now),
           '12 Oct 09:05');
     });
   });

@@ -64,8 +64,7 @@ class OfflineBanner extends StatelessWidget {
                       size: 18,
                       color: mq.textMuted),
                   const SizedBox(width: 10),
-                  Expanded(
-                      child: Text(text, style: theme.textTheme.bodySmall)),
+                  Expanded(child: Text(text, style: theme.textTheme.bodySmall)),
                   if (onRetry != null && status.offline)
                     Text(context.tr('Retry', 'Jaribu tena'),
                         style: theme.textTheme.labelLarge

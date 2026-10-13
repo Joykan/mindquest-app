@@ -78,8 +78,8 @@ class LocalNotificationScheduler implements ReminderScheduler {
         id: r.id,
         title: r.title,
         body: r.body,
-        scheduledDate: tz.TZDateTime(nairobi, r.at.year, r.at.month,
-            r.at.day, r.at.hour, r.at.minute),
+        scheduledDate: tz.TZDateTime(
+            nairobi, r.at.year, r.at.month, r.at.day, r.at.hour, r.at.minute),
         notificationDetails: const NotificationDetails(android: _android),
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         payload: _payload,

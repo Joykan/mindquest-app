@@ -179,7 +179,8 @@ class SupabaseProgressRepository implements ProgressRepository {
       // 23514: the time is outside what the database accepts. If the phone
       // says the check-in is recent, the phone's clock is probably wrong, so
       // the server's time is used instead. Older ones (7 days) are dropped.
-      final DateTime? at = DateTime.tryParse(data['logged_at'] as String? ?? '');
+      final DateTime? at =
+          DateTime.tryParse(data['logged_at'] as String? ?? '');
       final bool recent = at != null &&
           DateTime.now().toUtc().difference(at) < const Duration(days: 6);
       if (e.code != '23514' || !recent) rethrow;
@@ -223,7 +224,8 @@ class SupabaseProgressRepository implements ProgressRepository {
         streak: profile['streak'] as int? ?? 0,
         lastCheckin: parseDay(profile['last_checkin'] as String?),
         pendingDays: <DateTime>{
-          for (final MoodEntry e in pending) DateTime.utc(e.at.year, e.at.month, e.at.day)
+          for (final MoodEntry e in pending)
+            DateTime.utc(e.at.year, e.at.month, e.at.day)
         },
       );
 
@@ -265,14 +267,14 @@ class SupabaseProgressRepository implements ProgressRepository {
     final Map<String, dynamic> profile = results[0] as Map<String, dynamic>;
     final Set<String> done = results[1] as Set<String>;
     final List<MoodEntry> pending = _pendingMoods();
-    final Set<String> waiting = <String>{for (final MoodEntry e in pending) e.id};
+    final Set<String> waiting = <String>{
+      for (final MoodEntry e in pending) e.id
+    };
     final List<MoodEntry> moods = <MoodEntry>[
       ...pending,
       for (final dynamic m in results[2] as List<dynamic>)
         if (!waiting.contains((m as Map<String, dynamic>)['id'])) _entry(m),
-    ]
-        .where((MoodEntry e) => !e.at.isBefore(nairobiNow(week)))
-        .toList()
+    ].where((MoodEntry e) => !e.at.isBefore(nairobiNow(week))).toList()
       ..sort((MoodEntry a, MoodEntry b) => b.at.compareTo(a.at));
 
     final DateTime today = nairobiNow(startOfTodayUtc());
@@ -357,12 +359,13 @@ class SupabaseProgressRepository implements ProgressRepository {
             .gte('logged_at', since.toIso8601String())
             .order('logged_at', ascending: false)) as List<dynamic>;
     final List<MoodEntry> pending = _pendingMoods();
-    final Set<String> waiting = <String>{for (final MoodEntry e in pending) e.id};
+    final Set<String> waiting = <String>{
+      for (final MoodEntry e in pending) e.id
+    };
     return <MoodEntry>[
       ...pending,
       for (final dynamic r in rows)
-        if (!waiting.contains((r as Map<String, dynamic>)['id']))
-          _entry(r),
+        if (!waiting.contains((r as Map<String, dynamic>)['id'])) _entry(r),
     ].where((MoodEntry e) => !e.at.isBefore(nairobiNow(since))).toList()
       ..sort((MoodEntry a, MoodEntry b) => b.at.compareTo(a.at));
   }
@@ -385,15 +388,15 @@ class SupabaseProgressRepository implements ProgressRepository {
     final List<dynamic> rows = await _load(
         'feelings.$days',
         () => _client
-            .from('messages')
-            .select('intent, created_at')
-            .eq('sender', 'user')
-            .inFilter('intent', <String>[
-          'feel_stressed',
-          'feel_anxious',
-          'feel_sad',
-          'feel_good'
-        ]).gte('created_at', since.toIso8601String())) as List<dynamic>;
+                .from('messages')
+                .select('intent, created_at')
+                .eq('sender', 'user')
+                .inFilter('intent', <String>[
+              'feel_stressed',
+              'feel_anxious',
+              'feel_sad',
+              'feel_good'
+            ]).gte('created_at', since.toIso8601String())) as List<dynamic>;
     final Map<String, int> counts = <String, int>{};
     for (final dynamic r in rows) {
       final Map<String, dynamic> m = r as Map<String, dynamic>;

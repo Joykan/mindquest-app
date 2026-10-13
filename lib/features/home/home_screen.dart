@@ -273,45 +273,45 @@ class _HomeBody extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 8,
-                  runSpacing: 6,
-                  children: <Widget>[
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        const Text('🔥', style: TextStyle(fontSize: 20)),
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text(
-                            summary.streak == 0
-                                ? context.tr('Start your streak today',
-                                    'Anza mfululizo wako leo')
-                                : context.tr(
-                                    summary.streak == 1
-                                        ? '1-day streak'
-                                        : '${summary.streak}-day streak',
-                                    'Mfululizo wa siku ${summary.streak}'),
-                            style: theme.textTheme.titleMedium,
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
+                    runSpacing: 6,
+                    children: <Widget>[
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          const Text('🔥', style: TextStyle(fontSize: 20)),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              summary.streak == 0
+                                  ? context.tr('Start your streak today',
+                                      'Anza mfululizo wako leo')
+                                  : context.tr(
+                                      summary.streak == 1
+                                          ? '1-day streak'
+                                          : '${summary.streak}-day streak',
+                                      'Mfululizo wa siku ${summary.streak}'),
+                              style: theme.textTheme.titleMedium,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                          color: mq.reward,
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Text(
-                        '${context.tr('Level', 'Kiwango')} ${level.level} · ${title.emoji} ${title.name(lang)}',
-                        style: theme.textTheme.labelSmall
-                            ?.copyWith(color: mq.onReward),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                            color: mq.reward,
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Text(
+                          '${context.tr('Level', 'Kiwango')} ${level.level} · ${title.emoji} ${title.name(lang)}',
+                          style: theme.textTheme.labelSmall
+                              ?.copyWith(color: mq.onReward),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 12),
                 ClipRRect(

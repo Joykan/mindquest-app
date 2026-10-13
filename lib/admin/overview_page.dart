@@ -116,7 +116,8 @@ class _OverviewPageState extends State<OverviewPage> {
                 Text(
                   '${longDate('en', s.from)} to ${longDate('en', s.to)}. '
                   "Totals only: the dashboard never shows a student's messages, notes or check-ins.",
-                  style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+                  style:
+                      theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
                 ),
                 const SizedBox(height: 16),
                 Wrap(
@@ -150,7 +151,8 @@ class _OverviewPageState extends State<OverviewPage> {
           icon: Icons.people_outline,
           label: 'Students',
           value: '${s.users}',
-          detail: '+${s.newUsers} new · ${s.savedAccounts} saved with email or Google',
+          detail:
+              '+${s.newUsers} new · ${s.savedAccounts} saved with email or Google',
         ),
         StatTile(
           key: const Key('tile-active'),
@@ -164,7 +166,8 @@ class _OverviewPageState extends State<OverviewPage> {
           icon: Icons.sentiment_satisfied_outlined,
           label: 'Mood check-ins',
           value: '${s.moodEntries}',
-          detail: 'average mood ${_mood(s.averageMood)} / 5 ${_moodEmoji(s.averageMood)}',
+          detail:
+              'average mood ${_mood(s.averageMood)} / 5 ${_moodEmoji(s.averageMood)}',
         ),
         StatTile(
           key: const Key('tile-chats'),
@@ -209,11 +212,14 @@ class _OverviewPageState extends State<OverviewPage> {
     final MindQuestColors mq = Theme.of(context).extension<MindQuestColors>()!;
     final List<String> labels = <String>[
       for (final DailyStat d in s.daily)
-        s.daily.length <= 10 ? shortDay('en', d.day.weekday) : shortDate('en', d.day),
+        s.daily.length <= 10
+            ? shortDay('en', d.day.weekday)
+            : shortDate('en', d.day),
     ];
-    final int moodMax = s.moodSplit.values.fold<int>(0, (int a, int b) => a > b ? a : b);
-    final int tagMax =
-        s.tags.fold<int>(0, (int a, TagStat t) => a > t.checkIns ? a : t.checkIns);
+    final int moodMax =
+        s.moodSplit.values.fold<int>(0, (int a, int b) => a > b ? a : b);
+    final int tagMax = s.tags
+        .fold<int>(0, (int a, TagStat t) => a > t.checkIns ? a : t.checkIns);
 
     // Topics, most common first, with small talk grouped.
     final Map<String, int> topics = <String, int>{};
@@ -245,7 +251,9 @@ class _OverviewPageState extends State<OverviewPage> {
         title: 'Check-ins per day',
         subtitle: 'Counted on the day they were made, even if sent later',
         child: DayBars(
-          values: <double?>[for (final DailyStat d in s.daily) d.checkIns.toDouble()],
+          values: <double?>[
+            for (final DailyStat d in s.daily) d.checkIns.toDouble()
+          ],
           labels: labels,
           tooltips: <String>[
             for (final DailyStat d in s.daily)
@@ -301,7 +309,8 @@ class _OverviewPageState extends State<OverviewPage> {
                       label: moodTagById(t.tag)?.label('en') ?? t.tag,
                       value: t.checkIns,
                       max: tagMax,
-                      valueLabel: '${t.checkIns} · ${_mood(t.averageMood)} ${_moodEmoji(t.averageMood)}',
+                      valueLabel:
+                          '${t.checkIns} · ${_mood(t.averageMood)} ${_moodEmoji(t.averageMood)}',
                     ),
                 ],
               ),

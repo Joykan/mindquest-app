@@ -142,8 +142,7 @@ class BarRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
-    final double fraction =
-        max <= 0 ? 0 : (value / max).clamp(0, 1).toDouble();
+    final double fraction = max <= 0 ? 0 : (value / max).clamp(0, 1).toDouble();
     return Semantics(
       label: '$label: ${valueLabel ?? value}',
       excludeSemantics: true,
@@ -216,7 +215,8 @@ class DayBars extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
     final double top = max ??
-        values.fold<double>(0, (double m, double? v) => v != null && v > m ? v : m);
+        values.fold<double>(
+            0, (double m, double? v) => v != null && v > m ? v : m);
     final int every = values.length <= 10 ? 1 : (values.length / 7).ceil();
     return Column(
       children: <Widget>[
@@ -292,7 +292,8 @@ class LoadProblem extends StatelessWidget {
               const SizedBox(height: 8),
               Text(message, textAlign: TextAlign.center),
               const SizedBox(height: 12),
-              OutlinedButton(onPressed: onRetry, child: const Text('Try again')),
+              OutlinedButton(
+                  onPressed: onRetry, child: const Text('Try again')),
             ],
           ),
         ),

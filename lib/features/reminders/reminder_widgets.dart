@@ -4,8 +4,7 @@ import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import 'reminders.dart';
 
-String _clock(TimeOfDay t) =>
-    clock(DateTime(2000, 1, 1, t.hour, t.minute));
+String _clock(TimeOfDay t) => clock(DateTime(2000, 1, 1, t.hour, t.minute));
 
 /// Turns reminders on, explaining what to do if notifications are blocked.
 Future<void> _turnOn(BuildContext context, ReminderController reminders) async {
@@ -153,8 +152,8 @@ class ReminderSettingsTile extends StatelessWidget {
                     key: const Key('reminder-test'),
                     onPressed: reminders.sendTest,
                     icon: const Icon(Icons.notifications_active_outlined),
-                    label: Text(context.tr(
-                        'Send a test reminder', 'Tuma kikumbusho cha majaribio')),
+                    label: Text(context.tr('Send a test reminder',
+                        'Tuma kikumbusho cha majaribio')),
                   ),
                 ),
               ),

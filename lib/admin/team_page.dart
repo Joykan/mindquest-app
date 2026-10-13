@@ -119,8 +119,7 @@ class _TeamPageState extends State<TeamPage> {
                     DropdownMenuItem<String>(
                         value: 'admin', child: Text('Administrator')),
                   ],
-                  onChanged: (String? v) =>
-                      setState(() => _role = v ?? _role),
+                  onChanged: (String? v) => setState(() => _role = v ?? _role),
                 ),
               ),
               FilledButton(
@@ -134,8 +133,7 @@ class _TeamPageState extends State<TeamPage> {
         if (_error != null) ...<Widget>[
           const SizedBox(height: 8),
           Text(_error!,
-              key: const Key('team-error'),
-              style: TextStyle(color: mq.crisis)),
+              key: const Key('team-error'), style: TextStyle(color: mq.crisis)),
         ],
         const SizedBox(height: 16),
         FutureBuilder<List<StaffMember>>(
@@ -161,7 +159,8 @@ class _TeamPageState extends State<TeamPage> {
                             : m.username[0].toUpperCase()),
                       ),
                       title: Text(m.username),
-                      subtitle: Text('${m.email} · ${roleNames[m.role] ?? m.role}'),
+                      subtitle:
+                          Text('${m.email} · ${roleNames[m.role] ?? m.role}'),
                       trailing: m.email.toLowerCase() ==
                               (widget.myEmail ?? '').toLowerCase()
                           ? const Text('You')

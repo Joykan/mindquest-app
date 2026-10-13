@@ -187,7 +187,8 @@ class FakeAdmin implements AdminRepository {
             phone: '1199',
             description: 'Toll-free, 24 hours',
             verified: true),
-        AdminHelpline(id: 2, name: 'Befrienders Kenya', phone: '+254 722 178 177'),
+        AdminHelpline(
+            id: 2, name: 'Befrienders Kenya', phone: '+254 722 178 177'),
       ];
 
   @override
@@ -202,7 +203,10 @@ class FakeAdmin implements AdminRepository {
   @override
   Future<List<StaffMember>> staff() async => const <StaffMember>[
         StaffMember(
-            id: 'a', username: 'Candy', email: 'candy@example.com', role: 'admin'),
+            id: 'a',
+            username: 'Candy',
+            email: 'candy@example.com',
+            role: 'admin'),
         StaffMember(
             id: 'b',
             username: 'Rajula',
@@ -273,7 +277,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('MindQuest Admin'), findsOneWidget);
 
-    await tester.enterText(find.byKey(const Key('admin-email')), 'candy@example.com');
+    await tester.enterText(
+        find.byKey(const Key('admin-email')), 'candy@example.com');
     await tester.enterText(find.byKey(const Key('admin-password')), 'wrong');
     await tester.tap(find.byKey(const Key('admin-sign-in')));
     await tester.pumpAndSettle();
@@ -349,8 +354,10 @@ void main() {
     expect(admin.savedArticles, isEmpty);
 
     await tester.enterText(find.byKey(const Key('title-en')), 'Sleep tips');
-    await tester.enterText(find.byKey(const Key('title-sw')), 'Vidokezo vya usingizi');
-    await tester.enterText(find.byKey(const Key('body-en')), 'Go to bed.\n\nWake up.');
+    await tester.enterText(
+        find.byKey(const Key('title-sw')), 'Vidokezo vya usingizi');
+    await tester.enterText(
+        find.byKey(const Key('body-en')), 'Go to bed.\n\nWake up.');
     await tester.enterText(find.byKey(const Key('body-sw')), 'Lala.\n\nAmka.');
     await tester.tap(find.byKey(const Key('save-article')));
     await tester.pumpAndSettle();
@@ -366,7 +373,8 @@ void main() {
     await tester.tap(find.text('Understanding stress'));
     await tester.pumpAndSettle();
     expect(find.text('Edit article'), findsOneWidget);
-    await tester.enterText(find.byKey(const Key('title-en')), 'Stress, explained');
+    await tester.enterText(
+        find.byKey(const Key('title-en')), 'Stress, explained');
     await tester.tap(find.byKey(const Key('save-article')));
     await tester.pumpAndSettle();
     expect(admin.savedArticles.single.id, 1);
@@ -389,12 +397,14 @@ void main() {
     expect(find.text('Rajula'), findsOneWidget);
     expect(find.text('You'), findsOneWidget);
 
-    await tester.enterText(find.byKey(const Key('team-email')), 'nobody@example.com');
+    await tester.enterText(
+        find.byKey(const Key('team-email')), 'nobody@example.com');
     await tester.tap(find.byKey(const Key('team-add')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('team-error')), findsOneWidget);
 
-    await tester.enterText(find.byKey(const Key('team-email')), 'wanjiru@example.com');
+    await tester.enterText(
+        find.byKey(const Key('team-email')), 'wanjiru@example.com');
     await tester.tap(find.byKey(const Key('team-add')));
     await tester.pumpAndSettle();
     expect(admin.roles.single, ('wanjiru@example.com', 'counsellor'));

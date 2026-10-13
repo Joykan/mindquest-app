@@ -15,8 +15,8 @@ import 'features/setup/setup_status_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!Env.isConfigured) {
-    runApp(MaterialApp(
-        theme: AppTheme.light(), home: const SetupStatusScreen()));
+    runApp(
+        MaterialApp(theme: AppTheme.light(), home: const SetupStatusScreen()));
     return;
   }
   await Supabase.initialize(

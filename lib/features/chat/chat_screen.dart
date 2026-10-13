@@ -298,10 +298,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   "I've added that to your graph. You're offline, so it's saved on your phone and will sync later.",
                   'Nimeiongeza kwenye grafu yako. Huna mtandao, kwa hiyo imehifadhiwa kwenye simu yako na itatumwa baadaye.')
               : saved.xpEarned > 0
-              ? tr(lang, "I've added that to your graph. +${saved.xpEarned} XP",
-                  'Nimeiongeza kwenye grafu yako. +${saved.xpEarned} XP')
-              : tr(lang, "I've added that to your graph.",
-                  'Nimeiongeza kwenye grafu yako.'),
+                  ? tr(
+                      lang,
+                      "I've added that to your graph. +${saved.xpEarned} XP",
+                      'Nimeiongeza kwenye grafu yako. +${saved.xpEarned} XP')
+                  : tr(lang, "I've added that to your graph.",
+                      'Nimeiongeza kwenye grafu yako.'),
           ChatItemKind.moodGraph,
         );
         // Share the most important thing Chipu noticed, if anything.

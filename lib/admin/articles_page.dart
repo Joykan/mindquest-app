@@ -21,8 +21,7 @@ class _ArticlesPageState extends State<ArticlesPage> {
   late Future<List<AdminArticle>> _articles = widget.repository.articles();
   String? _category;
 
-  void _reload() =>
-      setState(() {
+  void _reload() => setState(() {
         _articles = widget.repository.articles();
       });
 
@@ -30,11 +29,12 @@ class _ArticlesPageState extends State<ArticlesPage> {
     final bool? saved = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) => ArticleEditor(
-          repository: widget.repository, article: article),
+      builder: (BuildContext context) =>
+          ArticleEditor(repository: widget.repository, article: article),
     );
     if (saved == true && mounted) {
-      showMessage(context, article == null ? 'Article added.' : 'Article saved.');
+      showMessage(
+          context, article == null ? 'Article added.' : 'Article saved.');
       _reload();
     }
   }
@@ -126,7 +126,8 @@ class _ArticlesPageState extends State<ArticlesPage> {
                 for (final String c in articleCategories)
                   ChoiceChip(
                     key: Key('filter-$c'),
-                    label: Text('${categoryEmoji[c] ?? ''} ${categoryName(c, 'en')}'),
+                    label: Text(
+                        '${categoryEmoji[c] ?? ''} ${categoryName(c, 'en')}'),
                     selected: _category == c,
                     onSelected: (_) => setState(() => _category = c),
                   ),

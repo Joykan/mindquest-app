@@ -119,7 +119,8 @@ class ReminderController extends ChangeNotifier {
   }
 
   /// Keeps reminders in the user's language, and stops them after sign out.
-  Future<void> update({required bool signedIn, required String language}) async {
+  Future<void> update(
+      {required bool signedIn, required String language}) async {
     if (signedIn == _signedIn && language == _language) return;
     _signedIn = signedIn;
     _language = language;
@@ -134,11 +135,12 @@ class ReminderController extends ChangeNotifier {
       minute: 59,
       checkedInToday: false,
       language: _language,
-      now: DateTime.utc(n.year, n.month, n.day).subtract(const Duration(hours: 3)),
+      now: DateTime.utc(n.year, n.month, n.day)
+          .subtract(const Duration(hours: 3)),
       days: 1,
     ).first;
-    await scheduler.showNow(PlannedReminder(
-        id: 999, at: r.at, title: r.title, body: r.body));
+    await scheduler.showNow(
+        PlannedReminder(id: 999, at: r.at, title: r.title, body: r.body));
   }
 
   /// Plans the next two weeks again (also on every app start).

@@ -65,8 +65,7 @@ String normalizeForCrisis(String text) {
   return ' $t ';
 }
 
-final List<String> _normalized =
-    crisisPhrases.map(normalizeForCrisis).toList();
+final List<String> _normalized = crisisPhrases.map(normalizeForCrisis).toList();
 
 /// True if [text] contains a crisis phrase as whole words.
 bool isCrisisText(String text) {

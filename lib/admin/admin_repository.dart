@@ -33,8 +33,7 @@ class DailyStat {
 
 /// A mood tag (school, sleep...) with how often it was used.
 class TagStat {
-  const TagStat(
-      {required this.tag, required this.checkIns, this.averageMood});
+  const TagStat({required this.tag, required this.checkIns, this.averageMood});
 
   final String tag;
   final int checkIns;
@@ -123,11 +122,13 @@ class AdminStats {
             ),
         ],
         moodSplit: <int, int>{
-          for (final MapEntry<String, int> e in _counts(j['mood_split']).entries)
+          for (final MapEntry<String, int> e
+              in _counts(j['mood_split']).entries)
             int.parse(e.key): e.value,
         },
         tags: <TagStat>[
-          for (final dynamic t in j['mood_tags'] as List<dynamic>? ?? <dynamic>[])
+          for (final dynamic t
+              in j['mood_tags'] as List<dynamic>? ?? <dynamic>[])
             TagStat(
               tag: (t as Map<String, dynamic>)['tag'] as String,
               checkIns: _int(t['check_ins']),
@@ -409,8 +410,8 @@ class SupabaseAdminRepository implements AdminRepository {
 
   @override
   Future<AdminStats> stats(int days) => _guard(() async {
-        final dynamic data = await _client
-            .rpc<dynamic>('admin_stats', params: <String, dynamic>{'p_days': days});
+        final dynamic data = await _client.rpc<dynamic>('admin_stats',
+            params: <String, dynamic>{'p_days': days});
         return AdminStats.fromJson(Map<String, dynamic>.from(data as Map));
       });
 
