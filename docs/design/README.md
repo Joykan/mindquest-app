@@ -3,6 +3,9 @@
 | Artefact | Tool | Link |
 |---|---|---|
 | Wireframes: 12 mobile + 2 admin screens, user flow | Figma | https://www.figma.com/design/50eKXCZIvp0hkz4bOa9K7F |
+| Hi-fi: screenshots of the real app (English, Kiswahili, light and dark) under the wireframes | Figma | https://www.figma.com/design/50eKXCZIvp0hkz4bOa9K7F/?node-id=22-251 |
+| Style guide: colours, type, mascot, components | SVG / PNG | `style-guide/` (this folder) |
+| Visual design decisions | Markdown | `visual-design.md` (this folder) |
 | System architecture | Lucidchart | https://lucid.app/lucidchart/2347f3d7-b019-4796-bdcb-bef9cab39438/edit |
 | Chatbot conversation flow (EN + SW) | Lucidchart | https://lucid.app/lucidchart/41d253c3-9993-4850-a42d-bd92f310a532/edit |
 | Sequence: UC-01 Conduct AI chat session | Lucidchart | https://lucid.app/lucidchart/ac00212e-7eca-4c81-becb-27000f6845d5/edit |
