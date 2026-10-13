@@ -111,6 +111,7 @@ class _TeamPageState extends State<TeamPage> {
                 child: DropdownButtonFormField<String>(
                   key: const Key('team-role'),
                   initialValue: _role,
+                  isExpanded: true,
                   decoration: const InputDecoration(labelText: 'Role'),
                   items: const <DropdownMenuItem<String>>[
                     DropdownMenuItem<String>(

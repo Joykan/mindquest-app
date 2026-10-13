@@ -327,13 +327,15 @@ class _ArticleEditorState extends State<ArticleEditor> {
                     child: DropdownButtonFormField<String>(
                       key: const Key('category'),
                       initialValue: _category,
+                      isExpanded: true,
                       decoration: const InputDecoration(labelText: 'Topic'),
                       items: <DropdownMenuItem<String>>[
                         for (final String c in articleCategories)
                           DropdownMenuItem<String>(
                             value: c,
                             child: Text(
-                                '${categoryEmoji[c] ?? ''} ${categoryName(c, 'en')}'),
+                                '${categoryEmoji[c] ?? ''} ${categoryName(c, 'en')}',
+                                overflow: TextOverflow.ellipsis),
                           ),
                       ],
                       onChanged: (String? v) =>
