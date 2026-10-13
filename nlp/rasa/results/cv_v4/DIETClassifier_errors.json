@@ -1,0 +1,126 @@
+[
+  {
+    "text": "this is Mercy",
+    "entities": [
+      {
+        "start": 8,
+        "end": 13,
+        "value": "Mercy",
+        "entity": "name"
+      }
+    ],
+    "predicted_entities": []
+  },
+  {
+    "text": "wananiita Nafula",
+    "entities": [
+      {
+        "start": 10,
+        "end": 16,
+        "value": "Nafula",
+        "entity": "name"
+      }
+    ],
+    "predicted_entities": []
+  },
+  {
+    "text": "Precious here",
+    "entities": [
+      {
+        "start": 0,
+        "end": 8,
+        "value": "Precious",
+        "entity": "name"
+      }
+    ],
+    "predicted_entities": []
+  },
+  {
+    "text": "I go by Sharon",
+    "entities": [
+      {
+        "start": 8,
+        "end": 14,
+        "value": "Sharon",
+        "entity": "name"
+      }
+    ],
+    "predicted_entities": []
+  },
+  {
+    "text": "hi there, I'm Peace",
+    "entities": [
+      {
+        "start": 14,
+        "end": 19,
+        "value": "Peace",
+        "entity": "name"
+      }
+    ],
+    "predicted_entities": []
+  },
+  {
+    "text": "I'm full of joy",
+    "entities": [],
+    "predicted_entities": [
+      {
+        "entity": "name",
+        "start": 12,
+        "end": 15,
+        "confidence_entity": 0.9877461194992065,
+        "value": "joy",
+        "extractor": "DIETClassifier"
+      }
+    ]
+  },
+  {
+    "text": "my heart is full of joy",
+    "entities": [],
+    "predicted_entities": [
+      {
+        "entity": "name",
+        "start": 20,
+        "end": 23,
+        "confidence_entity": 0.9805809259414673,
+        "value": "joy",
+        "extractor": "DIETClassifier"
+      }
+    ]
+  },
+  {
+    "text": "unaweza kuniita Mutua",
+    "entities": [
+      {
+        "start": 16,
+        "end": 21,
+        "value": "Mutua",
+        "entity": "name"
+      }
+    ],
+    "predicted_entities": []
+  },
+  {
+    "text": "you can call me Happy",
+    "entities": [
+      {
+        "start": 16,
+        "end": 21,
+        "value": "Happy",
+        "entity": "name"
+      }
+    ],
+    "predicted_entities": []
+  },
+  {
+    "text": "they call me Blessing",
+    "entities": [
+      {
+        "start": 13,
+        "end": 21,
+        "value": "Blessing",
+        "entity": "name"
+      }
+    ],
+    "predicted_entities": []
+  }
+]

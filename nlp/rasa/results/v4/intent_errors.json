@@ -1,0 +1,18 @@
+[
+  {
+    "text": "good day",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 1.0
+    }
+  },
+  {
+    "text": "akili haitulii",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "ask_breathing",
+      "confidence": 0.927654504776001
+    }
+  }
+]
