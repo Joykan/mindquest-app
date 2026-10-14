@@ -7,40 +7,7 @@ import 'package:mindquest/features/reminders/reminder_widgets.dart';
 import 'package:mindquest/features/reminders/reminders.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Remembers what would be scheduled instead of showing notifications.
-class FakeScheduler implements ReminderScheduler {
-  FakeScheduler({this.allowed = true, this.fromReminder = false});
-
-  final bool allowed;
-  final bool fromReminder;
-  List<PlannedReminder> scheduled = <PlannedReminder>[];
-  int permissionAsks = 0;
-  void Function()? tap;
-
-  @override
-  bool get supported => true;
-
-  @override
-  Future<void> init(void Function() onTap) async => tap = onTap;
-
-  @override
-  Future<bool> launchedFromReminder() async => fromReminder;
-
-  @override
-  Future<bool> requestPermission() async {
-    permissionAsks++;
-    return allowed;
-  }
-
-  @override
-  Future<void> replaceAll(List<PlannedReminder> reminders) async =>
-      scheduled = reminders;
-
-  final List<PlannedReminder> shown = <PlannedReminder>[];
-
-  @override
-  Future<void> showNow(PlannedReminder reminder) async => shown.add(reminder);
-}
+import 'fakes.dart';
 
 // Tuesday 13 Oct 2026, 10:00 in Nairobi.
 final DateTime morning = DateTime.utc(2026, 10, 13, 7);

@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mindquest/admin/admin_app.dart';
 import 'package:mindquest/admin/admin_repository.dart';
 import 'package:mindquest/admin/helplines_page.dart';
+import 'package:mindquest/admin/overview_page.dart';
 
-/// What public.admin_stats(7) returned on the live database (13 Oct 2026).
+/// What public.admin_stats(7) returned on the live database (13 Oct 2026),
+/// plus the reply-time and age fields added on 14 Oct (example values).
 final Map<String, dynamic> liveStats = <String, dynamic>{
   'to': '2026-10-13',
   'days': 7,
@@ -98,6 +101,12 @@ final Map<String, dynamic> liveStats = <String, dynamic>{
   'language_split': <String, dynamic>{'en': 5},
   'not_understood': 1,
   'saved_accounts': 0,
+  'min_group': 5,
+  'reply_count': 40,
+  'reply_median_ms': 420,
+  'reply_p95_ms': 1240,
+  'reply_within_2s': 0.975,
+  'age_split': <String, dynamic>{'18_20': 3, '21_24': 1, 'not_asked': 1},
 };
 
 class FakeAdmin implements AdminRepository {
@@ -165,6 +174,17 @@ class FakeAdmin implements AdminRepository {
     lastDays = days;
     return AdminStats.fromJson(liveStats);
   }
+
+  bool nluDown = false;
+
+  @override
+  Future<SystemHealth> health() async => SystemHealth(
+        database: const HealthCheck(ok: true, ms: 45),
+        nlu: nluDown
+            ? const HealthCheck(ok: false, ms: 8000, detail: 'status 502')
+            : const HealthCheck(ok: true, ms: 230, detail: 'mindquest.tar.gz'),
+        checkedAt: DateTime.utc(2026, 10, 14, 12),
+      );
 
   @override
   Future<List<AdminArticle>> articles() async => articleList;
@@ -409,5 +429,74 @@ void main() {
     await tester.pumpAndSettle();
     expect(admin.roles.single, ('wanjiru@example.com', 'counsellor'));
     expect(find.text('Wanjiru is now a counsellor.'), findsOneWidget);
+  });
+
+  test('reply time and ages are read from the database answer', () {
+    final AdminStats s = AdminStats.fromJson(liveStats);
+    expect(s.replyP95Ms, 1240);
+    expect(s.replyWithin2s, 0.975);
+    expect(s.ages['18_20'], 3);
+    expect(s.minGroup, 5);
+  });
+
+  test('the report has the totals and one line per day', () {
+    final String report = buildReport(AdminStats.fromJson(liveStats));
+    expect(report, contains('MindQuest report: 2026-10-07 to 2026-10-13 (7 days)'));
+    expect(report, contains('Mood check-ins: 12'));
+    expect(report, contains('Chipu understood: 96%'));
+    expect(report,
+        contains('Reply time: median 0.4 s, 95% within 1.2 s; 98% of 40 replies within 2 s'));
+    expect(report, contains('Day,Check-ins,Average mood,Chats,Crisis responses'));
+    expect(report, contains('2026-10-10,5,3.80,8,3'));
+    expect(report, contains('2026-10-07,0,,0,0'));
+  });
+
+  testWidgets('overview shows reply time, system health and ages',
+      (tester) async {
+    final FakeAdmin admin = await openDashboard(tester);
+    expect(
+        find.descendant(
+            of: find.byKey(const Key('tile-reply')),
+            matching: find.text('1.2 s')),
+        findsOneWidget);
+    await tester.scrollUntilVisible(find.byKey(const Key('card-health')), 300,
+        scrollable: find
+            .descendant(
+                of: find.byKey(const Key('overview')),
+                matching: find.byType(Scrollable))
+            .first);
+    expect(find.text('Chatbot (Rasa NLU server)'), findsOneWidget);
+    expect(find.textContaining('230 ms'), findsOneWidget);
+
+    admin.nluDown = true;
+    await tester.tap(find.byKey(const Key('check-health')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Not working: status 502'), findsOneWidget);
+
+    await tester.scrollUntilVisible(find.byKey(const Key('card-ages')), 300,
+        scrollable: find
+            .descendant(
+                of: find.byKey(const Key('overview')),
+                matching: find.byType(Scrollable))
+            .first);
+    expect(find.text('Not asked (joined before)'), findsOneWidget);
+  });
+
+  testWidgets('Copy report puts the report on the clipboard', (tester) async {
+    await openDashboard(tester);
+    String? copied;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform, (MethodCall call) async {
+      if (call.method == 'Clipboard.setData') {
+        copied = (call.arguments as Map<dynamic, dynamic>)['text'] as String?;
+      }
+      return null;
+    });
+    addTearDown(() => tester.binding.defaultBinaryMessenger
+        .setMockMethodCallHandler(SystemChannels.platform, null));
+    await tester.tap(find.byKey(const Key('copy-report')));
+    await tester.pumpAndSettle();
+    expect(copied, contains('MindQuest report'));
+    expect(find.textContaining('Report copied'), findsOneWidget);
   });
 }

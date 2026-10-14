@@ -21,6 +21,7 @@ class FakeAccount implements AccountRepository {
   Profile? profile;
   String? onboardedName;
   String? onboardedLanguage;
+  String? onboardedAge;
 
   @override
   String? get userId => _userId;
@@ -61,9 +62,12 @@ class FakeAccount implements AccountRepository {
 
   @override
   Future<void> completeOnboarding(
-      {required String username, required String language}) async {
+      {required String username,
+      required String language,
+      String? ageRange}) async {
     onboardedName = username;
     onboardedLanguage = language;
+    onboardedAge = ageRange;
     profile = Profile(username: username, language: language, onboarded: true);
   }
 
@@ -203,6 +207,11 @@ void main() {
     await tester.ensureVisible(find.byKey(const Key('consent')));
     await tester.tap(find.byKey(const Key('consent')));
     await tester.pump();
+    expect(finish().onPressed, isNull, reason: 'age range not chosen yet');
+
+    await tester.ensureVisible(find.byKey(const Key('age-18_20')));
+    await tester.tap(find.byKey(const Key('age-18_20')));
+    await tester.pump();
     expect(finish().onPressed, isNotNull);
 
     await tester.ensureVisible(find.byKey(const Key('finish-onboarding')));
@@ -211,6 +220,7 @@ void main() {
 
     expect(account.onboardedName, 'Wanjiru');
     expect(account.onboardedLanguage, 'sw');
+    expect(account.onboardedAge, '18_20');
     expect(s.onboarded, isTrue);
   });
 

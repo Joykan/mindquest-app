@@ -25,6 +25,7 @@ class ChatScreen extends StatefulWidget {
     this.progress,
     this.onBack,
     this.onMoodSaved,
+    this.onMessageSent,
     this.onHelplines,
     this.onPastChats,
   });
@@ -42,6 +43,9 @@ class ChatScreen extends StatefulWidget {
 
   /// Called after a mood is saved from the chat (e.g. to refresh Home).
   final VoidCallback? onMoodSaved;
+
+  /// After each reply (e.g. to look for a First Chat badge).
+  final VoidCallback? onMessageSent;
 
   /// Opens the helplines (offered after a run of hard days).
   final VoidCallback? onHelplines;
@@ -202,6 +206,7 @@ class _ChatScreenState extends State<ChatScreen> {
         _addBot(reply.reply);
         _sending = false;
       });
+      widget.onMessageSent?.call();
       if (reply.crisis) {
         await showCrisisSheet(context, reply);
       }

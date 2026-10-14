@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/l10n/tr.dart';
+import '../gamification/badges.dart';
 import '../home/progress_repository.dart';
 import 'reminder_plan.dart';
 
@@ -25,6 +27,9 @@ abstract class ReminderScheduler {
 
   /// Shows one reminder now ("Send a test reminder" in Profile).
   Future<void> showNow(PlannedReminder reminder);
+
+  /// Shows a "badge unlocked" notification.
+  Future<void> showBadge(int id, String title, String body);
 }
 
 /// The daily check-in reminder (step 10).
@@ -141,6 +146,28 @@ class ReminderController extends ChangeNotifier {
     ).first;
     await scheduler.showNow(
         PlannedReminder(id: 999, at: r.at, title: r.title, body: r.body));
+  }
+
+  /// Badge notifications get their own ids (reminders use 999–1013).
+  int _nextBadgeId = 2000;
+
+  /// A notification for each newly earned badge, in the user's language
+  /// (the proposal's "badge unlock alerts"). Android only shows it if
+  /// notifications are allowed for MindQuest.
+  Future<void> badgeUnlocked(List<RewardBadge> badges) async {
+    if (!supported) return;
+    for (final RewardBadge b in badges) {
+      try {
+        await scheduler.showBadge(
+          _nextBadgeId++,
+          tr(_language, 'New badge: ${b.displayName(_language)} ${b.emoji}',
+              'Beji mpya: ${b.displayName(_language)} ${b.emoji}'),
+          b.describe(_language),
+        );
+      } catch (e) {
+        debugPrint('Badge notification failed: $e');
+      }
+    }
   }
 
   /// Plans the next two weeks again (also on every app start).

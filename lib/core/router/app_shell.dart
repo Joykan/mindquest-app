@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/gamification/badge_watcher.dart';
 import '../l10n/tr.dart';
 import '../offline/offline_store.dart';
 import '../widgets/offline_banner.dart';
@@ -18,7 +19,11 @@ class AppShell extends StatelessWidget {
       required this.shell,
       required this.ticker,
       this.connection,
-      this.onRetry});
+      this.onRetry,
+      this.badges});
+
+  /// Shows the pop-up for badges earned anywhere in the app.
+  final BadgeWatcher? badges;
 
   final StatefulNavigationShell shell;
   final ProgressTicker ticker;
@@ -40,7 +45,9 @@ class AppShell extends StatelessWidget {
         }
       },
       child: Scaffold(
-        body: shell,
+        body: badges == null
+            ? shell
+            : BadgeAlerts(watcher: badges!, child: shell),
         bottomNavigationBar: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

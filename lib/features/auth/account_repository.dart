@@ -45,8 +45,9 @@ abstract class AccountRepository {
 
   Future<void> signOut();
   Future<Profile?> loadProfile();
+  /// [ageRange] is one of [ageRanges] (age_ranges.dart).
   Future<void> completeOnboarding(
-      {required String username, required String language});
+      {required String username, required String language, String? ageRange});
 
   /// Changes the language the chatbot replies in ('en' or 'sw').
   Future<void> updateLanguage(String language);
@@ -167,16 +168,24 @@ class SupabaseAccountRepository implements AccountRepository {
 
   @override
   Future<void> completeOnboarding(
-          {required String username, required String language}) =>
-      _guard(
-        () => _client.rpc<void>(
+          {required String username,
+          required String language,
+          String? ageRange}) =>
+      _guard(() async {
+        await _client.rpc<void>(
           'complete_onboarding',
           params: <String, dynamic>{
             'p_username': username,
             'p_language': language
           },
-        ),
-      );
+        );
+        final String? id = userId;
+        if (ageRange != null && id != null) {
+          await _client
+              .from('profiles')
+              .update(<String, dynamic>{'age_range': ageRange}).eq('id', id);
+        }
+      });
 
   @override
   String? get email {

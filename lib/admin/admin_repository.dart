@@ -87,6 +87,11 @@ class AdminStats {
     this.notUnderstood = 0,
     this.unavailable = 0,
     this.minGroup = 5,
+    this.replyCount = 0,
+    this.replyMedianMs,
+    this.replyP95Ms,
+    this.replyWithin2s,
+    this.ages = const <String, int>{},
     this.daily = const <DailyStat>[],
     this.moodSplit = const <int, int>{},
     this.tags = const <TagStat>[],
@@ -113,6 +118,11 @@ class AdminStats {
         notUnderstood: _int(j['not_understood']),
         unavailable: _int(j['unavailable']),
         minGroup: j['min_group'] == null ? 5 : _int(j['min_group']),
+        replyCount: _int(j['reply_count']),
+        replyMedianMs: (j['reply_median_ms'] as num?)?.toInt(),
+        replyP95Ms: (j['reply_p95_ms'] as num?)?.toInt(),
+        replyWithin2s: _double(j['reply_within_2s']),
+        ages: _counts(j['age_split']),
         daily: <DailyStat>[
           for (final dynamic d in j['daily'] as List<dynamic>? ?? <dynamic>[])
             DailyStat(
@@ -170,6 +180,18 @@ class AdminStats {
 
   /// Averages from fewer check-ins than this are hidden (null).
   final int minGroup;
+
+  /// Replies timed on the server, and how long they took (NFR-SPEC-01:
+  /// under 2 seconds for 95% of messages).
+  final int replyCount;
+  final int? replyMedianMs;
+  final int? replyP95Ms;
+
+  /// Share of replies ready within 2 seconds (0..1).
+  final double? replyWithin2s;
+
+  /// Students per age range chosen at sign-up (not_asked for older accounts).
+  final Map<String, int> ages;
   final List<DailyStat> daily;
 
   /// Check-ins per mood, 1 (very low) to 5 (very good).
@@ -286,6 +308,42 @@ class AdminHelpline {
   }
 }
 
+/// One part of the system and whether it answered (Monitor System Health).
+class HealthCheck {
+  const HealthCheck({required this.ok, required this.ms, this.detail});
+
+  factory HealthCheck.fromJson(Map<String, dynamic> j) => HealthCheck(
+        ok: j['ok'] == true,
+        ms: _int(j['ms']),
+        detail: j['detail'] as String?,
+      );
+
+  final bool ok;
+  final int ms;
+
+  /// The model file name, or what went wrong.
+  final String? detail;
+}
+
+/// Result of the health Edge Function.
+class SystemHealth {
+  const SystemHealth(
+      {required this.database, required this.nlu, required this.checkedAt});
+
+  factory SystemHealth.fromJson(Map<String, dynamic> j) => SystemHealth(
+        database: HealthCheck.fromJson(
+            Map<String, dynamic>.from(j['database'] as Map)),
+        nlu: HealthCheck.fromJson(Map<String, dynamic>.from(j['nlu'] as Map)),
+        checkedAt: DateTime.parse(j['checked_at'] as String),
+      );
+
+  final HealthCheck database;
+
+  /// The Rasa server that understands the messages.
+  final HealthCheck nlu;
+  final DateTime checkedAt;
+}
+
 /// An admin or counsellor.
 class StaffMember {
   const StaffMember(
@@ -328,6 +386,9 @@ abstract class AdminRepository {
 
   Future<AdminStats> stats(int days);
 
+  /// Checks the database and the chatbot's NLU server right now.
+  Future<SystemHealth> health();
+
   Future<List<AdminArticle>> articles();
   Future<void> saveArticle(AdminArticle article);
   Future<void> setPublished(int id, bool published);
@@ -363,6 +424,8 @@ class SupabaseAdminRepository implements AdminRepository {
         throw AdminException(e.message);
       }
       throw AdminException('The database said: ${e.message}');
+    } on FunctionException catch (e) {
+      throw AdminException('The server check failed (error ${e.status}).');
     } on AuthException catch (e) {
       throw AdminException(e.message);
     } on AdminException {
@@ -418,6 +481,13 @@ class SupabaseAdminRepository implements AdminRepository {
         final dynamic data = await _client.rpc<dynamic>('admin_stats',
             params: <String, dynamic>{'p_days': days});
         return AdminStats.fromJson(Map<String, dynamic>.from(data as Map));
+      });
+
+  @override
+  Future<SystemHealth> health() => _guard(() async {
+        final FunctionResponse res = await _client.functions.invoke('health');
+        return SystemHealth.fromJson(
+            Map<String, dynamic>.from(res.data as Map));
       });
 
   @override

@@ -4,6 +4,7 @@ import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/language_toggle.dart';
 import 'account_errors.dart';
+import 'age_ranges.dart';
 import 'account_repository.dart';
 import 'session_controller.dart';
 
@@ -21,6 +22,7 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final TextEditingController _name = TextEditingController();
   late String _language = widget.session.language;
+  String? _age;
   bool _agreed = false;
   bool _busy = false;
 
@@ -45,8 +47,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final String lang = context.lang;
     setState(() => _busy = true);
     try {
-      await widget.session
-          .completeOnboarding(username: _name.text.trim(), language: _language);
+      await widget.session.completeOnboarding(
+          username: _name.text.trim(), language: _language, ageRange: _age);
     } on AccountException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
@@ -71,8 +73,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   style: theme.textTheme.headlineMedium),
               const SizedBox(height: 6),
               Text(
-                context.tr("Two quick choices, then you're in.",
-                    'Machaguo mawili ya haraka, kisha umeingia.'),
+                context.tr("A few quick choices, then you're in.",
+                    'Machaguo machache ya haraka, kisha umeingia.'),
                 style: theme.textTheme.bodyLarge?.copyWith(color: mq.textMuted),
               ),
               const SizedBox(height: 28),
@@ -110,6 +112,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 context.tr(
                     'The app and Chipu use this language. You can change it later.',
                     'Programu na Chipu zitatumia lugha hii. Unaweza kuibadilisha baadaye.'),
+                style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+              ),
+              const SizedBox(height: 20),
+              Text(context.tr('How old are you?', 'Una umri gani?'),
+                  style: theme.textTheme.titleMedium),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: <Widget>[
+                  for (final AgeRange a in ageRanges)
+                    ChoiceChip(
+                      key: Key('age-${a.id}'),
+                      label: Text(a.label(context.lang)),
+                      selected: _age == a.id,
+                      onSelected: (_) => setState(() => _age = a.id),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                context.tr(
+                    'Only the range is saved, never your date of birth. MindQuest is made for ages 15–24.',
+                    'Ni kundi la umri tu linalohifadhiwa, kamwe si tarehe yako ya kuzaliwa. MindQuest imetengenezwa kwa umri wa miaka 15–24.'),
                 style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
               ),
               const SizedBox(height: 24),
@@ -161,7 +187,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 12),
               FilledButton(
                 key: const Key('finish-onboarding'),
-                onPressed: _nameOk && _agreed && !_busy ? _finish : null,
+                onPressed:
+                    _nameOk && _age != null && _agreed && !_busy ? _finish : null,
                 child: _busy
                     ? const SizedBox(
                         width: 22,

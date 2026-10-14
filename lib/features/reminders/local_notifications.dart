@@ -98,4 +98,24 @@ class LocalNotificationScheduler implements ReminderScheduler {
       payload: _payload,
     );
   }
+
+  static const AndroidNotificationDetails _badge = AndroidNotificationDetails(
+    'badges',
+    'Badges',
+    channelDescription: 'When you earn a new badge.',
+    icon: 'ic_notification',
+    importance: Importance.defaultImportance,
+    priority: Priority.defaultPriority,
+  );
+
+  @override
+  Future<void> showBadge(int id, String title, String body) async {
+    if (!supported || _nairobi == null) return;
+    await _plugin.show(
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: const NotificationDetails(android: _badge),
+    );
+  }
 }

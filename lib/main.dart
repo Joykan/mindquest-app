@@ -10,6 +10,7 @@ import 'core/offline/offline_store.dart';
 import 'core/theme/theme_controller.dart';
 import 'features/auth/account_repository.dart';
 import 'features/auth/session_controller.dart';
+import 'features/gamification/badge_watcher.dart';
 import 'features/reminders/local_notifications.dart';
 import 'features/reminders/reminders.dart';
 
@@ -19,6 +20,7 @@ Future<void> main() async {
   SessionController? session;
   OfflineStore? offline;
   ReminderController? reminders;
+  BadgeWatcher? badges;
   if (Env.isConfigured) {
     await Supabase.initialize(
       url: Env.supabaseUrl,
@@ -43,6 +45,12 @@ Future<void> main() async {
     } catch (e) {
       debugPrint('Reminders are not available: $e');
     }
+
+    // Badge pop-ups and "badge unlocked" notifications.
+    final ReminderController notifier = reminders;
+    badges = BadgeWatcher(prefs, SupabaseBadgeSource(),
+        userId: () => Supabase.instance.client.auth.currentUser?.id,
+        onUnlocked: notifier.badgeUnlocked);
   }
 
   final ThemeController theme = await ThemeController.load();
@@ -51,6 +59,7 @@ Future<void> main() async {
     session: session,
     offline: offline,
     reminders: reminders,
+    badges: badges,
   ));
   offline?.start();
 }

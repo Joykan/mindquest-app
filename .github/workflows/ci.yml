@@ -113,3 +113,7 @@ jobs:
       - name: Delete-account function (format, lint, type check)
         working-directory: supabase/functions/delete-account
         run: deno fmt --check && deno lint && deno check index.ts
+
+      - name: Health function (format, lint, type check)
+        working-directory: supabase/functions/health
+        run: deno fmt --check && deno lint && deno check index.ts

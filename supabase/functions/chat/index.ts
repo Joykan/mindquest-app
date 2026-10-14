@@ -9,6 +9,10 @@
 // 3. Save the user's message and the reply. Saving the user's message awards
 //    chat XP through the database trigger.
 //
+// The reply is saved with response_ms (time from the request arriving to the
+// reply being ready) and nlu_ms (time the Rasa call took), so the admin
+// dashboard can check NFR-SPEC-01: replies within 2 seconds for 95% of messages.
+//
 // Secrets: RASA_URL (e.g. https://name.ngrok-free.app) and RASA_TOKEN (the
 // --auth-token Rasa was started with). SUPABASE_URL and
 // SUPABASE_SERVICE_ROLE_KEY are provided by Supabase.
@@ -80,6 +84,8 @@ async function askRasa(text: string): Promise<RasaParse | null> {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json({ error: "method not allowed" }, 405);
+  const started = performance.now();
+  const elapsed = () => Math.round(performance.now() - started);
 
   // Who is asking?
   const jwt = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
@@ -141,6 +147,7 @@ Deno.serve(async (req) => {
       sender: "bot",
       content: reply,
       reply_key: "crisis",
+      response_ms: elapsed(),
     });
     return json({
       session_id: sessionId,
@@ -156,7 +163,11 @@ Deno.serve(async (req) => {
   const { data: last } = await db.from("messages").select("reply_key")
     .eq("session_id", sessionId).eq("sender", "bot")
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
-  const decision = decide(await askRasa(text), last?.reply_key ?? null, lang, Math.random, text);
+  const nluStarted = performance.now();
+  const parse = await askRasa(text);
+  const nluMs = Math.round(performance.now() - nluStarted);
+  const decision = decide(parse, last?.reply_key ?? null, lang, Math.random, text);
+  const responseMs = elapsed();
 
   // 3. Save both messages (two inserts so the user's comes first).
   const { error: e1 } = await db.from("messages").insert({
@@ -171,6 +182,8 @@ Deno.serve(async (req) => {
     sender: "bot",
     content: decision.text,
     reply_key: decision.replyKey,
+    response_ms: responseMs,
+    nlu_ms: nluMs,
   });
   if (e1 || e2) console.error("save failed", e1?.message, e2?.message);
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../core/l10n/tr.dart';
 import '../core/theme/app_colors.dart';
@@ -29,6 +30,52 @@ const Set<String> smallTalk = <String>{
 };
 
 String _mood(double? m) => m == null ? '–' : m.toStringAsFixed(1);
+
+String _seconds(int? ms) => ms == null ? '–' : '${(ms / 1000).toStringAsFixed(1)} s';
+
+String _percent(double? share) =>
+    share == null ? '–' : '${(share * 100).round()}%';
+
+/// Age ranges asked at sign-up, in display order.
+const List<(String, String)> ageNames = <(String, String)>[
+  ('under_15', 'Under 15'),
+  ('15_17', '15–17'),
+  ('18_20', '18–20'),
+  ('21_24', '21–24'),
+  ('25_plus', '25 or older'),
+  ('prefer_not', 'Prefer not to say'),
+  ('not_asked', 'Not asked (joined before)'),
+];
+
+String _date(DateTime d) =>
+    '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+/// The Overview as text ("Generate Reports" use case): totals, then one line
+/// per day as comma-separated values that paste into Excel or Word.
+String buildReport(AdminStats s) {
+  final StringBuffer b = StringBuffer()
+    ..writeln('MindQuest report: ${_date(s.from)} to ${_date(s.to)} (${s.days} days)')
+    ..writeln('Totals only. Averages from fewer than ${s.minGroup} check-ins are hidden.')
+    ..writeln()
+    ..writeln('Students: ${s.users} (new ${s.newUsers}, saved with email or Google ${s.savedAccounts})')
+    ..writeln('Active students: ${s.activeUsers}')
+    ..writeln('Mood check-ins: ${s.moodEntries} (average mood ${_mood(s.averageMood)} / 5)')
+    ..writeln('Chats with Chipu: ${s.chatSessions} (${s.messages} messages)')
+    ..writeln('Chipu understood: ${_percent(s.understoodShare)} (${s.notUnderstood} not understood)')
+    ..writeln('Reply time: median ${_seconds(s.replyMedianMs)}, 95% within ${_seconds(s.replyP95Ms)}; '
+        '${_percent(s.replyWithin2s)} of ${s.replyCount} replies within 2 s')
+    ..writeln('Chatbot server unavailable: ${s.unavailable} replies')
+    ..writeln('Articles read: ${s.articlesRead}')
+    ..writeln('Badges earned: ${s.badgesAwarded}')
+    ..writeln('Crisis responses (helplines shown): ${s.crisisEvents}')
+    ..writeln()
+    ..writeln('Day,Check-ins,Average mood,Chats,Crisis responses');
+  for (final DailyStat d in s.daily) {
+    b.writeln('${_date(d.day)},${d.checkIns},${d.averageMood?.toStringAsFixed(2) ?? ''},'
+        '${d.chats},${d.crisisEvents}');
+  }
+  return b.toString();
+}
 
 String _moodEmoji(double? m) =>
     m == null ? '' : moodOptions[(m.round() - 1).clamp(0, 4)].emoji;
@@ -80,6 +127,12 @@ class _OverviewPageState extends State<OverviewPage> {
               tooltip: 'Refresh',
               onPressed: _load,
               icon: const Icon(Icons.refresh),
+            ),
+            OutlinedButton.icon(
+              key: const Key('copy-report'),
+              onPressed: snap.hasData ? () => _copyReport(snap.data!) : null,
+              icon: const Icon(Icons.content_copy),
+              label: const Text('Copy report'),
             ),
           ],
         );
@@ -145,6 +198,14 @@ class _OverviewPageState extends State<OverviewPage> {
     );
   }
 
+  Future<void> _copyReport(AdminStats s) async {
+    await Clipboard.setData(ClipboardData(text: buildReport(s)));
+    if (mounted) {
+      showMessage(context,
+          'Report copied. Paste it into Word, Excel or an email.');
+    }
+  }
+
   List<Widget> _tiles(AdminStats s) => <Widget>[
         StatTile(
           key: const Key('tile-students'),
@@ -199,6 +260,15 @@ class _OverviewPageState extends State<OverviewPage> {
               '${s.unavailable > 0 ? ' · NLU server down ${s.unavailable}x' : ''}',
         ),
         StatTile(
+          key: const Key('tile-reply'),
+          icon: Icons.timer_outlined,
+          alert: (s.replyWithin2s ?? 1) < 0.95,
+          label: 'Reply time (95%)',
+          value: _seconds(s.replyP95Ms),
+          detail:
+              '${_percent(s.replyWithin2s)} within 2 s · ${s.replyCount} replies (target 95%)',
+        ),
+        StatTile(
           key: const Key('tile-crisis'),
           icon: Icons.health_and_safety_outlined,
           alert: s.crisisEvents > 0,
@@ -245,7 +315,11 @@ class _OverviewPageState extends State<OverviewPage> {
     final int readMax = s.articles
         .fold<int>(0, (int a, ArticleReads r) => a > r.reads ? a : r.reads);
 
+    final int ageMax =
+        s.ages.values.fold<int>(0, (int a, int b) => a > b ? a : b);
+
     return <Widget>[
+      HealthCard(repository: widget.repository, unavailable: s.unavailable),
       SectionCard(
         key: const Key('chart-checkins'),
         title: 'Check-ins per day',
@@ -370,6 +444,18 @@ class _OverviewPageState extends State<OverviewPage> {
         ),
       ),
       SectionCard(
+        key: const Key('card-ages'),
+        title: 'Age',
+        subtitle: 'Age range chosen at sign-up (MindQuest is for ages 15–24)',
+        child: Column(
+          children: <Widget>[
+            for (final (String id, String name) in ageNames)
+              if (id != 'not_asked' || (s.ages[id] ?? 0) > 0)
+                BarRow(label: name, value: s.ages[id] ?? 0, max: ageMax),
+          ],
+        ),
+      ),
+      SectionCard(
         key: const Key('card-articles'),
         title: 'Articles',
         subtitle: 'Reads in this period, and all time',
@@ -403,5 +489,82 @@ class _OverviewPageState extends State<OverviewPage> {
         ),
       ),
     ];
+  }
+}
+
+/// "Monitor System Health": is the database answering, and is the chatbot's
+/// NLU server up with its model loaded? Checked when the Overview opens.
+class HealthCard extends StatefulWidget {
+  const HealthCard(
+      {super.key, required this.repository, required this.unavailable});
+
+  final AdminRepository repository;
+
+  /// Replies in the period where the NLU server could not be reached.
+  final int unavailable;
+
+  @override
+  State<HealthCard> createState() => _HealthCardState();
+}
+
+class _HealthCardState extends State<HealthCard> {
+  late Future<SystemHealth> _health = widget.repository.health();
+
+  void _check() => setState(() {
+        _health = widget.repository.health();
+      });
+
+  Widget _row(BuildContext context, String name, HealthCheck c) {
+    final MindQuestColors mq = Theme.of(context).extension<MindQuestColors>()!;
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(c.ok ? Icons.check_circle : Icons.error,
+          color: c.ok ? Theme.of(context).colorScheme.primary : mq.crisis),
+      title: Text(name),
+      subtitle: Text(c.ok
+          ? '${c.ms} ms${c.detail == null ? '' : ' · ${c.detail}'}'
+          : 'Not working: ${c.detail ?? 'no answer'}'),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final MindQuestColors mq = Theme.of(context).extension<MindQuestColors>()!;
+    return SectionCard(
+      key: const Key('card-health'),
+      title: 'System health',
+      subtitle: widget.unavailable == 0
+          ? 'The chatbot server answered every message in this period.'
+          : 'The chatbot server could not be reached for ${widget.unavailable} '
+              'replies in this period.',
+      trailing: TextButton(
+        key: const Key('check-health'),
+        onPressed: _check,
+        child: const Text('Check now'),
+      ),
+      child: FutureBuilder<SystemHealth>(
+        future: _health,
+        builder: (BuildContext context, AsyncSnapshot<SystemHealth> snap) {
+          if (snap.hasError) {
+            return Text('${snap.error}', style: TextStyle(color: mq.crisis));
+          }
+          if (!snap.hasData) return const LinearProgressIndicator();
+          final SystemHealth h = snap.data!;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _row(context, 'Database', h.database),
+              _row(context, 'Chatbot (Rasa NLU server)', h.nlu),
+              Text('Checked at ${clock(h.checkedAt.toLocal())}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: mq.textMuted)),
+            ],
+          );
+        },
+      ),
+    );
   }
 }

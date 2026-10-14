@@ -8,6 +8,7 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
 import 'features/auth/session_controller.dart';
+import 'features/gamification/badge_watcher.dart';
 import 'features/reminders/reminders.dart';
 
 class MindQuestApp extends StatefulWidget {
@@ -16,7 +17,8 @@ class MindQuestApp extends StatefulWidget {
       this.themeController,
       this.session,
       this.offline,
-      this.reminders});
+      this.reminders,
+      this.badges});
 
   /// Loaded in main() from the saved setting; tests use the default.
   final ThemeController? themeController;
@@ -30,6 +32,9 @@ class MindQuestApp extends StatefulWidget {
   /// Daily check-in reminders (null in tests).
   final ReminderController? reminders;
 
+  /// Notices new badges (null in tests).
+  final BadgeWatcher? badges;
+
   @override
   State<MindQuestApp> createState() => _MindQuestAppState();
 }
@@ -38,7 +43,9 @@ class _MindQuestAppState extends State<MindQuestApp> {
   late final ThemeController _theme =
       widget.themeController ?? ThemeController();
   late final GoRouter _router = createRouter(_theme, widget.session,
-      offline: widget.offline, reminders: widget.reminders);
+      offline: widget.offline,
+      reminders: widget.reminders,
+      badges: widget.badges);
 
   @override
   void initState() {

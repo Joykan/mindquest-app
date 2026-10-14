@@ -9,6 +9,7 @@ import '../../features/auth/welcome_screen.dart';
 import '../../features/chat/chat_backend.dart';
 import '../../features/chat/chat_screen.dart';
 import '../../features/chat/past_chats_screen.dart';
+import '../../features/gamification/badge_watcher.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/home/progress_repository.dart';
 import '../../features/learn/article_screen.dart';
@@ -65,8 +66,12 @@ String? redirectFor(SessionController? session, String location) {
 /// [offline] keeps data for use without internet; [reminders] is the daily
 /// check-in reminder (both null in tests).
 GoRouter createRouter(ThemeController theme, SessionController? session,
-    {OfflineStore? offline, ReminderController? reminders}) {
+    {OfflineStore? offline,
+    ReminderController? reminders,
+    BadgeWatcher? badges}) {
   final ProgressTicker ticker = ProgressTicker();
+  // Any change in progress may have earned a badge.
+  if (badges != null) ticker.addListener(badges.check);
   final ProgressRepository? progress = session == null
       ? null
       : SupabaseProgressRepository(
@@ -167,6 +172,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
           builder: (context, state, shell) => AppShell(
             shell: shell,
             ticker: ticker,
+            badges: badges,
             connection: offline?.status,
             onRetry: offline == null ? null : retryOffline,
           ),
@@ -199,6 +205,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
                         onBack: () => goHome(context),
                         onHelplines: () => showHelplines(context),
                         onMoodSaved: ticker.bump,
+                        onMessageSent: badges?.check,
                         onPastChats: () => context.go('/chat/history'),
                       ),
                   routes: <RouteBase>[
@@ -279,6 +286,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
                             article: a,
                             repository: learn!,
                             onRead: ticker.bump,
+                            onBadgesShown: badges?.markSeen,
                           );
                       if (extra is Article) return screen(extra);
                       // Opened without the article (e.g. after a restart): load it.

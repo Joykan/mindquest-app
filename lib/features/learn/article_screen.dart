@@ -4,6 +4,7 @@ import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/language_toggle.dart';
 import '../gamification/badge_dialog.dart';
+import '../gamification/badges.dart';
 import 'learn_repository.dart';
 
 /// Article (wireframe 10): the text in English or Kiswahili, and a button to
@@ -14,6 +15,7 @@ class ArticleScreen extends StatefulWidget {
     required this.article,
     required this.repository,
     this.onRead,
+    this.onBadgesShown,
   });
 
   final Article article;
@@ -21,6 +23,9 @@ class ArticleScreen extends StatefulWidget {
 
   /// Called after the article is marked read (e.g. to refresh Learn and Home).
   final VoidCallback? onRead;
+
+  /// Badges this screen celebrates itself, so they don't pop up twice.
+  final void Function(List<String> badgeIds)? onBadgesShown;
 
   @override
   State<ArticleScreen> createState() => _ArticleScreenState();
@@ -42,6 +47,11 @@ class _ArticleScreenState extends State<ArticleScreen> {
           await widget.repository.markRead(widget.article.id);
       if (!mounted) return;
       setState(() => _read = true);
+      if (result.newBadges.isNotEmpty) {
+        widget.onBadgesShown?.call(<String>[
+          for (final RewardBadge b in result.newBadges) b.id,
+        ]);
+      }
       widget.onRead?.call();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
