@@ -10,6 +10,10 @@ Find out whether students:
    useful and motivating (MindQuest statements);
 4. run into bugs or confusing parts (open answers).
 
+This covers the proposal's testing objectives i (UAT of the chatbot in both
+languages) and ii (gamification usability and engagement); see
+`traceability.md`.
+
 This is a usability and acceptance test, not a study of whether the app
 improves mental health. Participants are **not** asked about their own mental
 health, and nobody reads their chats or notes.
@@ -32,11 +36,20 @@ the real round. Pilot answers are not counted.
 
 ## Participants
 
-- **10–20 students**, aged 18 or over (anyone under 18 is not included).
+Following the approved proposal (population and ethical considerations,
+chapter 3):
+
+- **10–20 young people aged 15–24** living or studying in **Kisumu County**
+  (e.g. Maseno University students).
+- **Consent** from everyone (the first question of the form). For
+  **15–17-year-olds**, a **parent or guardian must agree first** (assent from
+  the young person plus guardian approval): send the invitation to the
+  parent or guardian too, and the form asks for their agreement. In practice
+  most participants will be 18–24 university students.
 - Android phone (the app is an Android APK).
 - Recruited through class or hostel WhatsApp groups and friends; taking part
   is voluntary, and stopping at any time is fine.
-- Try for a mix: English and Kiswahili users, different years of study.
+- Try for a mix: English and Kiswahili users, ages, years of study.
 
 ## Before starting (checklist)
 
@@ -108,6 +121,8 @@ or **Google**, so no custom email service is needed for the test.
   works even offline.
 - Participants are not asked about their own mental health, diagnoses or
   feelings in the form; only about using the app.
+- Under-18s take part only with a parent's or guardian's agreement (proposal,
+  ethical considerations).
 - If a participant tells you they are struggling: thank them, don't try to
   counsel them, and share Kenya Red Cross 1199 (free, 24 hours), emergency
   999 or 112, and the university counselling service.
@@ -124,9 +139,10 @@ or **Google**, so no custom email service is needed for the test.
 > **Chipu** (a friendly chatbot, in English or Kiswahili) and earn XP and
 > badges for looking after yourself.
 >
-> I'm looking for 10–20 students (18+, Android phone) to try it for 5 days
-> and then fill in a 10-minute anonymous form. You don't need an account or
-> your real name.
+> I'm looking for 10–20 young people aged 15–24 in Kisumu County (with an
+> Android phone) to try it for 5 days and then fill in a 10-minute anonymous
+> form. You don't need an account or your real name. If you're under 18, a
+> parent or guardian needs to agree first.
 >
 > MindQuest is a student project, not therapy or an emergency service. If
 > you're going through a hard time, please call Kenya Red Cross on 1199
@@ -164,14 +180,18 @@ Description (paste):
 > call Kenya Red Cross 1199 (free, 24 hours) or 999 / 112.
 
 Question (required, multiple choice):
-**I am 18 or older, I have read the information above, and I agree to take
-part.**
-- Yes, I agree → continue
+**Do you agree to take part?**
+- I am 18–24, I have read the information above, and I agree → continue
+- I am 15–17, I agree, **and my parent or guardian has read the information
+  and agrees** → continue
 - No → submit form (Section "Thank you")
+
+(People outside 15–24 are thanked but not included: add the line "This study
+is for ages 15–24" to the description.)
 
 ### Section 2: About you
 
-1. Age: 18–20 / 21–23 / 24–26 / 27 or older
+1. Age: 15–17 / 18–20 / 21–24 (the same ranges as the app)
 2. Year of study: 1 / 2 / 3 / 4 / 5 or more / Not a student
 3. Which language did you mostly use in MindQuest? English / Kiswahili / Both
 4. On how many days did you open MindQuest? 1 / 2–3 / 4–5 / 6 or more
@@ -262,7 +282,9 @@ Download the responses (Responses → Download CSV) and fill in the workbook
 | Task completion per task | UAT tasks | 78% or more per task |
 | SUS score (mean, median, SD) | SUS | above 68 (average); 80+ is good |
 | Agreement per statement (% choosing 4 or 5) | Likert | 70% or more agree |
-| Usage during the test (active students, check-ins, chats, % understood, crisis responses) | Admin dashboard, period covering the test | For the report, totals only |
+| Usage during the test (active students, check-ins, chats, % understood, crisis responses) | Admin dashboard, period covering the test (Copy report) | For the report, totals only |
+| Reply time (NFR-SPEC-01) | Overview Reply time tile over the test period | 95% of replies within 2 s |
+| Chatbot availability (NFR-SPEC-02) | Overview: unavailable replies ÷ all replies | 99.5% available |
 | Problems found | Bugs | All critical and major fixed |
 
 Open answers: group them into themes (e.g. "chatbot understanding", "rewards",

@@ -46,6 +46,13 @@ refuse anyone without the right role. Users can't change their own role
   mood for each tag), what students talk to Chipu about (the NLU intents;
   greetings, thanks and yes/no grouped as small talk), app language, reads
   per article.
+- **Added to match the approved proposal:** a **Reply time** tile (median,
+  95th percentile and share of replies within 2 s, NFR-SPEC-01), a **System
+  health** card that checks the database and the chatbot's NLU server
+  (`health` Edge Function; use case Monitor System Health), an **Age** card
+  (age range from sign-up), and **Copy report** (use case Generate Reports:
+  the totals plus one comma-separated line per day, to paste into Word or
+  Excel).
 - **Articles** – list with topic filter, Published switch, edit (English and
   Kiswahili side by side, topic, minutes), add, delete (with a tip to
   unpublish instead).
