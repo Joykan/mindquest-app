@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/mascot.dart';
 import '../gamification/badges.dart';
 import '../gamification/levels.dart';
+import '../gamification/outfits.dart';
 import 'rewards_repository.dart';
 
 /// Rewards (wireframe 11): level and XP, the weekly quest, badges with
@@ -15,7 +16,11 @@ class RewardsScreen extends StatefulWidget {
     required this.repository,
     this.onBack,
     this.reloadWhen,
+    this.outfits,
   });
+
+  /// What Chipu wears; the wardrobe changes it.
+  final OutfitController? outfits;
 
   final RewardsRepository repository;
   final VoidCallback? onBack;
@@ -26,7 +31,41 @@ class RewardsScreen extends StatefulWidget {
 }
 
 class _RewardsScreenState extends State<RewardsScreen> {
-  late Future<RewardsSummary> _summary = widget.repository.loadRewards();
+  late Future<RewardsSummary> _summary = _load();
+
+  Future<RewardsSummary> _load() =>
+      widget.repository.loadRewards().then((RewardsSummary s) {
+        if (mounted) widget.outfits?.show(s.outfit);
+        return s;
+      });
+
+  /// Wears [outfit] (null: none) everywhere at once; the choice is saved in
+  /// the background (later, when offline).
+  Future<void> _wear(String? outfit) async {
+    final OutfitController? controller = widget.outfits;
+    final String lang = context.lang;
+    final ScaffoldMessengerState messenger = ScaffoldMessenger.of(context);
+    try {
+      if (controller != null) {
+        await controller.wear(outfit);
+      } else {
+        await widget.repository.wearOutfit(outfit);
+      }
+      final Outfit? o = outfitById(outfit);
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(SnackBar(
+          content: Text(o == null
+              ? tr(lang, 'Chipu is wearing nothing special now.',
+                  'Chipu hajavaa kitu maalum sasa.')
+              : tr(lang, 'Chipu is wearing the ${o.en.toLowerCase()} ${o.emoji}',
+                  'Chipu amevaa ${o.sw.toLowerCase()} ${o.emoji}'))));
+    } catch (_) {
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(SnackBar(
+          content: Text(tr(lang, "Couldn't change Chipu's outfit. Try again.",
+              'Imeshindikana kubadilisha vazi la Chipu. Jaribu tena.'))));
+    }
+  }
 
   @override
   void initState() {
@@ -42,7 +81,7 @@ class _RewardsScreenState extends State<RewardsScreen> {
 
   Future<void> _reload() async {
     if (!mounted) return;
-    final Future<RewardsSummary> next = widget.repository.loadRewards();
+    final Future<RewardsSummary> next = _load();
     setState(() => _summary = next);
     await next;
   }
@@ -79,6 +118,8 @@ class _RewardsScreenState extends State<RewardsScreen> {
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
               children: <Widget>[
                 _LevelCard(summary: s),
+                const SizedBox(height: 12),
+                WardrobeCard(level: LevelProgress(s.xp).level, onWear: _wear),
                 const SizedBox(height: 12),
                 _QuestCard(summary: s),
                 const SizedBox(height: 20),
@@ -370,6 +411,164 @@ class _BadgeTile extends StatelessWidget {
                 ),
               ],
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Chipu's wardrobe: every outfit, unlocked ones can be worn.
+class WardrobeCard extends StatelessWidget {
+  const WardrobeCard({super.key, required this.level, required this.onWear});
+
+  final int level;
+  final ValueChanged<String?> onWear;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final MindQuestColors mq = theme.extension<MindQuestColors>()!;
+    final String lang = context.lang;
+    final String? wearing = OutfitScope.of(context);
+    Outfit? next;
+    for (final Outfit o in outfits) {
+      if (o.level > level) {
+        next = o;
+        break;
+      }
+    }
+    return Card(
+      key: const Key('wardrobe'),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                const Text('👕', style: TextStyle(fontSize: 22)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(context.tr("Chipu's wardrobe", 'Kabati la Chipu'),
+                      style: theme.textTheme.titleMedium),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              next == null
+                  ? context.tr('Chipu has grown into a forest. Everything is unlocked!',
+                      'Chipu amekua msitu. Kila kitu kimefunguliwa!')
+                  : context.tr(
+                      'Chipu grows with you. Reach Level ${next.level} to unlock the ${next.en.toLowerCase()} ${next.emoji}.',
+                      'Chipu anakua pamoja nawe. Fikia Kiwango ${next.level} kufungua ${next.sw.toLowerCase()} ${next.emoji}.'),
+              style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+            ),
+            const SizedBox(height: 12),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: <Widget>[
+                  _OutfitTile(
+                    keyName: 'none',
+                    label: context.tr('Just Chipu', 'Chipu tu'),
+                    selected: wearing == null,
+                    locked: false,
+                    onTap: () => onWear(null),
+                    child: const Mascot(size: 64, followScope: false),
+                  ),
+                  for (final Outfit o in outfits)
+                    _OutfitTile(
+                      keyName: o.id,
+                      label: o.level > level
+                          ? tr(lang, 'Level ${o.level}', 'Kiwango ${o.level}')
+                          : o.name(lang),
+                      selected: wearing == o.id,
+                      locked: o.level > level,
+                      onTap: () => onWear(o.id),
+                      child:
+                          Mascot(size: 64, outfit: o.id, followScope: false),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OutfitTile extends StatelessWidget {
+  const _OutfitTile({
+    required this.keyName,
+    required this.label,
+    required this.selected,
+    required this.locked,
+    required this.onTap,
+    required this.child,
+  });
+
+  final String keyName;
+  final String label;
+  final bool selected;
+  final bool locked;
+  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final MindQuestColors mq = theme.extension<MindQuestColors>()!;
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Semantics(
+        button: !locked,
+        selected: selected,
+        label: locked
+            ? context.tr('$label, locked', '$label, imefungwa')
+            : label,
+        excludeSemantics: true,
+        child: InkWell(
+          key: Key('outfit-$keyName'),
+          borderRadius: BorderRadius.circular(16),
+          onTap: locked ? null : onTap,
+          child: Container(
+            width: 92,
+            padding: const EdgeInsets.fromLTRB(6, 8, 6, 8),
+            decoration: BoxDecoration(
+              color: selected
+                  ? theme.colorScheme.primary.withValues(alpha: 0.12)
+                  : mq.surfaceSoft,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: selected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.outline.withValues(alpha: 0.4),
+                width: selected ? 2 : 1,
+              ),
+            ),
+            child: Column(
+              children: <Widget>[
+                Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    Opacity(opacity: locked ? 0.35 : 1, child: child),
+                    if (locked)
+                      Icon(Icons.lock_outline, color: mq.textMuted, size: 26),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.labelSmall,
+                ),
+              ],
+            ),
           ),
         ),
       ),

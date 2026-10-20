@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/offline/offline_store.dart';
 import '../chat/chat_models.dart';
+import '../gamification/streaks.dart';
 
 /// Everything the Home screen shows, for the signed-in user.
 class HomeSummary {
@@ -12,11 +13,23 @@ class HomeSummary {
     this.todayMood,
     this.doneToday = const <String>{},
     this.weekCheckinDays = 0,
+    this.restUsedThisWeek = false,
+    this.restYesterday = false,
+    this.outfit,
   });
 
   final String username;
   final int xp;
   final int streak;
+
+  /// This week's rest day already kept the streak going (see streaks.dart).
+  final bool restUsedThisWeek;
+
+  /// Yesterday was missed and the rest day kept the streak: check in today.
+  final bool restYesterday;
+
+  /// What Chipu wears (outfits.dart), or null.
+  final String? outfit;
 
   /// Mood logged today (1-5), if any.
   final int? todayMood;
@@ -110,34 +123,39 @@ DateTime? parseDay(String? date) {
   return DateTime.utc(d.year, d.month, d.day);
 }
 
-/// The streak to show today.
-///
-/// The database keeps [streak], the days in a row ending on [lastCheckin].
-/// Check-ins still waiting to sync ([pendingDays]) are added. A streak whose
-/// last day is before yesterday is over, so it shows as 0.
-int currentStreak({
-  required int streak,
-  DateTime? lastCheckin,
-  Set<DateTime> pendingDays = const <DateTime>{},
+/// The streak today, from the profile, the check-in days loaded from the
+/// server and the check-ins still waiting to sync (see streaks.dart).
+StreakStatus streakToday({
+  required Map<String, dynamic> profile,
+  Set<DateTime> checkins = const <DateTime>{},
+  Iterable<DateTime> pending = const <DateTime>[],
   DateTime? now,
-}) {
-  final Set<DateTime> days = <DateTime>{
-    for (final DateTime d in pendingDays) DateTime.utc(d.year, d.month, d.day),
-    if (lastCheckin != null)
-      for (int i = 0; i < streak; i++)
-        DateTime.utc(lastCheckin.year, lastCheckin.month, lastCheckin.day - i),
-  };
-  final DateTime today = nairobiDay(now ?? DateTime.now());
-  DateTime d = days.contains(today)
-      ? today
-      : DateTime.utc(today.year, today.month, today.day - 1);
-  int n = 0;
-  while (days.contains(d)) {
-    n++;
-    d = DateTime.utc(d.year, d.month, d.day - 1);
-  }
-  return n;
-}
+}) =>
+    streakStatus(
+      today: nairobiDay(now ?? DateTime.now()),
+      checkins: <DateTime>{...checkins, for (final DateTime d in pending) d},
+      savedStreak: profile['streak'] as int? ?? 0,
+      lastCheckin: parseDay(profile['last_checkin'] as String?),
+    );
+
+/// The days with a check-in in the last 120 days (from the XP ledger, which
+/// keeps one mood_checkin row per day even if a check-in is deleted).
+Future<dynamic> checkinDaysQuery(SupabaseClient client, String uid) => client
+    .from('xp_events')
+    .select('created_at')
+    .eq('user_id', uid)
+    .eq('reason', 'mood_checkin')
+    .gte(
+        'created_at',
+        startOfTodayUtc()
+            .subtract(const Duration(days: 120))
+            .toIso8601String());
+
+Set<DateTime> parseCheckinDays(dynamic rows) => <DateTime>{
+      for (final dynamic r in rows as List<dynamic>)
+        nairobiDay(
+            DateTime.parse((r as Map<String, dynamic>)['created_at'] as String)),
+    };
 
 /// Start of this Monday-to-Sunday week in Nairobi, as a UTC instant.
 DateTime startOfWeekUtc([DateTime? now]) {
@@ -215,18 +233,38 @@ class SupabaseProgressRepository implements ProgressRepository {
           'profile.progress',
           () => _client
               .from('profiles')
-              .select('username, xp, streak, last_checkin')
+              .select('username, xp, streak, last_checkin, outfit')
               .eq('id', _uid)
               .single()) as Map);
 
-  int _streakFrom(Map<String, dynamic> profile, List<MoodEntry> pending) =>
-      currentStreak(
-        streak: profile['streak'] as int? ?? 0,
-        lastCheckin: parseDay(profile['last_checkin'] as String?),
-        pendingDays: <DateTime>{
+  /// An outfit chosen offline and not sent yet wins over the saved profile.
+  String? _outfit(Map<String, dynamic> profile) {
+    final List<PendingAction> waiting =
+        offline?.pending('outfit') ?? const <PendingAction>[];
+    if (waiting.isNotEmpty) return waiting.last.data['outfit'] as String?;
+    return profile['outfit'] as String?;
+  }
+
+  /// Check-in days for the streak; none if they can't be loaded (the
+  /// profile's streak is used then).
+  Future<Set<DateTime>> _checkinDays() async {
+    try {
+      return parseCheckinDays(
+          await _load('checkin.days', () => checkinDaysQuery(_client, _uid)));
+    } catch (_) {
+      return const <DateTime>{};
+    }
+  }
+
+  Future<StreakStatus> _streakFrom(
+          Map<String, dynamic> profile, List<MoodEntry> pending) async =>
+      streakToday(
+        profile: profile,
+        checkins: await _checkinDays(),
+        pending: <DateTime>[
           for (final MoodEntry e in pending)
             DateTime.utc(e.at.year, e.at.month, e.at.day)
-        },
+        ],
       );
 
   /// XP reasons earned since the start of today (Nairobi).
@@ -287,11 +325,15 @@ class SupabaseProgressRepository implements ProgressRepository {
     if (pending.any((MoodEntry e) => !e.at.isBefore(today))) {
       done.add('mood_checkin');
     }
+    final StreakStatus streak = await _streakFrom(profile, pending);
 
     return HomeSummary(
       username: profile['username'] as String? ?? 'Friend',
       xp: profile['xp'] as int? ?? 0,
-      streak: _streakFrom(profile, pending),
+      streak: streak.days,
+      restUsedThisWeek: streak.restUsedThisWeek,
+      restYesterday: streak.restYesterday,
+      outfit: _outfit(profile),
       todayMood: todayMood,
       doneToday: done,
       weekCheckinDays: days.length,
@@ -339,7 +381,7 @@ class SupabaseProgressRepository implements ProgressRepository {
     final bool waiting = store?.isPending(id) ?? false;
     int streak;
     try {
-      streak = _streakFrom(await _profile(), _pendingMoods());
+      streak = (await _streakFrom(await _profile(), _pendingMoods())).days;
     } catch (_) {
       streak = 1;
     }

@@ -196,32 +196,36 @@ void main() {
     });
   });
 
-  group('currentStreak', () {
+  group('streak with check-ins waiting to sync', () {
     // Tuesday 13 Oct 2026, 10:00 in Nairobi.
     final DateTime now = DateTime.utc(2026, 10, 13, 7);
     DateTime day(int d) => DateTime.utc(2026, 10, d);
+    Map<String, dynamic> profile(int streak, String? last) =>
+        <String, dynamic>{'streak': streak, 'last_checkin': last};
 
     test('a streak that ended yesterday or today still counts', () {
-      expect(currentStreak(streak: 4, lastCheckin: day(13), now: now), 4);
-      expect(currentStreak(streak: 4, lastCheckin: day(12), now: now), 4);
+      expect(streakToday(profile: profile(4, '2026-10-13'), now: now).days, 4);
+      expect(streakToday(profile: profile(4, '2026-10-12'), now: now).days, 4);
     });
 
-    test('a streak that ended before yesterday is over', () {
-      expect(currentStreak(streak: 5, lastCheckin: day(11), now: now), 0);
-      expect(currentStreak(streak: 0, now: now), 0);
+    test('a streak that ended three days ago is over', () {
+      expect(streakToday(profile: profile(5, '2026-10-10'), now: now).days, 0);
+      expect(streakToday(profile: profile(0, null), now: now).days, 0);
     });
 
     test('check-ins waiting to sync are added', () {
       // Server: 9-11 Oct. Offline: 12 and 13 Oct.
       expect(
-          currentStreak(
-              streak: 3,
-              lastCheckin: day(11),
-              pendingDays: <DateTime>{day(12), day(13)},
-              now: now),
+          streakToday(
+              profile: profile(3, '2026-10-11'),
+              pending: <DateTime>[day(12), day(13)],
+              now: now).days,
           5);
       expect(
-          currentStreak(streak: 0, pendingDays: <DateTime>{day(13)}, now: now),
+          streakToday(
+              profile: profile(0, null),
+              pending: <DateTime>[day(13)],
+              now: now).days,
           1);
     });
   });

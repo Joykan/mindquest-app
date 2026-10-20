@@ -11,6 +11,7 @@ import 'core/theme/theme_controller.dart';
 import 'features/auth/account_repository.dart';
 import 'features/auth/session_controller.dart';
 import 'features/gamification/badge_watcher.dart';
+import 'features/gamification/outfits.dart';
 import 'features/reminders/local_notifications.dart';
 import 'features/reminders/reminders.dart';
 
@@ -21,6 +22,7 @@ Future<void> main() async {
   OfflineStore? offline;
   ReminderController? reminders;
   BadgeWatcher? badges;
+  OutfitController? outfits;
   if (Env.isConfigured) {
     await Supabase.initialize(
       url: Env.supabaseUrl,
@@ -51,6 +53,11 @@ Future<void> main() async {
     badges = BadgeWatcher(prefs, SupabaseBadgeSource(),
         userId: () => Supabase.instance.client.auth.currentUser?.id,
         onUnlocked: notifier.badgeUnlocked);
+
+    // What Chipu wears, and which outfits were already celebrated.
+    outfits = OutfitController(
+        prefs: prefs,
+        userId: () => Supabase.instance.client.auth.currentUser?.id);
   }
 
   final ThemeController theme = await ThemeController.load();
@@ -60,6 +67,7 @@ Future<void> main() async {
     offline: offline,
     reminders: reminders,
     badges: badges,
+    outfits: outfits,
   ));
   offline?.start();
 }

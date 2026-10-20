@@ -25,10 +25,18 @@ const List<Helpline> emergencyHelplines = <Helpline>[
 /// Support: helplines with Call buttons, a guided box-breathing exercise and
 /// the 5-4-3-2-1 grounding exercise. Opened from Home, Profile and insights.
 class SupportScreen extends StatefulWidget {
-  const SupportScreen({super.key, required this.loadHelplines, this.onTalk});
+  const SupportScreen(
+      {super.key,
+      required this.loadHelplines,
+      this.onTalk,
+      this.onExerciseDone});
 
   final Future<List<Helpline>> Function() loadHelplines;
   final VoidCallback? onTalk;
+
+  /// Called with 'breathing' or 'grounding' when an exercise is finished
+  /// (it counts for challenges).
+  final ValueChanged<String>? onExerciseDone;
 
   @override
   State<SupportScreen> createState() => _SupportScreenState();
@@ -107,9 +115,11 @@ class _SupportScreenState extends State<SupportScreen> {
             },
           ),
           const SizedBox(height: 20),
-          const BoxBreathingCard(),
+          BoxBreathingCard(
+              onFinished: () => widget.onExerciseDone?.call('breathing')),
           const SizedBox(height: 12),
-          const GroundingCard(),
+          GroundingCard(
+              onFinished: () => widget.onExerciseDone?.call('grounding')),
           if (widget.onTalk != null) ...<Widget>[
             const SizedBox(height: 16),
             OutlinedButton.icon(
@@ -127,9 +137,12 @@ class _SupportScreenState extends State<SupportScreen> {
 /// Box breathing: in 4, hold 4, out 4, hold 4, four rounds. A circle grows as
 /// you breathe in and shrinks as you breathe out.
 class BoxBreathingCard extends StatefulWidget {
-  const BoxBreathingCard({super.key});
+  const BoxBreathingCard({super.key, this.onFinished});
 
   static const int rounds = 4;
+
+  /// Called each time all four rounds are done.
+  final VoidCallback? onFinished;
 
   @override
   State<BoxBreathingCard> createState() => _BoxBreathingCardState();
@@ -158,6 +171,7 @@ class _BoxBreathingCardState extends State<BoxBreathingCard>
         _running = false;
         _finished = true;
       });
+      widget.onFinished?.call();
     } else {
       setState(() => _round++);
       _box.forward(from: 0);
@@ -303,7 +317,10 @@ class _BoxBreathingCardState extends State<BoxBreathingCard>
 
 /// 5-4-3-2-1 grounding: tap each step when done.
 class GroundingCard extends StatefulWidget {
-  const GroundingCard({super.key});
+  const GroundingCard({super.key, this.onFinished});
+
+  /// Called once when all five steps are ticked.
+  final VoidCallback? onFinished;
 
   @override
   State<GroundingCard> createState() => _GroundingCardState();
@@ -319,6 +336,15 @@ class _GroundingCardState extends State<GroundingCard> {
     ('👅', '1 thing you can taste', 'Kitu 1 unachoweza kuonja'),
   ];
   final Set<int> _done = <int>{};
+  bool _reported = false;
+
+  void _toggle(int i, bool? v) {
+    setState(() => v == true ? _done.add(i) : _done.remove(i));
+    if (!_reported && _done.length == _steps.length) {
+      _reported = true;
+      widget.onFinished?.call();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -356,8 +382,7 @@ class _GroundingCardState extends State<GroundingCard> {
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.trailing,
                 value: _done.contains(i),
-                onChanged: (bool? v) =>
-                    setState(() => v == true ? _done.add(i) : _done.remove(i)),
+                onChanged: (bool? v) => _toggle(i, v),
                 title: Text(
                     '${_steps[i].$1}  ${context.tr(_steps[i].$2, _steps[i].$3)}'),
               ),

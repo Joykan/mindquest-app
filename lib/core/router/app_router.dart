@@ -6,10 +6,13 @@ import '../../features/auth/onboarding_screen.dart';
 import '../../features/auth/session_controller.dart';
 import '../../features/auth/sign_in_screen.dart';
 import '../../features/auth/welcome_screen.dart';
+import '../../features/challenges/challenge_widgets.dart';
+import '../../features/challenges/challenges.dart';
 import '../../features/chat/chat_backend.dart';
 import '../../features/chat/chat_screen.dart';
 import '../../features/chat/past_chats_screen.dart';
 import '../../features/gamification/badge_watcher.dart';
+import '../../features/gamification/outfits.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/home/progress_repository.dart';
 import '../../features/learn/article_screen.dart';
@@ -68,7 +71,8 @@ String? redirectFor(SessionController? session, String location) {
 GoRouter createRouter(ThemeController theme, SessionController? session,
     {OfflineStore? offline,
     ReminderController? reminders,
-    BadgeWatcher? badges}) {
+    BadgeWatcher? badges,
+    OutfitController? outfits}) {
   final ProgressTicker ticker = ProgressTicker();
   // Any change in progress may have earned a badge.
   if (badges != null) ticker.addListener(badges.check);
@@ -84,6 +88,25 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
       session == null ? null : SupabaseLearnRepository(offline: offline);
   final RewardsRepository? rewards =
       session == null ? null : SupabaseRewardsRepository(offline: offline);
+  if (outfits != null && rewards != null) outfits.save = rewards.wearOutfit;
+  final ChallengesRepository? challenges =
+      session == null ? null : SupabaseChallengesRepository(offline: offline);
+
+  /// Opens the place for a challenge step.
+  void openStep(BuildContext context, String place) {
+    switch (place) {
+      case 'mood':
+        context.go('/mood');
+      case 'chat':
+        context.go('/chat');
+      case 'support':
+        context.push('/support');
+      case 'learn':
+        context.go('/learn');
+      default:
+        context.go('/home');
+    }
+  }
 
   // Something made offline reached the server, or the internet is back:
   // screens reload to show the real XP, streak and badges.
@@ -166,6 +189,22 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
           builder: (context, state) => SupportScreen(
             loadHelplines: progress!.loadHelplines,
             onTalk: () => context.go('/chat'),
+            onExerciseDone: (String kind) async {
+              try {
+                await challenges?.logActivity(kind);
+              } catch (_) {
+                // Only counts for challenges; the exercise itself is done.
+              }
+              ticker.bump();
+            },
+          ),
+        ),
+        GoRoute(
+          path: '/challenges',
+          builder: (context, state) => ChallengesScreen(
+            repository: challenges!,
+            onChanged: ticker.bump,
+            onStep: (String place) => openStep(context, place),
           ),
         ),
         StatefulShellRoute.indexedStack(
@@ -193,6 +232,9 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
                   onTalk: () => context.go('/chat'),
                   onProfile: () => context.push('/profile'),
                   reminders: reminders,
+                  outfits: outfits,
+                  challenges: challenges,
+                  onChallenges: () => context.push('/challenges'),
                 ),
               ),
             ]),
@@ -318,6 +360,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
                 builder: (context, state) => RewardsScreen(
                   repository: rewards!,
                   reloadWhen: ticker,
+                  outfits: outfits,
                   onBack: () => goHome(context),
                 ),
               ),
