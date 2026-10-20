@@ -70,7 +70,7 @@ class FakeRewards implements RewardsRepository {
 }
 
 void tallScreen(WidgetTester tester) {
-  tester.view.physicalSize = const Size(1080, 3600);
+  tester.view.physicalSize = const Size(1080, 6000);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
 }
