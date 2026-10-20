@@ -8,6 +8,19 @@ Cloud project: **mindquest-app** (ref `dqcgeugyhpiemucdypok`, region eu-central-
 
 Migrations in `migrations/` are applied in filename order.
 
+Every table has explicit grants (migration `explicit_table_grants`). Since
+30 Oct 2026 Supabase no longer gives new tables in `public` API access by
+itself, so **a migration that creates a table must also grant access to it**,
+for example:
+
+```sql
+grant select, insert, update, delete on public.new_table to authenticated;
+grant select, insert, update, delete on public.new_table to service_role;
+```
+
+(add `anon` only if people who are not signed in need it), and turn on
+row-level security with policies as for the other tables.
+
 | Table | What it holds |
 |---|---|
 | `profiles` | One row per user: name, language, role, XP, level, streak. Created automatically on sign-up. |
