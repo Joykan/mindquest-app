@@ -31,6 +31,8 @@ row-level security with policies as for the other tables.
 | `helplines` | Crisis helplines. Only rows marked `verified` are shown in the app. |
 | `crisis_events` | A record that a crisis response was shown. No message text is stored. |
 | `xp_events`, `quest_completions` | XP history and completed weekly quests. |
+| `challenges`, `challenge_runs` | Themed 7-day challenges, and who started which one when. |
+| `wellbeing_activities` | Finished breathing and grounding exercises (kind and time only), for challenges. |
 
 ### Gamification rules (database triggers)
 
@@ -40,10 +42,14 @@ row-level security with policies as for the other tables.
 | Chat message | +2 | 20 XP per day |
 | Article read | +5 | once per article |
 | Weekly quest: check in on 5 days in one week | +25 | once per week |
+| Finish a 7-day challenge | +40 | one challenge at a time |
 
 Levels: L1 0 XP, L2 50, L3 100, L4 200, L5 350, then a new level every 200 XP.
-Missing a day restarts the streak at 1 but never removes XP, levels or badges.
-Days are counted in Kenyan time.
+Each level unlocks an outfit for Chipu (`set_outfit()` checks the level).
+Each week (Monday to Sunday) has one rest day: missing one day keeps the
+streak; two days in a row, or a second day in the same week, restart it at 1
+(`checkin_streak()`). XP, levels and badges are never removed.
+Days are counted in Kenyan time. Details: `docs/fun-features.md`.
 
 ### Security
 

@@ -13,3 +13,4 @@
 | Sequence: UC-02 Log mood entry | Lucidchart | https://lucid.app/lucidchart/cc79e4de-9d41-4ceb-a4d4-2ef42ecd76eb/edit |
 | Gamification mechanics | Draw.io | `MindQuest_gamification_mechanics.drawio` (this folder) |
 | Co-design workshop board | Miro | https://miro.com/app/board/uXjVEd0f4fw=/ |
+| Chipu's outfits (one per level), drawn as layers over the mascot | Python (cairosvg) | `mascot/make_outfits.py`, preview `mascot/outfits_preview.png` (this folder) |

@@ -80,12 +80,15 @@ jobs:
       - name: Build Android APK (release, arm64)
         run: flutter build apk --release --target-platform android-arm64
 
+      # Kept for 3 days only: GitHub's free artifact storage fills up
+      # quickly with one APK per push. A full storage doesn't fail the build.
       - name: Upload APK
         uses: actions/upload-artifact@v5
+        continue-on-error: true
         with:
           name: mindquest-debug-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
-          retention-days: 14
+          retention-days: 3
 
   chat-function:
     name: Edge function tests
