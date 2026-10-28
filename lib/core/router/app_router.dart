@@ -121,6 +121,12 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
   // Something made offline reached the server, or the internet is back:
   // screens reload to show the real XP, streak and badges.
   offline?.onSynced = ticker.bump;
+  // Opening the app shows the saved data at once; when the server's newer
+  // data arrives a moment later, screens reload with it.
+  offline?.onRefreshed = () {
+    ticker.bump();
+    session?.refresh(); // e.g. the name or language changed on another phone
+  };
 
   /// The offline banner's Retry: send what is waiting, then reload.
   Future<void> retryOffline() async {

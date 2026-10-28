@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/reload_when_visible.dart';
 import '../../core/l10n/tr.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -87,7 +88,8 @@ class HomeExtras {
   final ChallengesState? challenges;
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen>
+    with ReloadWhenVisible<HomeScreen> {
   late Future<HomeSummary> _summary = _loadSummary();
 
   Future<HomeSummary> _loadSummary() =>
@@ -110,56 +112,48 @@ class HomeScreenState extends State<HomeScreen> {
   late Future<HomeExtras> _extras = _loadExtras();
 
   /// Extras are a bonus: if any part fails, Home still shows the rest.
+  /// The parts are loaded at the same time.
   Future<HomeExtras> _loadExtras() async {
-    List<MoodEntry> week = const <MoodEntry>[];
-    Map<String, int> feelings = const <String, int>{};
-    List<Recommendation> picks = const <Recommendation>[];
-    try {
-      week = await widget.repository.loadMoodHistory(days: 7);
-    } catch (_) {
-      // Optional: Home works without it.
-    }
-    try {
-      feelings = await widget.repository.loadChatFeelings();
-    } catch (_) {
-      // Optional: Home works without it.
-    }
-    ChallengesState? challenges;
-    final ChallengesRepository? challengeRepo = widget.challenges;
-    if (challengeRepo != null) {
+    Future<T?> optional<T>(Future<T> Function()? load) async {
+      if (load == null) return null;
       try {
-        challenges = await challengeRepo.load();
+        return await load();
       } catch (_) {
-        // Optional: Home works without it.
+        return null; // Optional: Home works without it.
       }
     }
+
+    final ChallengesRepository? challengeRepo = widget.challenges;
     final LearnRepository? learn = widget.learn;
-    if (learn != null) {
+    final List<Object?> r = await Future.wait<Object?>(<Future<Object?>>[
+      optional<List<MoodEntry>>(
+          () => widget.repository.loadMoodHistory(days: 7)),
+      optional<Map<String, int>>(widget.repository.loadChatFeelings),
+      optional<ChallengesState>(challengeRepo?.load),
+      optional<List<Article>>(learn?.loadArticles),
+    ]);
+    final List<MoodEntry> week = r[0] as List<MoodEntry>? ?? const <MoodEntry>[];
+    final Map<String, int> feelings =
+        r[1] as Map<String, int>? ?? const <String, int>{};
+    final List<Article>? articles = r[3] as List<Article>?;
+    List<Recommendation> picks = const <Recommendation>[];
+    if (articles != null) {
       try {
-        picks = recommendArticles(await learn.loadArticles(),
+        picks = recommendArticles(articles,
             recentMoods: week, chatFeelings: feelings);
       } catch (_) {
         // Optional: Home works without it.
       }
     }
-    return HomeExtras(week: week, picks: picks, challenges: challenges);
+    return HomeExtras(
+        week: week, picks: picks, challenges: r[2] as ChallengesState?);
   }
 
   @override
-  void initState() {
-    super.initState();
-    widget.reloadWhen?.addListener(_onTick);
-  }
+  Listenable? get reloadSignal => widget.reloadWhen;
 
   @override
-  void dispose() {
-    widget.reloadWhen?.removeListener(_onTick);
-    super.dispose();
-  }
-
-  void _onTick() {
-    if (mounted) reload();
-  }
+  Future<void> reloadNow() => reload();
 
   /// Reloads the numbers, e.g. after a mood check-in.
   Future<void> reload() async {

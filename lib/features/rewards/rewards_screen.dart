@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/reload_when_visible.dart';
 import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/mascot.dart';
@@ -30,7 +31,8 @@ class RewardsScreen extends StatefulWidget {
   State<RewardsScreen> createState() => _RewardsScreenState();
 }
 
-class _RewardsScreenState extends State<RewardsScreen> {
+class _RewardsScreenState extends State<RewardsScreen>
+    with ReloadWhenVisible<RewardsScreen> {
   late Future<RewardsSummary> _summary = _load();
 
   Future<RewardsSummary> _load() =>
@@ -68,16 +70,10 @@ class _RewardsScreenState extends State<RewardsScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    widget.reloadWhen?.addListener(_reload);
-  }
+  Listenable? get reloadSignal => widget.reloadWhen;
 
   @override
-  void dispose() {
-    widget.reloadWhen?.removeListener(_reload);
-    super.dispose();
-  }
+  Future<void> reloadNow() => _reload();
 
   Future<void> _reload() async {
     if (!mounted) return;

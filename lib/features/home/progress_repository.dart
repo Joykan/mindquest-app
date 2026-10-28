@@ -257,10 +257,11 @@ class SupabaseProgressRepository implements ProgressRepository {
   }
 
   Future<StreakStatus> _streakFrom(
-          Map<String, dynamic> profile, List<MoodEntry> pending) async =>
+          Map<String, dynamic> profile, List<MoodEntry> pending,
+          {Set<DateTime>? checkins}) async =>
       streakToday(
         profile: profile,
-        checkins: await _checkinDays(),
+        checkins: checkins ?? await _checkinDays(),
         pending: <DateTime>[
           for (final MoodEntry e in pending)
             DateTime.utc(e.at.year, e.at.month, e.at.day)
@@ -300,6 +301,8 @@ class SupabaseProgressRepository implements ProgressRepository {
               .eq('user_id', _uid)
               .gte('logged_at', week.toIso8601String())
               .order('logged_at', ascending: false)),
+      // At the same time as the rest, for the streak.
+      _checkinDays(),
     ]);
 
     final Map<String, dynamic> profile = results[0] as Map<String, dynamic>;
@@ -325,7 +328,8 @@ class SupabaseProgressRepository implements ProgressRepository {
     if (pending.any((MoodEntry e) => !e.at.isBefore(today))) {
       done.add('mood_checkin');
     }
-    final StreakStatus streak = await _streakFrom(profile, pending);
+    final StreakStatus streak = await _streakFrom(profile, pending,
+        checkins: results[3] as Set<DateTime>);
 
     return HomeSummary(
       username: profile['username'] as String? ?? 'Friend',
