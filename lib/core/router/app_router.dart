@@ -31,7 +31,17 @@ import '../config/env.dart';
 import '../l10n/tr.dart';
 import '../offline/offline_store.dart';
 import '../theme/theme_controller.dart';
+import '../widgets/web_layout.dart';
 import 'app_shell.dart';
+
+/// A full-screen page outside the tabs. On big screens it is kept to a
+/// readable width in the middle.
+GoRoute page(String path,
+        Widget Function(BuildContext context, GoRouterState state) build) =>
+    GoRoute(
+        path: path,
+        builder: (BuildContext context, GoRouterState state) =>
+            ReadableWidth(child: build(context, state)));
 
 const Set<String> _signedOutPages = <String>{
   '/welcome',
@@ -142,32 +152,32 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
       return to;
     },
     routes: <RouteBase>[
-      GoRoute(
-          path: '/', builder: (context, state) => const SetupStatusScreen()),
-      GoRoute(
-          path: '/setup',
-          builder: (context, state) => const SetupStatusScreen()),
+      page(
+          '/', (context, state) => const SetupStatusScreen()),
+      page(
+          '/setup',
+          (context, state) => const SetupStatusScreen()),
       if (session != null) ...<RouteBase>[
-        GoRoute(
-            path: '/welcome',
-            builder: (context, state) => WelcomeScreen(session: session)),
-        GoRoute(
-            path: '/sign-in',
-            builder: (context, state) => SignInScreen(session: session)),
-        GoRoute(
-          path: '/sign-up',
-          builder: (context, state) =>
+        page(
+            '/welcome',
+            (context, state) => WelcomeScreen(session: session)),
+        page(
+            '/sign-in',
+            (context, state) => SignInScreen(session: session)),
+        page(
+          '/sign-up',
+          (context, state) =>
               SignInScreen(session: session, createAccount: true),
         ),
-        GoRoute(
-            path: '/loading',
-            builder: (context, state) => LoadingScreen(session: session)),
-        GoRoute(
-            path: '/onboarding',
-            builder: (context, state) => OnboardingScreen(session: session)),
-        GoRoute(
-          path: '/profile',
-          builder: (context, state) => ProfileScreen(
+        page(
+            '/loading',
+            (context, state) => LoadingScreen(session: session)),
+        page(
+            '/onboarding',
+            (context, state) => OnboardingScreen(session: session)),
+        page(
+          '/profile',
+          (context, state) => ProfileScreen(
             session: session,
             theme: theme,
             progress: progress,
@@ -180,13 +190,13 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
             onSaveProgress: () => context.push('/save-progress'),
           ),
         ),
-        GoRoute(
-          path: '/save-progress',
-          builder: (context, state) => SaveProgressScreen(session: session),
+        page(
+          '/save-progress',
+          (context, state) => SaveProgressScreen(session: session),
         ),
-        GoRoute(
-          path: '/support',
-          builder: (context, state) => SupportScreen(
+        page(
+          '/support',
+          (context, state) => SupportScreen(
             loadHelplines: progress!.loadHelplines,
             onTalk: () => context.go('/chat'),
             onExerciseDone: (String kind) async {
@@ -199,9 +209,9 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
             },
           ),
         ),
-        GoRoute(
-          path: '/challenges',
-          builder: (context, state) => ChallengesScreen(
+        page(
+          '/challenges',
+          (context, state) => ChallengesScreen(
             repository: challenges!,
             onChanged: ticker.bump,
             onStep: (String place) => openStep(context, place),

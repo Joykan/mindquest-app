@@ -63,8 +63,14 @@ jobs:
           fi
           exit $code
 
+      # The web version: CanvasKit is served from the site itself (not a CDN)
+      # so the offline cache (web/sw.js) can keep it.
       - name: Build web
-        run: flutter build web --release
+        run: |
+          flutter build web --release --no-web-resources-cdn
+          grep -q startOfflineCache build/web/flutter_bootstrap.js
+          test -f build/web/sw.js
+          test -f build/web/canvaskit/canvaskit.wasm
 
       # The admin dashboard (lib/main_admin.dart) is a second web app.
       - name: Build admin dashboard (web)
@@ -120,3 +126,59 @@ jobs:
       - name: Health function (format, lint, type check)
         working-directory: supabase/functions/health
         run: deno fmt --check && deno lint && deno check index.ts
+
+  # Puts the website (and the admin dashboard) online on Netlify after every
+  # change to main that passes the checks. Skipped until the Netlify and
+  # Supabase settings are added to the repository (docs/web-version.md).
+  deploy-web:
+    name: Deploy website
+    needs: [flutter, chat-function]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      NETLIFY_ADMIN_SITE_ID: ${{ secrets.NETLIFY_ADMIN_SITE_ID }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+      FEEDBACK_URL: ${{ vars.FEEDBACK_URL }}
+    steps:
+      - name: Check the settings
+        id: setup
+        run: |
+          if [ -n "$NETLIFY_AUTH_TOKEN" ] && [ -n "$NETLIFY_SITE_ID" ] && [ -n "$SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::The website is not deployed yet: add the Netlify and Supabase settings (docs/web-version.md)."
+          fi
+
+      - uses: actions/checkout@v5
+        if: steps.setup.outputs.ready == 'true'
+
+      - uses: subosito/flutter-action@v2
+        if: steps.setup.outputs.ready == 'true'
+        with:
+          channel: stable
+          cache: true
+
+      # Only public values: the project address and the publishable key,
+      # which every web visitor's browser gets anyway.
+      - name: Write the web settings
+        if: steps.setup.outputs.ready == 'true'
+        run: |
+          flutter pub get
+          jq -n --arg key "$SUPABASE_PUBLISHABLE_KEY" --arg feedback "$FEEDBACK_URL" \
+            '{SUPABASE_URL: "https://dqcgeugyhpiemucdypok.supabase.co", SUPABASE_ANON_KEY: $key, FEEDBACK_URL: $feedback}' \
+            > config/web.json
+
+      - name: Deploy the student app
+        if: steps.setup.outputs.ready == 'true'
+        run: |
+          flutter build web --release --no-web-resources-cdn --dart-define-from-file=config/web.json
+          npx --yes netlify-cli@17 deploy --prod --dir=build/web --site="$NETLIFY_SITE_ID" --message="${GITHUB_SHA::7}"
+
+      - name: Deploy the admin dashboard
+        if: steps.setup.outputs.ready == 'true' && env.NETLIFY_ADMIN_SITE_ID != ''
+        run: |
+          flutter build web --release --no-web-resources-cdn -t lib/main_admin.dart --dart-define-from-file=config/web.json
+          npx --yes netlify-cli@17 deploy --prod --dir=build/web --site="$NETLIFY_ADMIN_SITE_ID" --message="${GITHUB_SHA::7}"

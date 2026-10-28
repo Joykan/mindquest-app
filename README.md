@@ -15,7 +15,7 @@ not replace a counsellor or doctor.
 
 ## Built with
 
-- Flutter for the app (Android and web for now)
+- Flutter for the app: Android, and a website that can be installed and works offline (PWA)
 - Supabase for login, the database and server functions
 - Rasa for understanding messages in English and Kiswahili, with Dialogflow for comparison
 - GitHub Actions to build and test every push
@@ -44,6 +44,15 @@ cp config/dev.json.example config/dev.json
 flutter run --dart-define-from-file=config/dev.json
 ```
 
+The website (the same app in a browser):
+
+```
+flutter run -d chrome --dart-define-from-file=config/dev.json
+```
+
+To put it online, see `docs/web-version.md` (`scripts/build-web.ps1` builds
+both web apps for Netlify).
+
 The admin dashboard is a second web app in the same project:
 
 ```
@@ -66,5 +75,7 @@ Put the Supabase URL and publishable key in `config/dev.json`. That file is in
 - [x] Rewards and learning articles
 - [x] Offline mode and reminders (see `docs/offline-and-reminders.md`)
 - [x] Admin dashboard (see `docs/admin-dashboard.md`)
+- [x] Outfits, rest days and challenges (see `docs/fun-features.md`)
+- [x] Website / PWA (see `docs/web-version.md`)
 - [ ] Testing with users (plan, test cases and form: `docs/testing/`)
 - [ ] Final report and presentation

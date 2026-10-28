@@ -37,9 +37,9 @@ way than the proposal describes (reason given).
 | NFR 1 | Response time below 2 seconds | See NFR-SPEC-01 | ST-20 | To measure |
 | NFR 2 | Data confidentiality through encryption and anonymisation | HTTPS (TLS) for all traffic; Supabase encrypts stored data (AES-256); row-level security on every table; anonymous accounts by default, age as a range only; crisis events stored without text; dashboard shows totals only and hides averages from fewer than 5 check-ins; Delete my data | Database security tests, Supabase security advisor, ST-08, ST-46 | Done (limitation: data saved on the phone for offline use is in the app's private storage, not separately encrypted) |
 | NFR 3 | 99.5% uptime through reliable cloud hosting | See NFR-SPEC-02 | ST-50 | To measure |
-| NFR 4 | Simple, mobile-optimised interface for youth | Bottom navigation with 5 tabs, large touch targets, Chipu mascot, dark mode, works with large fonts | ST-38–ST-40, UAT SUS + tasks | To measure (UAT) |
+| NFR 4 | Simple, mobile-optimised interface for youth | Bottom navigation with 5 tabs, large touch targets, Chipu mascot, dark mode, works with large fonts; also a website that adapts to phones and laptops | `web_test`, ST-38–ST-40, ST-62, ST-63, UAT SUS + tasks | To measure (UAT) |
 | NFR 5 | Scale to high user traffic | Supabase Postgres and Edge Functions scale on the managed service; indexes on the busy tables | Not load-tested | Limitation: the single Rasa server would be the bottleneck; a load test and a larger NLU server are future work |
-| NFR 6 | Efficient under low bandwidth using PWA caching | The app saves what it loads and keeps working offline; check-ins and reads are queued and sent later; small requests | `offline_test`, ST-32–ST-35, ST-49 (2G) | Deviation: built into the Android app (and the web build) as an offline cache and sync queue, not as a PWA service worker, because the main app is an installed Android app |
+| NFR 6 | Efficient under low bandwidth using PWA caching | The app saves what it loads and keeps working offline; check-ins and reads are queued and sent later; small requests. The website is a PWA: a service worker keeps its files so it opens without internet, and it can be installed (`docs/web-version.md`) | `offline_test`, ST-32–ST-35, ST-49 (2G), ST-64, ST-65 | Done (Android app: offline cache and sync queue; website: the same plus PWA caching) |
 | NFR 7 | Cultural and linguistic appropriateness | Kiswahili and Sheng training phrases, Kiswahili reviewed by a fluent speaker, Kenyan helplines, local examples (exams, family, money) | NLU evaluation, UAT L2, L3 | To measure (UAT) |
 
 ## Use cases (proposal Figure 4)
@@ -77,7 +77,7 @@ accounts anonymous (NFR 2). Tested by `auth_test` and ST-52.
 
 | Proposal | Used | Note |
 |---|---|---|
-| Flutter | Flutter (Android app + web admin dashboard) | |
+| Flutter | Flutter (Android app, website (PWA) and web admin dashboard) | |
 | Supabase Edge Functions | `chat`, `delete-account`, `health` | XP and badge rules run as database triggers, called on every user action |
 | Supabase (PostgreSQL) | Yes, with row-level security | |
 | Supabase Auth | Email/password, Google, anonymous | |
