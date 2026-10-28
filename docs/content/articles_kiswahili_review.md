@@ -1,7 +1,7 @@
 # Learn articles: Kiswahili review
 
 The Learn screen has 12 short articles, three per topic, in English and Kiswahili
-(`supabase/migrations/20261007100100_seed_reference_data.sql` and
+(`supabase/migrations/20261007102152_seed_reference_data.sql` and
 `20261010153348_more_articles.sql`). A fluent Kiswahili speaker should check
 the Kiswahili text before user testing. Corrections can be made in the
 Supabase Table Editor (`resources.title_sw`, `resources.body_sw`) or sent back
