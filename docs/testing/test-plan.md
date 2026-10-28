@@ -12,7 +12,7 @@ the fourth is with students.
 
 | Level | What is tested | How | Where the results are |
 |---|---|---|---|
-| 1. Unit and widget tests | App logic and every screen, in English and Kiswahili | 162 Flutter tests + 20 Edge Function tests, run by CI on every push | GitHub Actions; test/ and supabase/functions/chat/logic_test.ts |
+| 1. Unit and widget tests | App logic and every screen, in English and Kiswahili | 169 Flutter tests + 20 Edge Function tests, run by CI on every push | GitHub Actions; test/ and supabase/functions/chat/logic_test.ts |
 | 2. Database tests | XP, streaks, badges, row-level security, admin functions | SQL run on the live database inside transactions that are rolled back | Step write-ups (below) |
 | 3. System tests | The whole app on a real phone, the website, and the admin dashboard | 66 manual test cases | [MindQuest_testing.xlsx](MindQuest_testing.xlsx), sheet System tests |
 | 4. User acceptance testing | Whether students can use it and find it useful | 10–20 students, remote, Google Form with SUS | [uat-plan.md](uat-plan.md); workbook sheets UAT tasks, SUS, Likert |
@@ -40,6 +40,7 @@ only finished when CI is green.
 | `reminders_test.dart` | 14 | Reminder plan, on/off, permission refused, time, language, sign out, tap opens mood, Home card, Profile setting |
 | `admin_test.dart` | 14 | Statistics parsing (incl. reply time and ages), report text, phone rule, staff sign-in, no access for students, counsellor view, overview, reply time tile, system health card, copy report, articles, helplines, team |
 | `fun_test.dart` | 24 | Rest-day streak rule (the same cases as the database), outfits and level-up, wardrobe, challenges (reading, card, start, leave, Kiswahili), exercises counted once |
+| `speed_test.dart` | 7 | Saved data shown at once on start-up and refreshed in the background, no stale data after a change, one request when two screens ask, hidden tabs reload when shown |
 | `web_test.dart` | 4 | Web sign-in return address, side menu and readable width on big screens, bottom tabs on phones |
 | `badge_watcher_test.dart` | 5 | New badges found once, not twice, not after the article pop-up; pop-up; badge notification in Kiswahili |
 | `widget_test.dart` | 1 | App starts without keys |

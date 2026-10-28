@@ -104,3 +104,25 @@ Code: `lib/features/reminders/` (plan, controller, notifications, widgets).
 6. Profile → Daily reminder → on. "Send a test reminder" shows one straight
    away; tapping it opens the mood check-in. (The scheduled one is skipped
    today if you already checked in.)
+
+## Faster loading (28 Oct 2026)
+
+- **Start-up:** the first time each thing is loaded after the app opens, the
+  copy saved last time is shown at once and the server is asked in the
+  background. If its answer is different, the screens reload with it a
+  moment later (without asking again). Without internet the app no longer
+  waits for the 15-second timeout before showing the saved data.
+- **No stale data after a change:** a check-in, article read, exercise or
+  outfit change clears the "just refreshed" copies, so the next load asks
+  the server.
+- **One request per thing:** when two screens ask for the same data at the
+  same time, they share one request.
+- **Home in parallel:** the streak days, the week's moods, chat feelings,
+  challenges and articles are loaded at the same time instead of one after
+  another.
+- **Hidden tabs wait:** Home, Learn and Rewards stay alive behind the other
+  tabs; they now reload only while on screen, and a hidden tab reloads when
+  it is opened.
+- Code: `OfflineStore.load` (`lib/core/offline/offline_store.dart`),
+  `ReloadWhenVisible` (`lib/core/widgets/reload_when_visible.dart`).
+  Tests: `test/speed_test.dart`.
