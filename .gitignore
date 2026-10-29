@@ -27,6 +27,7 @@ local.properties
 
 # Local secrets: never commit real keys
 config/dev.json
+config/web.json
 config/prod.json
 .env
 supabase/.temp/

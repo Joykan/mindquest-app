@@ -6,10 +6,13 @@ import '../../features/auth/onboarding_screen.dart';
 import '../../features/auth/session_controller.dart';
 import '../../features/auth/sign_in_screen.dart';
 import '../../features/auth/welcome_screen.dart';
+import '../../features/challenges/challenge_widgets.dart';
+import '../../features/challenges/challenges.dart';
 import '../../features/chat/chat_backend.dart';
 import '../../features/chat/chat_screen.dart';
 import '../../features/chat/past_chats_screen.dart';
 import '../../features/gamification/badge_watcher.dart';
+import '../../features/gamification/outfits.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/home/progress_repository.dart';
 import '../../features/learn/article_screen.dart';
@@ -28,7 +31,17 @@ import '../config/env.dart';
 import '../l10n/tr.dart';
 import '../offline/offline_store.dart';
 import '../theme/theme_controller.dart';
+import '../widgets/web_layout.dart';
 import 'app_shell.dart';
+
+/// A full-screen page outside the tabs. On big screens it is kept to a
+/// readable width in the middle.
+GoRoute page(String path,
+        Widget Function(BuildContext context, GoRouterState state) build) =>
+    GoRoute(
+        path: path,
+        builder: (BuildContext context, GoRouterState state) =>
+            ReadableWidth(child: build(context, state)));
 
 const Set<String> _signedOutPages = <String>{
   '/welcome',
@@ -68,7 +81,8 @@ String? redirectFor(SessionController? session, String location) {
 GoRouter createRouter(ThemeController theme, SessionController? session,
     {OfflineStore? offline,
     ReminderController? reminders,
-    BadgeWatcher? badges}) {
+    BadgeWatcher? badges,
+    OutfitController? outfits}) {
   final ProgressTicker ticker = ProgressTicker();
   // Any change in progress may have earned a badge.
   if (badges != null) ticker.addListener(badges.check);
@@ -84,10 +98,35 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
       session == null ? null : SupabaseLearnRepository(offline: offline);
   final RewardsRepository? rewards =
       session == null ? null : SupabaseRewardsRepository(offline: offline);
+  if (outfits != null && rewards != null) outfits.save = rewards.wearOutfit;
+  final ChallengesRepository? challenges =
+      session == null ? null : SupabaseChallengesRepository(offline: offline);
+
+  /// Opens the place for a challenge step.
+  void openStep(BuildContext context, String place) {
+    switch (place) {
+      case 'mood':
+        context.go('/mood');
+      case 'chat':
+        context.go('/chat');
+      case 'support':
+        context.push('/support');
+      case 'learn':
+        context.go('/learn');
+      default:
+        context.go('/home');
+    }
+  }
 
   // Something made offline reached the server, or the internet is back:
   // screens reload to show the real XP, streak and badges.
   offline?.onSynced = ticker.bump;
+  // Opening the app shows the saved data at once; when the server's newer
+  // data arrives a moment later, screens reload with it.
+  offline?.onRefreshed = () {
+    ticker.bump();
+    session?.refresh(); // e.g. the name or language changed on another phone
+  };
 
   /// The offline banner's Retry: send what is waiting, then reload.
   Future<void> retryOffline() async {
@@ -119,32 +158,32 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
       return to;
     },
     routes: <RouteBase>[
-      GoRoute(
-          path: '/', builder: (context, state) => const SetupStatusScreen()),
-      GoRoute(
-          path: '/setup',
-          builder: (context, state) => const SetupStatusScreen()),
+      page(
+          '/', (context, state) => const SetupStatusScreen()),
+      page(
+          '/setup',
+          (context, state) => const SetupStatusScreen()),
       if (session != null) ...<RouteBase>[
-        GoRoute(
-            path: '/welcome',
-            builder: (context, state) => WelcomeScreen(session: session)),
-        GoRoute(
-            path: '/sign-in',
-            builder: (context, state) => SignInScreen(session: session)),
-        GoRoute(
-          path: '/sign-up',
-          builder: (context, state) =>
+        page(
+            '/welcome',
+            (context, state) => WelcomeScreen(session: session)),
+        page(
+            '/sign-in',
+            (context, state) => SignInScreen(session: session)),
+        page(
+          '/sign-up',
+          (context, state) =>
               SignInScreen(session: session, createAccount: true),
         ),
-        GoRoute(
-            path: '/loading',
-            builder: (context, state) => LoadingScreen(session: session)),
-        GoRoute(
-            path: '/onboarding',
-            builder: (context, state) => OnboardingScreen(session: session)),
-        GoRoute(
-          path: '/profile',
-          builder: (context, state) => ProfileScreen(
+        page(
+            '/loading',
+            (context, state) => LoadingScreen(session: session)),
+        page(
+            '/onboarding',
+            (context, state) => OnboardingScreen(session: session)),
+        page(
+          '/profile',
+          (context, state) => ProfileScreen(
             session: session,
             theme: theme,
             progress: progress,
@@ -157,15 +196,31 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
             onSaveProgress: () => context.push('/save-progress'),
           ),
         ),
-        GoRoute(
-          path: '/save-progress',
-          builder: (context, state) => SaveProgressScreen(session: session),
+        page(
+          '/save-progress',
+          (context, state) => SaveProgressScreen(session: session),
         ),
-        GoRoute(
-          path: '/support',
-          builder: (context, state) => SupportScreen(
+        page(
+          '/support',
+          (context, state) => SupportScreen(
             loadHelplines: progress!.loadHelplines,
             onTalk: () => context.go('/chat'),
+            onExerciseDone: (String kind) async {
+              try {
+                await challenges?.logActivity(kind);
+              } catch (_) {
+                // Only counts for challenges; the exercise itself is done.
+              }
+              ticker.bump();
+            },
+          ),
+        ),
+        page(
+          '/challenges',
+          (context, state) => ChallengesScreen(
+            repository: challenges!,
+            onChanged: ticker.bump,
+            onStep: (String place) => openStep(context, place),
           ),
         ),
         StatefulShellRoute.indexedStack(
@@ -193,6 +248,9 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
                   onTalk: () => context.go('/chat'),
                   onProfile: () => context.push('/profile'),
                   reminders: reminders,
+                  outfits: outfits,
+                  challenges: challenges,
+                  onChallenges: () => context.push('/challenges'),
                 ),
               ),
             ]),
@@ -318,6 +376,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
                 builder: (context, state) => RewardsScreen(
                   repository: rewards!,
                   reloadWhen: ticker,
+                  outfits: outfits,
                   onBack: () => goHome(context),
                 ),
               ),

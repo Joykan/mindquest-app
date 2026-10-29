@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/l10n/tr.dart';
 import '../../core/offline/offline_store.dart';
 import '../gamification/badges.dart';
+import '../gamification/streaks.dart';
 import '../home/progress_repository.dart';
 
 /// One badge and how close the user is to it.
@@ -41,6 +42,8 @@ class XpEvent {
         'article_read' => tr(language, 'Article read', 'Makala imesomwa'),
         'weekly_quest' => tr(language, 'Weekly quest complete',
             'Changamoto ya wiki imekamilika'),
+        'challenge' =>
+          tr(language, 'Challenge complete', 'Changamoto imekamilika'),
         _ => reason,
       };
 }
@@ -55,10 +58,18 @@ class RewardsSummary {
     required this.weeklyQuestDone,
     required this.questsCompleted,
     this.recent = const <XpEvent>[],
+    this.restUsedThisWeek = false,
+    this.outfit,
   });
 
   final int xp;
   final int streak;
+
+  /// This week's rest day already kept the streak going.
+  final bool restUsedThisWeek;
+
+  /// What Chipu wears (outfits.dart), or null.
+  final String? outfit;
   final List<BadgeStatus> badges;
   final int weekCheckinDays;
   final bool weeklyQuestDone;
@@ -90,6 +101,7 @@ class BadgeCounts {
         BadgeMeasure.articlesRead => articlesRead,
         BadgeMeasure.streak => streak,
         BadgeMeasure.weeklyQuests => weeklyQuests,
+        BadgeMeasure.challenge => 0,
       };
 }
 
@@ -112,11 +124,47 @@ List<BadgeStatus> badgeStatuses(
 
 abstract class RewardsRepository {
   Future<RewardsSummary> loadRewards();
+
+  /// Puts an outfit on Chipu (null: none). The database checks the level.
+  /// Without internet it is saved on the phone and sent later.
+  Future<void> wearOutfit(String? outfit);
 }
 
 class SupabaseRewardsRepository implements RewardsRepository {
   SupabaseRewardsRepository({SupabaseClient? client, this.offline})
-      : _client = client ?? Supabase.instance.client;
+      : _client = client ?? Supabase.instance.client {
+    offline?.register('outfit', _sendOutfit);
+  }
+
+  Future<void> _sendOutfit(Map<String, dynamic> data) =>
+      _client.rpc('set_outfit', params: <String, dynamic>{
+        'p_outfit': data['outfit'],
+      });
+
+  @override
+  Future<void> wearOutfit(String? outfit) async {
+    final Map<String, dynamic> data = <String, dynamic>{'outfit': outfit};
+    final OfflineStore? store = offline;
+    if (store == null) {
+      await _sendOutfit(data);
+      return;
+    }
+    // Only the latest choice matters.
+    for (final PendingAction a in store.pending('outfit')) {
+      await store.removePending(a.id);
+    }
+    await store.addPending(
+        PendingAction(id: newId(), kind: 'outfit', data: data));
+    await store.flush();
+  }
+
+  /// An outfit chosen offline and not sent yet wins over the saved profile.
+  String? _outfit(Map<String, dynamic> profile) {
+    final List<PendingAction> waiting =
+        offline?.pending('outfit') ?? const <PendingAction>[];
+    if (waiting.isNotEmpty) return waiting.last.data['outfit'] as String?;
+    return profile['outfit'] as String?;
+  }
 
   final SupabaseClient _client;
 
@@ -157,7 +205,7 @@ class SupabaseRewardsRepository implements RewardsRepository {
           'profile.progress',
           () => _client
               .from('profiles')
-              .select('username, xp, streak, last_checkin')
+              .select('username, xp, streak, last_checkin, outfit')
               .eq('id', _uid)
               .single()),
       _load(
@@ -201,6 +249,9 @@ class SupabaseRewardsRepository implements RewardsRepository {
               .eq('user_id', _uid)
               .order('created_at', ascending: false)
               .limit(8)),
+      _load('checkin.days', () => checkinDaysQuery(_client, _uid))
+          .then(parseCheckinDays)
+          .catchError((Object _) => <DateTime>{}),
     ]);
 
     final Map<String, dynamic> profile = Map<String, dynamic>.from(r[0] as Map);
@@ -231,11 +282,12 @@ class SupabaseRewardsRepository implements RewardsRepository {
       ...pendingDays,
     }.where((DateTime d) => !d.isBefore(nairobiDay(weekStart))).toSet();
 
-    final int streak = currentStreak(
-      streak: profile['streak'] as int? ?? 0,
-      lastCheckin: parseDay(profile['last_checkin'] as String?),
-      pendingDays: pendingDays,
+    final StreakStatus status = streakToday(
+      profile: profile,
+      checkins: r[9] as Set<DateTime>,
+      pending: pendingDays,
     );
+    final int streak = status.days;
     final BadgeCounts counts = BadgeCounts(
       checkIns: (r[3] as int) + pendingTimes.length,
       chatMessages: r[4] as int,
@@ -248,6 +300,8 @@ class SupabaseRewardsRepository implements RewardsRepository {
     return RewardsSummary(
       xp: profile['xp'] as int? ?? 0,
       streak: streak,
+      restUsedThisWeek: status.restUsedThisWeek,
+      outfit: _outfit(profile),
       badges: badgeStatuses(badges, earned, counts),
       weekCheckinDays: days.length,
       weeklyQuestDone: quests.any((dynamic q) =>

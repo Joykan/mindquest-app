@@ -1,46 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
+  <!-- Replaced by the value of `flutter build web --base-href`
+       (only needed when the site is not at the root of its address). -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description"
+        content="MindQuest: check in on your mood, chat with Chipu in English or Kiswahili, and earn XP and badges for looking after yourself.">
+  <meta name="theme-color" content="#2F7A5D">
 
-  <!-- iOS meta tags & icons -->
+  <!-- Installing on phones (Add to Home screen) -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="mindquest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MindQuest">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>mindquest</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="manifest" href="manifest.json">
+  <!-- Start downloading the app at once, instead of after the start-up script. -->
+  <link rel="preload" href="main.dart.js" as="script">
+
+  <title>MindQuest</title>
+
+  <style>
+    html, body { margin: 0; height: 100%; background: #F6F8F7; }
+    #loading {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #16231E; background: #F6F8F7; text-align: center; padding: 16px;
+    }
+    #loading img { width: 96px; height: 96px; border-radius: 24px; }
+    #loading h1 { font-size: 24px; margin: 4px 0 0; }
+    #loading p { margin: 0; color: #5B6B64; font-size: 15px; }
+    #loading .bar {
+      width: 160px; height: 6px; border-radius: 3px; background: #E8F1ED;
+      overflow: hidden; margin-top: 8px;
+    }
+    #loading .bar::after {
+      content: ""; display: block; width: 40%; height: 100%;
+      background: #2F7A5D; border-radius: 3px;
+      animation: slide 1.2s ease-in-out infinite;
+    }
+    @keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+    @media (prefers-color-scheme: dark) {
+      html, body, #loading { background: #121B17; color: #EAF2EE; }
+      #loading p { color: #9DB1A8; }
+      #loading .bar { background: #24362F; }
+      #loading .bar::after { background: #6FCFB0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #loading .bar::after { animation: none; width: 100%; }
+    }
+  </style>
 </head>
 <body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+  <div id="loading" role="status" aria-live="polite">
+    <img src="icons/Icon-192.png" alt="">
+    <h1>MindQuest</h1>
+    <p>Loading… / Inapakia…</p>
+    <div class="bar"></div>
+  </div>
+  <noscript>
+    MindQuest needs JavaScript. Please turn it on in your browser.
+    In an emergency in Kenya call 999 or 112, or Kenya Red Cross on 1199.
+  </noscript>
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
+  <!-- Starts the app (web/flutter_bootstrap.js) and the offline cache (web/sw.js). -->
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

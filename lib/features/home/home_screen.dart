@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/reload_when_visible.dart';
 import '../../core/l10n/tr.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/theme_controller.dart';
 import '../../core/widgets/logo_mark.dart';
+import '../../core/widgets/mascot.dart';
+import '../challenges/challenge_widgets.dart';
+import '../challenges/challenges.dart';
 import '../chat/chat_models.dart';
 import '../chat/crisis_sheet.dart';
 import '../gamification/levels.dart';
+import '../gamification/outfits.dart';
 import '../learn/learn_repository.dart';
 import '../learn/recommend.dart';
 import '../mood/moods.dart';
@@ -31,7 +36,17 @@ class HomeScreen extends StatefulWidget {
     this.onSupport,
     this.onMoodHistory,
     this.reminders,
+    this.outfits,
+    this.challenges,
+    this.onChallenges,
   });
+
+  /// Themed challenges; without it the challenge card is hidden.
+  final ChallengesRepository? challenges;
+  final VoidCallback? onChallenges;
+
+  /// What Chipu wears; Home also celebrates newly unlocked outfits.
+  final OutfitController? outfits;
 
   /// Asks once whether the user wants a daily reminder.
   final ReminderController? reminders;
@@ -64,62 +79,85 @@ class HomeScreen extends StatefulWidget {
 /// The week's moods and article picks, loaded next to the summary.
 class HomeExtras {
   const HomeExtras(
-      {this.week = const <MoodEntry>[], this.picks = const <Recommendation>[]});
+      {this.week = const <MoodEntry>[],
+      this.picks = const <Recommendation>[],
+      this.challenges});
 
   final List<MoodEntry> week;
   final List<Recommendation> picks;
+  final ChallengesState? challenges;
 }
 
-class HomeScreenState extends State<HomeScreen> {
-  late Future<HomeSummary> _summary = widget.repository.loadHome();
+class HomeScreenState extends State<HomeScreen>
+    with ReloadWhenVisible<HomeScreen> {
+  late Future<HomeSummary> _summary = _loadSummary();
+
+  Future<HomeSummary> _loadSummary() =>
+      widget.repository.loadHome().then((HomeSummary s) {
+        _afterLoad(s);
+        return s;
+      });
+
+  /// Shows the user's outfit everywhere, and celebrates a new level once.
+  void _afterLoad(HomeSummary s) {
+    final OutfitController? outfits = widget.outfits;
+    if (outfits == null || !mounted) return;
+    outfits.show(s.outfit);
+    final int level = levelForXp(s.xp);
+    final List<Outfit> unlocked = outfits.newUnlocks(level);
+    if (unlocked.isNotEmpty) {
+      showLevelUp(context, level: level, unlocked: unlocked, outfits: outfits);
+    }
+  }
   late Future<HomeExtras> _extras = _loadExtras();
 
   /// Extras are a bonus: if any part fails, Home still shows the rest.
+  /// The parts are loaded at the same time.
   Future<HomeExtras> _loadExtras() async {
-    List<MoodEntry> week = const <MoodEntry>[];
-    Map<String, int> feelings = const <String, int>{};
-    List<Recommendation> picks = const <Recommendation>[];
-    try {
-      week = await widget.repository.loadMoodHistory(days: 7);
-    } catch (_) {
-      // Optional: Home works without it.
-    }
-    try {
-      feelings = await widget.repository.loadChatFeelings();
-    } catch (_) {
-      // Optional: Home works without it.
-    }
-    final LearnRepository? learn = widget.learn;
-    if (learn != null) {
+    Future<T?> optional<T>(Future<T> Function()? load) async {
+      if (load == null) return null;
       try {
-        picks = recommendArticles(await learn.loadArticles(),
+        return await load();
+      } catch (_) {
+        return null; // Optional: Home works without it.
+      }
+    }
+
+    final ChallengesRepository? challengeRepo = widget.challenges;
+    final LearnRepository? learn = widget.learn;
+    final List<Object?> r = await Future.wait<Object?>(<Future<Object?>>[
+      optional<List<MoodEntry>>(
+          () => widget.repository.loadMoodHistory(days: 7)),
+      optional<Map<String, int>>(widget.repository.loadChatFeelings),
+      optional<ChallengesState>(challengeRepo?.load),
+      optional<List<Article>>(learn?.loadArticles),
+    ]);
+    final List<MoodEntry> week = r[0] as List<MoodEntry>? ?? const <MoodEntry>[];
+    final Map<String, int> feelings =
+        r[1] as Map<String, int>? ?? const <String, int>{};
+    final List<Article>? articles = r[3] as List<Article>?;
+    List<Recommendation> picks = const <Recommendation>[];
+    if (articles != null) {
+      try {
+        picks = recommendArticles(articles,
             recentMoods: week, chatFeelings: feelings);
       } catch (_) {
         // Optional: Home works without it.
       }
     }
-    return HomeExtras(week: week, picks: picks);
+    return HomeExtras(
+        week: week, picks: picks, challenges: r[2] as ChallengesState?);
   }
 
   @override
-  void initState() {
-    super.initState();
-    widget.reloadWhen?.addListener(_onTick);
-  }
+  Listenable? get reloadSignal => widget.reloadWhen;
 
   @override
-  void dispose() {
-    widget.reloadWhen?.removeListener(_onTick);
-    super.dispose();
-  }
-
-  void _onTick() {
-    if (mounted) reload();
-  }
+  Future<void> reloadNow() => reload();
 
   /// Reloads the numbers, e.g. after a mood check-in.
   Future<void> reload() async {
-    final Future<HomeSummary> next = widget.repository.loadHome();
+    final Future<HomeSummary> next = _loadSummary();
     setState(() {
       _summary = next;
       _extras = _loadExtras();
@@ -183,6 +221,7 @@ class HomeScreenState extends State<HomeScreen> {
                   onOpenArticle: widget.onOpenArticle,
                   theme: widget.theme,
                   reminders: widget.reminders,
+                  onChallenges: widget.onChallenges,
                 ),
               ),
             );
@@ -205,8 +244,10 @@ class _HomeBody extends StatelessWidget {
     this.onOpenArticle,
     this.theme,
     this.reminders,
+    this.onChallenges,
   });
 
+  final VoidCallback? onChallenges;
   final ReminderController? reminders;
   final HomeExtras extras;
   final VoidCallback? onMoodHistory;
@@ -248,15 +289,28 @@ class _HomeBody extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        Text(
-            context.tr(
-                'Hi, ${summary.username}', 'Habari, ${summary.username}'),
-            style: theme.textTheme.headlineSmall),
-        Text(
-          longDate(lang, nairobiNow()),
-          style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+        Row(
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                      context.tr('Hi, ${summary.username}',
+                          'Habari, ${summary.username}'),
+                      style: theme.textTheme.headlineSmall),
+                  Text(
+                    longDate(lang, nairobiNow()),
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: mq.textMuted),
+                  ),
+                ],
+              ),
+            ),
+            const Mascot(pose: MascotPose.wave, size: 64),
+          ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
 
         // Streak and level
         Card(
@@ -313,6 +367,7 @@ class _HomeBody extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (summary.streak > 0) RestDayLine(summary: summary),
                 const SizedBox(height: 12),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(6),
@@ -428,6 +483,10 @@ class _HomeBody extends StatelessWidget {
             ),
           ),
         ),
+        if (extras.challenges != null && onChallenges != null) ...<Widget>[
+          const SizedBox(height: 12),
+          ChallengeHomeCard(state: extras.challenges!, onOpen: onChallenges!),
+        ],
         if (reminders != null) ReminderPrompt(reminders: reminders!),
         if (extras.picks.isNotEmpty && onOpenArticle != null) ...<Widget>[
           const SizedBox(height: 16),
@@ -743,4 +802,139 @@ class _WeekStrip extends StatelessWidget {
       ),
     );
   }
+}
+
+/// One line under the streak about this week's rest day; tap to learn how
+/// rest days work.
+class RestDayLine extends StatelessWidget {
+  const RestDayLine({super.key, required this.summary});
+
+  final HomeSummary summary;
+
+  static Future<void> explain(BuildContext context) => showDialog<void>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text(context.tr('Rest days 🛌', 'Siku za kupumzika 🛌')),
+          content: Text(context.tr(
+              'Everyone misses a day sometimes. Each week (Monday to Sunday) '
+                  'you get one rest day: if you miss one day, your streak keeps '
+                  'going. Miss two days in a row, or a second day in the same '
+                  'week, and the streak starts again. Your XP, level and badges '
+                  'always stay.',
+              'Kila mtu hukosa siku moja mara kwa mara. Kila wiki (Jumatatu hadi '
+                  'Jumapili) unapata siku moja ya kupumzika: ukikosa siku moja, '
+                  'mfululizo wako unaendelea. Ukikosa siku mbili mfululizo, au siku '
+                  'ya pili katika wiki hiyo hiyo, mfululizo unaanza upya. XP, '
+                  'kiwango na beji zako hubaki daima.')),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(context.tr('Got it', 'Nimeelewa')),
+            ),
+          ],
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final MindQuestColors mq = theme.extension<MindQuestColors>()!;
+    final String text = summary.restYesterday
+        ? context.tr(
+            'Yesterday was your rest day. Check in today to keep your streak!',
+            'Jana ilikuwa siku yako ya kupumzika. Rekodi hisia leo ili mfululizo uendelee!')
+        : summary.restUsedThisWeek
+            ? context.tr('Rest day used this week',
+                'Siku ya kupumzika imetumika wiki hii')
+            : context.tr('Rest day ready: miss a day and your streak stays',
+                'Siku ya kupumzika ipo: ukikosa siku moja, mfululizo unabaki');
+    return InkWell(
+      key: const Key('rest-day'),
+      borderRadius: BorderRadius.circular(8),
+      onTap: () => explain(context),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Row(
+          children: <Widget>[
+            const Text('🛌', style: TextStyle(fontSize: 16)),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                text,
+                style: theme.textTheme.bodySmall?.copyWith(
+                    color: summary.restYesterday
+                        ? theme.colorScheme.primary
+                        : mq.textMuted,
+                    fontWeight: summary.restYesterday ? FontWeight.w700 : null),
+              ),
+            ),
+            Icon(Icons.info_outline, size: 16, color: mq.textMuted),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// "Level up!" with the outfits Chipu just unlocked. "Put it on" wears the
+/// newest one.
+Future<void> showLevelUp(BuildContext context,
+    {required int level,
+    required List<Outfit> unlocked,
+    required OutfitController outfits}) {
+  final String lang = LanguageScope.of(context);
+  final LevelTitle title = levelTitle(level);
+  final Outfit newest = unlocked.last;
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) => AlertDialog(
+      key: const Key('level-up-dialog'),
+      title: Text(tr(lang, 'Level up! 🎉', 'Umepanda kiwango! 🎉'),
+          textAlign: TextAlign.center),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Mascot(
+              pose: MascotPose.happy,
+              size: 120,
+              outfit: newest.id,
+              followScope: false),
+          const SizedBox(height: 8),
+          Text(
+            tr(
+                lang,
+                'You reached Level $level · ${title.emoji} ${title.name(lang)}. '
+                    'Chipu is growing with you!',
+                'Umefikia Kiwango $level · ${title.emoji} ${title.name(lang)}. '
+                    'Chipu anakua pamoja nawe!'),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            tr(
+                lang,
+                'New for Chipu: ${unlocked.map((Outfit o) => '${o.emoji} ${o.name(lang)}').join(', ')}',
+                'Kipya kwa Chipu: ${unlocked.map((Outfit o) => '${o.emoji} ${o.name(lang)}').join(', ')}'),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(tr(lang, 'Later', 'Baadaye')),
+        ),
+        FilledButton(
+          key: const Key('wear-new-outfit'),
+          style: FilledButton.styleFrom(minimumSize: const Size(120, 44)),
+          onPressed: () {
+            Navigator.of(context).pop();
+            outfits.wear(newest.id).catchError((Object _) {});
+          },
+          child: Text(tr(lang, 'Put it on', 'Mvalishe')),
+        ),
+      ],
+    ),
+  );
 }

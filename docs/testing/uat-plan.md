@@ -25,7 +25,7 @@ Because testing happens away from campus, it is done remotely:
 | When | What |
 |---|---|
 | Day 0 | Send the invitation (WhatsApp). Those who agree get the APK link and the Google Form link. |
-| Day 1 | Participants install the app and do tasks T1–T8 (about 20 minutes). |
+| Day 1 | Participants install the app and do tasks T1–T10 (about 25 minutes). |
 | Days 1–5 | They use MindQuest as they like (check in, chat, read). One reminder message on day 3. |
 | Day 5 | They fill in the Google Form (about 10 minutes). It is also linked in the app: Profile → Give feedback on MindQuest. |
 | Day 6–7 | Close the form. Copy the results into the workbook. |
@@ -212,6 +212,8 @@ Columns: Done easily / Done with some difficulty / Couldn't do it / Didn't try
 | T6 | Finding where to get help quickly |
 | T7 | Switching the app's language |
 | T8 | Turning on the daily reminder |
+| T9 | Starting a 7-day challenge |
+| T10 | Finding Chipu's wardrobe |
 
 (The task list with what counts as done is in the workbook, sheet UAT tasks.)
 
@@ -245,12 +247,14 @@ agree / Not applicable:
 | L2 | Chipu's replies felt kind and supportive. |
 | L3 | Chatting in Kiswahili or Sheng worked well. |
 | L4 | Earning XP, levels and badges made me want to come back. |
-| L5 | The daily quests and streak encouraged me to check in. |
+| L5 | The daily quests, challenges and streak encouraged me to check in. |
 | L6 | Chipu's mood insights helped me notice something about my moods. |
 | L7 | The articles were useful to me. |
 | L8 | I know where in the app to find help in a crisis. |
 | L9 | I trust MindQuest to keep my information private. |
 | L10 | I would recommend MindQuest to a friend. |
+| L11 | Unlocking new outfits for Chipu made me want to level up. |
+| L12 | Rest days made missing a day feel less discouraging. |
 
 Then: **Would you keep using MindQuest after this test?** Yes / Maybe / No
 

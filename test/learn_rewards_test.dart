@@ -60,13 +60,17 @@ class FakeRewards implements RewardsRepository {
   FakeRewards(this.summary);
 
   final RewardsSummary summary;
+  final List<String?> worn = <String?>[];
 
   @override
   Future<RewardsSummary> loadRewards() async => summary;
+
+  @override
+  Future<void> wearOutfit(String? outfit) async => worn.add(outfit);
 }
 
 void tallScreen(WidgetTester tester) {
-  tester.view.physicalSize = const Size(1080, 3600);
+  tester.view.physicalSize = const Size(1080, 6000);
   tester.view.devicePixelRatio = 3;
   addTearDown(tester.view.reset);
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/offline/offline_store.dart';
@@ -85,6 +86,13 @@ abstract class AccountRepository {
 /// intent filter in AndroidManifest.xml and the Supabase redirect URLs.
 const String authRedirect = 'ke.ac.maseno.mindquest://login-callback';
 
+/// The website's own address (without ?query or #page), where Supabase sends
+/// the user back on the web. It must be in the Supabase redirect URLs.
+String webHome(Uri page) => '${page.origin}${page.path}';
+
+/// Back to the Android app, or back to the website.
+String get _redirect => kIsWeb ? webHome(Uri.base) : authRedirect;
+
 class SupabaseAccountRepository implements AccountRepository {
   SupabaseAccountRepository({SupabaseClient? client, this.offline})
       : _client = client ?? Supabase.instance.client;
@@ -133,7 +141,11 @@ class SupabaseAccountRepository implements AccountRepository {
   Future<bool> signUp({required String email, required String password}) =>
       _guard(() async {
         final AuthResponse res =
-            await _client.auth.signUp(email: email.trim(), password: password);
+            await _client.auth.signUp(
+                email: email.trim(),
+                password: password,
+                // The confirmation link opens the website on the web.
+                emailRedirectTo: kIsWeb ? webHome(Uri.base) : null);
         return res.session != null;
       });
 
@@ -233,7 +245,7 @@ class SupabaseAccountRepository implements AccountRepository {
   @override
   Future<void> signInWithGoogle() => _guard(() async {
         final bool opened = await _client.auth
-            .signInWithOAuth(OAuthProvider.google, redirectTo: authRedirect);
+            .signInWithOAuth(OAuthProvider.google, redirectTo: _redirect);
         if (!opened) {
           throw const AccountException("Couldn't open Google sign-in.");
         }
@@ -242,7 +254,7 @@ class SupabaseAccountRepository implements AccountRepository {
   @override
   Future<void> linkGoogle() => _guard(() async {
         final bool opened = await _client.auth
-            .linkIdentity(OAuthProvider.google, redirectTo: authRedirect);
+            .linkIdentity(OAuthProvider.google, redirectTo: _redirect);
         if (!opened) {
           throw const AccountException("Couldn't open Google sign-in.");
         }

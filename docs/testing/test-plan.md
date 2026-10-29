@@ -12,9 +12,9 @@ the fourth is with students.
 
 | Level | What is tested | How | Where the results are |
 |---|---|---|---|
-| 1. Unit and widget tests | App logic and every screen, in English and Kiswahili | 134 Flutter tests + 20 Edge Function tests, run by CI on every push | GitHub Actions; test/ and supabase/functions/chat/logic_test.ts |
+| 1. Unit and widget tests | App logic and every screen, in English and Kiswahili | 169 Flutter tests + 20 Edge Function tests, run by CI on every push | GitHub Actions; test/ and supabase/functions/chat/logic_test.ts |
 | 2. Database tests | XP, streaks, badges, row-level security, admin functions | SQL run on the live database inside transactions that are rolled back | Step write-ups (below) |
-| 3. System tests | The whole app on a real phone, plus the admin dashboard | 53 manual test cases | [MindQuest_testing.xlsx](MindQuest_testing.xlsx), sheet System tests |
+| 3. System tests | The whole app on a real phone, the website, and the admin dashboard | 66 manual test cases | [MindQuest_testing.xlsx](MindQuest_testing.xlsx), sheet System tests |
 | 4. User acceptance testing | Whether students can use it and find it useful | 10–20 students, remote, Google Form with SUS | [uat-plan.md](uat-plan.md); workbook sheets UAT tasks, SUS, Likert |
 
 The NLU model is evaluated separately (held-out test phrases and 5-fold
@@ -39,6 +39,9 @@ only finished when CI is green.
 | `offline_test.dart` | 24 | Saved copies per user, sync queue (order, duplicates, rejected, expired login), streak with waiting check-ins, crisis phrases match the server, offline crisis in chat, offline banner |
 | `reminders_test.dart` | 14 | Reminder plan, on/off, permission refused, time, language, sign out, tap opens mood, Home card, Profile setting |
 | `admin_test.dart` | 14 | Statistics parsing (incl. reply time and ages), report text, phone rule, staff sign-in, no access for students, counsellor view, overview, reply time tile, system health card, copy report, articles, helplines, team |
+| `fun_test.dart` | 24 | Rest-day streak rule (the same cases as the database), outfits and level-up, wardrobe, challenges (reading, card, start, leave, Kiswahili), exercises counted once |
+| `speed_test.dart` | 7 | Saved data shown at once on start-up and refreshed in the background, no stale data after a change, one request when two screens ask, hidden tabs reload when shown |
+| `web_test.dart` | 4 | Web sign-in return address, side menu and readable width on big screens, bottom tabs on phones |
 | `badge_watcher_test.dart` | 5 | New badges found once, not twice, not after the article pop-up; pop-up; badge notification in Kiswahili |
 | `widget_test.dart` | 1 | App starts without keys |
 | `supabase/functions/chat/logic_test.ts` | 20 | Crisis phrases (EN/SW/Sheng, whole words), reply rules, names, confidence threshold, every intent has replies in both languages |
@@ -55,10 +58,13 @@ a transaction that is rolled back, so nothing stays in the database.
   day, duplicates rejected, check-ins older than 7 days rejected.
 - Step 11 (`docs/admin-dashboard.md`): admin functions refuse students;
   admins can't remove their own access; small averages hidden.
+- Outfits, rest days and challenges (`docs/fun-features.md`): the streak
+  rule, locked outfits refused, one challenge at a time, a challenge
+  finished with XP and badge, other users' data and forged rows refused.
 
 ## 3. System tests (manual)
 
-53 test cases in the workbook, grouped by area: sign-in and onboarding,
+66 test cases in the workbook, grouped by area: sign-in and onboarding,
 privacy, language, chatbot, crisis detection, mood tracking, gamification,
 Learn, Support, offline, reminders, usability (dark mode, large fonts,
 TalkBack), admin dashboard, security, performance and compatibility. Each

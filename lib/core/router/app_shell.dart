@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../features/gamification/badge_watcher.dart';
 import '../l10n/tr.dart';
 import '../offline/offline_store.dart';
+import '../widgets/logo_mark.dart';
 import '../widgets/offline_banner.dart';
+import '../widgets/web_layout.dart';
 
 /// Tells screens that progress changed (mood saved, tab switched to Home), so
 /// they reload their numbers.
@@ -32,8 +34,103 @@ class AppShell extends StatelessWidget {
   final ConnectionStatus? connection;
   final VoidCallback? onRetry;
 
+  void _go(int i) {
+    if (i == 0) ticker.bump();
+    shell.goBranch(i, initialLocation: i == shell.currentIndex);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final List<(IconData, IconData, String)> tabs =
+        <(IconData, IconData, String)>[
+      (Icons.home_outlined, Icons.home, context.tr('Home', 'Nyumbani')),
+      (
+        Icons.chat_bubble_outline,
+        Icons.chat_bubble,
+        context.tr('Chat', 'Ongea')
+      ),
+      (
+        Icons.sentiment_satisfied_outlined,
+        Icons.sentiment_satisfied,
+        context.tr('Mood', 'Hisia')
+      ),
+      (Icons.menu_book_outlined, Icons.menu_book, context.tr('Learn', 'Jifunze')),
+      (
+        Icons.emoji_events_outlined,
+        Icons.emoji_events,
+        context.tr('Rewards', 'Zawadi')
+      ),
+    ];
+    final Widget body =
+        badges == null ? shell : BadgeAlerts(watcher: badges!, child: shell);
+    final bool wide = isWideScreen(context);
+
+    // Big screens (laptops, the web): a side menu, and the screens kept to a
+    // readable width in the middle.
+    final Widget scaffold = wide
+        ? Scaffold(
+            body: SafeArea(
+              child: Row(
+                children: <Widget>[
+                  NavigationRail(
+                    key: const Key('side-menu'),
+                    selectedIndex: shell.currentIndex,
+                    onDestinationSelected: _go,
+                    extended: MediaQuery.sizeOf(context).width >= 1100,
+                    labelType: MediaQuery.sizeOf(context).width >= 1100
+                        ? NavigationRailLabelType.none
+                        : NavigationRailLabelType.all,
+                    leading: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: LogoMark(size: 40),
+                    ),
+                    destinations: <NavigationRailDestination>[
+                      for (final (IconData icon, IconData selected, String label)
+                          in tabs)
+                        NavigationRailDestination(
+                          icon: Icon(icon),
+                          selectedIcon: Icon(selected),
+                          label: Text(label),
+                        ),
+                    ],
+                  ),
+                  const VerticalDivider(width: 1),
+                  Expanded(
+                    child: Column(
+                      children: <Widget>[
+                        if (connection != null)
+                          OfflineBanner(status: connection!, onRetry: onRetry),
+                        Expanded(child: ReadableWidth(child: body)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        : Scaffold(
+            body: body,
+            bottomNavigationBar: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                if (connection != null)
+                  OfflineBanner(status: connection!, onRetry: onRetry),
+                NavigationBar(
+                  selectedIndex: shell.currentIndex,
+                  onDestinationSelected: _go,
+                  destinations: <NavigationDestination>[
+                    for (final (IconData icon, IconData selected, String label)
+                        in tabs)
+                      NavigationDestination(
+                          icon: Icon(icon),
+                          selectedIcon: Icon(selected),
+                          label: label),
+                  ],
+                ),
+              ],
+            ),
+          );
+
     // The phone's back button: on another tab it returns to Home; on Home it
     // leaves the app as usual.
     return PopScope(
@@ -44,51 +141,7 @@ class AppShell extends StatelessWidget {
           shell.goBranch(0);
         }
       },
-      child: Scaffold(
-        body: badges == null
-            ? shell
-            : BadgeAlerts(watcher: badges!, child: shell),
-        bottomNavigationBar: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            if (connection != null)
-              OfflineBanner(status: connection!, onRetry: onRetry),
-            NavigationBar(
-              selectedIndex: shell.currentIndex,
-              onDestinationSelected: (int i) {
-                if (i == 0) ticker.bump();
-                shell.goBranch(i, initialLocation: i == shell.currentIndex);
-              },
-              destinations: <NavigationDestination>[
-                NavigationDestination(
-                    icon: const Icon(Icons.home_outlined),
-                    selectedIcon: const Icon(Icons.home),
-                    label: context.tr('Home', 'Nyumbani')),
-                NavigationDestination(
-                  icon: const Icon(Icons.chat_bubble_outline),
-                  selectedIcon: const Icon(Icons.chat_bubble),
-                  label: context.tr('Chat', 'Ongea'),
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.sentiment_satisfied_outlined),
-                  selectedIcon: const Icon(Icons.sentiment_satisfied),
-                  label: context.tr('Mood', 'Hisia'),
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.menu_book_outlined),
-                  selectedIcon: const Icon(Icons.menu_book),
-                  label: context.tr('Learn', 'Jifunze'),
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.emoji_events_outlined),
-                  selectedIcon: const Icon(Icons.emoji_events),
-                  label: context.tr('Rewards', 'Zawadi'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+      child: scaffold,
     );
   }
 }

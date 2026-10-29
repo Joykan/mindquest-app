@@ -9,6 +9,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
 import 'features/auth/session_controller.dart';
 import 'features/gamification/badge_watcher.dart';
+import 'features/gamification/outfits.dart';
 import 'features/reminders/reminders.dart';
 
 class MindQuestApp extends StatefulWidget {
@@ -18,7 +19,8 @@ class MindQuestApp extends StatefulWidget {
       this.session,
       this.offline,
       this.reminders,
-      this.badges});
+      this.badges,
+      this.outfits});
 
   /// Loaded in main() from the saved setting; tests use the default.
   final ThemeController? themeController;
@@ -35,6 +37,9 @@ class MindQuestApp extends StatefulWidget {
   /// Notices new badges (null in tests).
   final BadgeWatcher? badges;
 
+  /// What Chipu wears (tests get one that saves nothing).
+  final OutfitController? outfits;
+
   @override
   State<MindQuestApp> createState() => _MindQuestAppState();
 }
@@ -42,10 +47,13 @@ class MindQuestApp extends StatefulWidget {
 class _MindQuestAppState extends State<MindQuestApp> {
   late final ThemeController _theme =
       widget.themeController ?? ThemeController();
+  late final OutfitController _outfits =
+      widget.outfits ?? OutfitController();
   late final GoRouter _router = createRouter(_theme, widget.session,
       offline: widget.offline,
       reminders: widget.reminders,
-      badges: widget.badges);
+      badges: widget.badges,
+      outfits: _outfits);
 
   @override
   void initState() {
@@ -64,6 +72,8 @@ class _MindQuestAppState extends State<MindQuestApp> {
   void _updateReminders() {
     final SessionController? s = widget.session;
     if (s == null) return;
+    // Someone else may sign in next: Chipu starts plain.
+    if (!s.signedIn) _outfits.show(null);
     widget.reminders
         ?.update(signedIn: s.signedIn && s.onboarded, language: s.language);
   }
@@ -94,7 +104,10 @@ class _MindQuestAppState extends State<MindQuestApp> {
           ],
           builder: (BuildContext context, Widget? child) => LanguageScope(
             language: language,
-            child: child ?? const SizedBox.shrink(),
+            child: OutfitScope(
+              controller: _outfits,
+              child: child ?? const SizedBox.shrink(),
+            ),
           ),
           routerConfig: _router,
         );

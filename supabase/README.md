@@ -8,6 +8,19 @@ Cloud project: **mindquest-app** (ref `dqcgeugyhpiemucdypok`, region eu-central-
 
 Migrations in `migrations/` are applied in filename order.
 
+Every table has explicit grants (migration `explicit_table_grants`). Since
+30 Oct 2026 Supabase no longer gives new tables in `public` API access by
+itself, so **a migration that creates a table must also grant access to it**,
+for example:
+
+```sql
+grant select, insert, update, delete on public.new_table to authenticated;
+grant select, insert, update, delete on public.new_table to service_role;
+```
+
+(add `anon` only if people who are not signed in need it), and turn on
+row-level security with policies as for the other tables.
+
 | Table | What it holds |
 |---|---|
 | `profiles` | One row per user: name, language, role, XP, level, streak. Created automatically on sign-up. |
@@ -18,6 +31,8 @@ Migrations in `migrations/` are applied in filename order.
 | `helplines` | Crisis helplines. Only rows marked `verified` are shown in the app. |
 | `crisis_events` | A record that a crisis response was shown. No message text is stored. |
 | `xp_events`, `quest_completions` | XP history and completed weekly quests. |
+| `challenges`, `challenge_runs` | Themed 7-day challenges, and who started which one when. |
+| `wellbeing_activities` | Finished breathing and grounding exercises (kind and time only), for challenges. |
 
 ### Gamification rules (database triggers)
 
@@ -27,10 +42,14 @@ Migrations in `migrations/` are applied in filename order.
 | Chat message | +2 | 20 XP per day |
 | Article read | +5 | once per article |
 | Weekly quest: check in on 5 days in one week | +25 | once per week |
+| Finish a 7-day challenge | +40 | one challenge at a time |
 
 Levels: L1 0 XP, L2 50, L3 100, L4 200, L5 350, then a new level every 200 XP.
-Missing a day restarts the streak at 1 but never removes XP, levels or badges.
-Days are counted in Kenyan time.
+Each level unlocks an outfit for Chipu (`set_outfit()` checks the level).
+Each week (Monday to Sunday) has one rest day: missing one day keeps the
+streak; two days in a row, or a second day in the same week, restart it at 1
+(`checkin_streak()`). XP, levels and badges are never removed.
+Days are counted in Kenyan time. Details: `docs/fun-features.md`.
 
 ### Security
 

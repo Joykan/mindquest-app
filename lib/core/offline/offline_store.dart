@@ -104,6 +104,10 @@ typedef PendingSender = Future<void> Function(Map<String, dynamic> data);
 /// - [load] saves a copy of what the server returns, per user, on the phone.
 ///   Without internet it returns that copy instead, so the app still opens
 ///   and shows the user's last data.
+/// - Opening the app is fast: the first time each thing is loaded after the
+///   app starts, the saved copy is shown at once and the server is asked in
+///   the background; if the answer is different, [onRefreshed] tells the
+///   screens to reload (they then get the new copy without asking again).
 /// - Check-ins and article reads made offline are kept in a queue
 ///   ([addPending]) and sent, oldest first, when the internet is back
 ///   ([flush]). That happens when the app opens or comes back to the front,
@@ -139,22 +143,65 @@ class OfflineStore with WidgetsBindingObserver {
 
   String _key(String uid, String name) => '$_prefix$uid.$name';
 
+  /// Called when a background refresh brought different data, so screens
+  /// reload (see [load]).
+  VoidCallback? onRefreshed;
+
+  /// Loaded from the server at least once since the app started.
+  final Set<String> _seen = <String>{};
+
+  /// Requests to the server still running, so the same thing isn't asked
+  /// for twice at once.
+  final Map<String, Future<dynamic>> _inflight = <String, Future<dynamic>>{};
+
+  /// Just refreshed in the background: the next load uses the saved copy.
+  final Map<String, DateTime> _justRefreshed = <String, DateTime>{};
+  Timer? _refreshTimer;
+
   /// Runs [remote] and saves the result. If the server can't be reached,
   /// returns the saved copy (or rethrows if there is none).
+  ///
+  /// The first time [name] is loaded after the app starts, a saved copy is
+  /// returned at once and [remote] runs in the background instead.
   Future<dynamic> load(String name, Future<dynamic> Function() remote) async {
     final String? uid = userId();
-    try {
-      final dynamic value = await remote().timeout(timeout);
-      status.markOnline();
-      if (uid != null) {
-        await _prefs.setString(
-          _key(uid, 'cache.$name'),
-          jsonEncode(<String, dynamic>{
-            'at': DateTime.now().toUtc().toIso8601String(),
-            'value': value,
-          }),
-        );
+    if (uid != null) {
+      // A background refresh just finished: use it without asking again.
+      final DateTime? refreshed = _justRefreshed.remove('$uid|$name');
+      if (refreshed != null &&
+          DateTime.now().difference(refreshed) < const Duration(seconds: 5)) {
+        final String? raw = _prefs.getString(_key(uid, 'cache.$name'));
+        if (raw != null) {
+          return (jsonDecode(raw) as Map<String, dynamic>)['value'];
+        }
       }
+      // First time since the app started: show the saved copy at once.
+      if (!_seen.contains('$uid|$name')) {
+        final String? raw = _prefs.getString(_key(uid, 'cache.$name'));
+        if (raw != null) {
+          _seen.add('$uid|$name');
+          unawaited(_refresh(uid, name, remote, raw));
+          return (jsonDecode(raw) as Map<String, dynamic>)['value'];
+        }
+      }
+    }
+    final Future<dynamic>? running = _inflight['$uid|$name'];
+    if (running != null) {
+      try {
+        return await running;
+      } catch (_) {
+        // Ask again below (and use the saved copy if that fails too).
+      }
+    }
+    return _fetch(uid, name, remote);
+  }
+
+  Future<dynamic> _fetch(
+      String? uid, String name, Future<dynamic> Function() remote) async {
+    try {
+      final dynamic value = await _ask('$uid|$name', remote);
+      status.markOnline();
+      if (uid != null) await _keep(uid, name, value);
       return value;
     } catch (e) {
       if (!isOfflineError(e)) rethrow;
@@ -168,6 +215,51 @@ class OfflineStore with WidgetsBindingObserver {
           jsonDecode(raw) as Map<String, dynamic>;
       status.markOffline(DateTime.parse(saved['at'] as String));
       return saved['value'];
+    }
+  }
+
+  /// Runs [remote] once even if several screens ask at the same time
+  /// ([key] is the user and the name).
+  Future<dynamic> _ask(String key, Future<dynamic> Function() remote) {
+    final Future<dynamic> f = remote().timeout(timeout);
+    _inflight[key] = f;
+    return f.whenComplete(() {
+      if (identical(_inflight[key], f)) _inflight.remove(key);
+    });
+  }
+
+  Future<void> _keep(String uid, String name, dynamic value) async {
+    _seen.add('$uid|$name');
+    await _prefs.setString(
+      _key(uid, 'cache.$name'),
+      jsonEncode(<String, dynamic>{
+        'at': DateTime.now().toUtc().toIso8601String(),
+        'value': value,
+      }),
+    );
+  }
+
+  /// Asks the server in the background after the saved copy was shown.
+  Future<void> _refresh(String uid, String name,
+      Future<dynamic> Function() remote, String shown) async {
+    try {
+      final dynamic value = await _ask('$uid|$name', remote);
+      status.markOnline();
+      final String before =
+          jsonEncode((jsonDecode(shown) as Map<String, dynamic>)['value']);
+      await _keep(uid, name, value);
+      if (jsonEncode(value) == before) return;
+      _justRefreshed['$uid|$name'] = DateTime.now();
+      // Several things often change together: reload the screens once.
+      _refreshTimer?.cancel();
+      _refreshTimer = Timer(const Duration(milliseconds: 300), () {
+        onRefreshed?.call();
+      });
+    } catch (e) {
+      if (isOfflineError(e)) {
+        status.markOffline(DateTime.parse(
+            (jsonDecode(shown) as Map<String, dynamic>)['at'] as String));
+      }
     }
   }
 
@@ -208,6 +300,9 @@ class OfflineStore with WidgetsBindingObserver {
   Future<void> addPending(PendingAction action) async {
     final String? uid = userId();
     if (uid == null) return;
+    // Copies loaded before this change are out of date now.
+    _justRefreshed.clear();
+    _inflight.clear();
     await _save(uid, <PendingAction>[...pending(), action]);
   }
 
@@ -263,6 +358,9 @@ class OfflineStore with WidgetsBindingObserver {
 
   /// Removes everything saved for the signed-in user (on sign out).
   Future<void> clearUser(String uid) async {
+    _seen.clear();
+    _justRefreshed.clear();
+    _inflight.clear();
     for (final String k in _prefs.getKeys().toList()) {
       if (k.startsWith('$_prefix$uid.')) await _prefs.remove(k);
     }

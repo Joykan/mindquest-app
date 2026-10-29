@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/reload_when_visible.dart';
 import '../../core/l10n/tr.dart';
 import '../../core/theme/app_colors.dart';
 import 'learn_repository.dart';
@@ -27,21 +28,16 @@ class LearnScreen extends StatefulWidget {
   State<LearnScreen> createState() => _LearnScreenState();
 }
 
-class _LearnScreenState extends State<LearnScreen> {
+class _LearnScreenState extends State<LearnScreen>
+    with ReloadWhenVisible<LearnScreen> {
   late Future<List<Article>> _articles = widget.repository.loadArticles();
   String? _category; // null = all
 
   @override
-  void initState() {
-    super.initState();
-    widget.reloadWhen?.addListener(_reload);
-  }
+  Listenable? get reloadSignal => widget.reloadWhen;
 
   @override
-  void dispose() {
-    widget.reloadWhen?.removeListener(_reload);
-    super.dispose();
-  }
+  Future<void> reloadNow() => _reload();
 
   Future<void> _reload() async {
     if (!mounted) return;
