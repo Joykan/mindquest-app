@@ -2,5 +2,16 @@
   "imports": {
     "@supabase/supabase-js": "npm:@supabase/supabase-js@2"
   },
-  "fmt": { "lineWidth": 110 }
+  "fmt": {
+    "lineWidth": 110,
+    "exclude": [
+      "backup_model.ts",
+      "backup_expected.json"
+    ]
+  },
+  "lint": {
+    "exclude": [
+      "backup_model.ts"
+    ]
+  }
 }

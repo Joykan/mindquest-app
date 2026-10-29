@@ -86,6 +86,7 @@ class AdminStats {
     this.crisisEvents = 0,
     this.notUnderstood = 0,
     this.unavailable = 0,
+    this.backupReplies = 0,
     this.minGroup = 5,
     this.replyCount = 0,
     this.replyMedianMs,
@@ -117,6 +118,7 @@ class AdminStats {
         crisisEvents: _int(j['crisis_events']),
         notUnderstood: _int(j['not_understood']),
         unavailable: _int(j['unavailable']),
+        backupReplies: _int(j['backup_replies']),
         minGroup: j['min_group'] == null ? 5 : _int(j['min_group']),
         replyCount: _int(j['reply_count']),
         replyMedianMs: (j['reply_median_ms'] as num?)?.toInt(),
@@ -177,6 +179,9 @@ class AdminStats {
   final int crisisEvents;
   final int notUnderstood;
   final int unavailable;
+
+  /// Replies the backup model read because Rasa couldn't be reached.
+  final int backupReplies;
 
   /// Averages from fewer check-ins than this are hidden (null).
   final int minGroup;

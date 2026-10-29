@@ -6,6 +6,8 @@
 // 1. Check the message for crisis phrases. If found: log a crisis event (no
 //    message text), skip the model and return the verified helplines.
 // 2. Otherwise send the text to the Rasa server and pick a reply (logic.ts).
+//    If Rasa can't be reached, the backup model (backup_nlu.ts) reads the
+//    message instead, so Chipu still answers.
 // 3. Save the user's message and the reply. Saving the user's message awards
 //    chat XP through the database trigger.
 //
@@ -19,11 +21,14 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { isCrisis } from "./crisis.ts";
-import { decide, type RasaParse } from "./logic.ts";
+import { BACKUP_THRESHOLD, backupParse } from "./backup_nlu.ts";
+import { decide, type RasaParse, THRESHOLD } from "./logic.ts";
 import { type Lang, REPLIES } from "./replies.ts";
 
 const MAX_LENGTH = 1000;
-const RASA_TIMEOUT_MS = 8000;
+// Rasa normally answers in well under a second; after 3 s the backup model
+// answers instead, so the student isn't kept waiting.
+const RASA_TIMEOUT_MS = 3000;
 
 /** Used only if no helpline has been verified yet. Kenya's emergency numbers. */
 const EMERGENCY_FALLBACK: Record<Lang, { name: string; phone: string; description: string }[]> = {
@@ -164,9 +169,18 @@ Deno.serve(async (req) => {
     .eq("session_id", sessionId).eq("sender", "bot")
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
   const nluStarted = performance.now();
-  const parse = await askRasa(text);
+  const fromRasa = await askRasa(text);
+  const nluSource = fromRasa ? "rasa" : "backup";
+  const parse = fromRasa ?? backupParse(text);
   const nluMs = Math.round(performance.now() - nluStarted);
-  const decision = decide(parse, last?.reply_key ?? null, lang, Math.random, text);
+  const decision = decide(
+    parse,
+    last?.reply_key ?? null,
+    lang,
+    Math.random,
+    text,
+    fromRasa ? THRESHOLD : BACKUP_THRESHOLD,
+  );
   const responseMs = elapsed();
 
   // 3. Save both messages (two inserts so the user's comes first).
@@ -184,6 +198,7 @@ Deno.serve(async (req) => {
     reply_key: decision.replyKey,
     response_ms: responseMs,
     nlu_ms: nluMs,
+    nlu_source: nluSource,
   });
   if (e1 || e2) console.error("save failed", e1?.message, e2?.message);
 

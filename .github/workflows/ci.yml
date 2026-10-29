@@ -122,6 +122,43 @@ jobs:
         working-directory: supabase/functions/health
         run: deno fmt --check && deno lint && deno check index.ts
 
+  # Puts the Edge Functions (chat, delete-account, health) online after every
+  # change to main that passes the checks, so the server always runs the code
+  # in the repository. Skipped until the SUPABASE_ACCESS_TOKEN secret is added
+  # (Supabase → Account → Access Tokens; see supabase/README.md).
+  deploy-functions:
+    name: Deploy Edge Functions
+    needs: [chat-function]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - name: Check the settings
+        id: setup
+        run: |
+          if [ -n "$SUPABASE_ACCESS_TOKEN" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Edge Functions are not deployed automatically yet: add the SUPABASE_ACCESS_TOKEN secret (supabase/README.md)."
+          fi
+
+      - uses: actions/checkout@v5
+        if: steps.setup.outputs.ready == 'true'
+
+      - uses: supabase/setup-cli@v1
+        if: steps.setup.outputs.ready == 'true'
+        with:
+          version: latest
+
+      - name: Deploy
+        if: steps.setup.outputs.ready == 'true'
+        run: |
+          for f in chat delete-account health; do
+            supabase functions deploy "$f" --project-ref dqcgeugyhpiemucdypok --use-api
+          done
+
   # Puts the website (and the admin dashboard) online on Netlify after every
   # change to main that passes the checks. Skipped until the Netlify and
   # Supabase settings are added to the repository (docs/web-version.md).

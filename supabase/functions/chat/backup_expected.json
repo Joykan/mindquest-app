@@ -1,0 +1,302 @@
+[
+ {
+  "text": "good day",
+  "intent": "feel_good",
+  "confidence": 0.65
+ },
+ {
+  "text": "hey hey",
+  "intent": "greet",
+  "confidence": 0.93
+ },
+ {
+  "text": "habari gani",
+  "intent": "greet",
+  "confidence": 0.77
+ },
+ {
+  "text": "hali yako je",
+  "intent": "goodbye",
+  "confidence": 0.18
+ },
+ {
+  "text": "alright bye",
+  "intent": "affirm",
+  "confidence": 0.47
+ },
+ {
+  "text": "see ya",
+  "intent": "goodbye",
+  "confidence": 0.67
+ },
+ {
+  "text": "kwaheri rafiki",
+  "intent": "goodbye",
+  "confidence": 0.76
+ },
+ {
+  "text": "tutaongea kesho",
+  "intent": "goodbye",
+  "confidence": 0.8
+ },
+ {
+  "text": "thank u",
+  "intent": "thank",
+  "confidence": 0.93
+ },
+ {
+  "text": "you've been helpful",
+  "intent": "thank",
+  "confidence": 0.76
+ },
+ {
+  "text": "asante kwa ushauri",
+  "intent": "thank",
+  "confidence": 0.89
+ },
+ {
+  "text": "nimefurahi, asante",
+  "intent": "thank",
+  "confidence": 0.5
+ },
+ {
+  "text": "yep",
+  "intent": "affirm",
+  "confidence": 0.68
+ },
+ {
+  "text": "okay let's go",
+  "intent": "affirm",
+  "confidence": 0.95
+ },
+ {
+  "text": "eeh",
+  "intent": "affirm",
+  "confidence": 0.35
+ },
+ {
+  "text": "sawa basi",
+  "intent": "affirm",
+  "confidence": 0.73
+ },
+ {
+  "text": "nah thanks",
+  "intent": "deny",
+  "confidence": 0.57
+ },
+ {
+  "text": "not right now",
+  "intent": "deny",
+  "confidence": 0.39
+ },
+ {
+  "text": "hapana kwa sasa",
+  "intent": "deny",
+  "confidence": 0.97
+ },
+ {
+  "text": "si leo",
+  "intent": "deny",
+  "confidence": 0.42
+ },
+ {
+  "text": "I'm stressed about my exams",
+  "intent": "feel_stressed",
+  "confidence": 0.64
+ },
+ {
+  "text": "too much on my plate",
+  "intent": "feel_stressed",
+  "confidence": 0.23
+ },
+ {
+  "text": "nina stress ya mitihani",
+  "intent": "feel_stressed",
+  "confidence": 0.94
+ },
+ {
+  "text": "maisha yamenibana",
+  "intent": "feel_stressed",
+  "confidence": 0.45
+ },
+ {
+  "text": "I'm really nervous",
+  "intent": "feel_anxious",
+  "confidence": 0.31
+ },
+ {
+  "text": "I'm worried all the time",
+  "intent": "feel_anxious",
+  "confidence": 0.44
+ },
+ {
+  "text": "nina hofu sana",
+  "intent": "feel_anxious",
+  "confidence": 0.76
+ },
+ {
+  "text": "akili haitulii",
+  "intent": "ask_breathing",
+  "confidence": 0.47
+ },
+ {
+  "text": "I'm so sad",
+  "intent": "feel_sad",
+  "confidence": 0.66
+ },
+ {
+  "text": "I feel down lately",
+  "intent": "feel_sad",
+  "confidence": 0.84
+ },
+ {
+  "text": "nina huzuni leo",
+  "intent": "feel_sad",
+  "confidence": 0.74
+ },
+ {
+  "text": "roho yangu iko chini",
+  "intent": "ask_about_bot",
+  "confidence": 0.53
+ },
+ {
+  "text": "I'm feeling awesome",
+  "intent": "feel_sad",
+  "confidence": 0.54
+ },
+ {
+  "text": "all good here",
+  "intent": "greet",
+  "confidence": 0.46
+ },
+ {
+  "text": "niko poa sana",
+  "intent": "feel_good",
+  "confidence": 0.81
+ },
+ {
+  "text": "leo nimefurahi",
+  "intent": "feel_good",
+  "confidence": 0.99
+ },
+ {
+  "text": "breathing exercise please",
+  "intent": "ask_breathing",
+  "confidence": 0.89
+ },
+ {
+  "text": "how do I relax",
+  "intent": "ask_breathing",
+  "confidence": 0.9
+ },
+ {
+  "text": "nisaidie nitulie",
+  "intent": "ask_breathing",
+  "confidence": 0.98
+ },
+ {
+  "text": "zoezi la kupumua tafadhali",
+  "intent": "ask_breathing",
+  "confidence": 0.87
+ },
+ {
+  "text": "what are you exactly",
+  "intent": "ask_about_bot",
+  "confidence": 0.86
+ },
+ {
+  "text": "is this a bot",
+  "intent": "ask_about_bot",
+  "confidence": 0.4
+ },
+ {
+  "text": "wewe ni AI",
+  "intent": "ask_about_bot",
+  "confidence": 0.96
+ },
+ {
+  "text": "unanisaidiaje",
+  "intent": "ask_about_bot",
+  "confidence": 0.32
+ },
+ {
+  "text": "I need ideas to keep myself busy",
+  "intent": "ask_ideas",
+  "confidence": 0.94
+ },
+ {
+  "text": "what could I do to feel less bored",
+  "intent": "ask_ideas",
+  "confidence": 0.78
+ },
+ {
+  "text": "nipe wazo la kitu cha kufanya",
+  "intent": "ask_ideas",
+  "confidence": 0.92
+ },
+ {
+  "text": "nifanye nini kupitisha muda",
+  "intent": "ask_ideas",
+  "confidence": 0.9
+ },
+ {
+  "text": "hey, I'm Faith",
+  "intent": "tell_name",
+  "confidence": 0.79
+ },
+ {
+  "text": "my name is Amani",
+  "intent": "tell_name",
+  "confidence": 0.65
+ },
+ {
+  "text": "call me Joy",
+  "intent": "tell_name",
+  "confidence": 1.0
+ },
+ {
+  "text": "Hope here",
+  "intent": "tell_name",
+  "confidence": 0.66
+ },
+ {
+  "text": "naitwa Joy",
+  "intent": "tell_name",
+  "confidence": 0.99
+ },
+ {
+  "text": "jina langu ni Furaha",
+  "intent": "tell_name",
+  "confidence": 0.83
+ },
+ {
+  "text": "mimi ni Grace",
+  "intent": "tell_name",
+  "confidence": 0.99
+ },
+ {
+  "text": "niite Imani",
+  "intent": "tell_name",
+  "confidence": 0.61
+ },
+ {
+  "text": "I feel joy",
+  "intent": "feel_sad",
+  "confidence": 0.44
+ },
+ {
+  "text": "so much joy today",
+  "intent": "goodbye",
+  "confidence": 0.36
+ },
+ {
+  "text": "nina furaha sana leo",
+  "intent": "feel_good",
+  "confidence": 0.92
+ },
+ {
+  "text": "nimejaa furaha",
+  "intent": "feel_good",
+  "confidence": 0.89
+ }
+]

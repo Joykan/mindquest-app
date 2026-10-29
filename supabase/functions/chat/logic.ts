@@ -87,10 +87,13 @@ export function cleanName(raw: string): string | null {
   return v[0].toUpperCase() + v.slice(1).toLowerCase();
 }
 
-/** Applies the threshold and the name rule to the raw Rasa result. */
-export function resolve(parse: RasaParse): Resolved {
+/**
+ * Applies the threshold and the name rule to the raw Rasa result. The backup
+ * model (backup_nlu.ts) uses its own, lower threshold.
+ */
+export function resolve(parse: RasaParse, threshold = THRESHOLD): Resolved {
   const top = parse.intent;
-  if (top.name === "nlu_fallback" || top.confidence < THRESHOLD) {
+  if (top.name === "nlu_fallback" || top.confidence < threshold) {
     return { intent: "fallback", confidence: top.confidence };
   }
   if (top.name === "tell_name") {
@@ -101,7 +104,7 @@ export function resolve(parse: RasaParse): Resolved {
     const next = (parse.intent_ranking ?? []).find(
       (r) => r.name !== "tell_name" && r.name !== "nlu_fallback",
     );
-    if (next && next.confidence >= THRESHOLD) {
+    if (next && next.confidence >= threshold) {
       return { intent: next.name, confidence: next.confidence };
     }
     return { intent: "fallback", confidence: top.confidence };
@@ -118,7 +121,8 @@ function pick(key: string, lang: Lang, rng: () => number, name?: string): string
 /**
  * Decides the reply. `previousReplyKey` is the reply key of the bot's last
  * message in this session, so "yes" and "no" can be read in context.
- * `parse` is null when Rasa could not be reached.
+ * `parse` is null when no model could read the message. `threshold` is the
+ * confidence cut-off of the model that read it.
  */
 export function decide(
   parse: RasaParse | null,
@@ -126,11 +130,12 @@ export function decide(
   lang: Lang,
   rng: () => number = Math.random,
   text = "",
+  threshold = THRESHOLD,
 ): Decision {
   if (!parse) {
     return { intent: null, confidence: null, replyKey: "unavailable", text: pick("unavailable", lang, rng) };
   }
-  let r = resolve(parse);
+  let r = resolve(parse, threshold);
   if (r.intent === "fallback" && parse.intent.name === "tell_name" && soundsHappy(text)) {
     r = { intent: "feel_good", confidence: parse.intent.confidence };
   }

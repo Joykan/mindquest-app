@@ -287,3 +287,48 @@ the project controls, which matters for a mental health app (half of the survey
 respondents raised privacy). The cost is that Rasa needs its own server, which
 is planned in step 7. Dialogflow's habit of giving no answer when unsure is a
 useful idea, and MindQuest's fallback reply plays the same role.
+
+## Backup model (when Rasa can't be reached)
+
+Rasa runs on a separate server. If that server is off (for example the PC
+running it is asleep), the chat function now reads the message with a small
+backup model built into the function, so Chipu still answers instead of
+"try again". Rasa stays the main NLU engine; the backup is only used when
+Rasa doesn't answer within 3 seconds.
+
+- **Model:** logistic regression on hashed words, word pairs and 3- to
+  5-letter pieces of words (2,048 buckets, weights stored as 8-bit numbers,
+  35 KB). Trained from the same `rasa/data/nlu.yml` by
+  `backup/train_backup.py`, which writes
+  `supabase/functions/chat/backup_model.ts`.
+- **Same answers in Python and in the function:** the TypeScript code
+  (`backup_nlu.ts`) cleans the text, builds the features and hashes them
+  exactly like the script. `backup_nlu_test.ts` checks that all 60 test
+  phrases get the same intent (and confidence within 0.02) as in Python.
+- **Names:** the backup finds the name in introductions with patterns
+  ("my name is …", "naitwa …", "… here"); the name rules in `logic.ts` then
+  apply as for Rasa.
+- **Cut-off:** 0.35 (Rasa: 0.5), chosen by cross-validation: at 0.35 the
+  backup answers 81% of messages and 81% of those answers are right; the
+  rest get the "I didn't quite get that" reply.
+- **Settings chosen by 5-fold cross-validation only** (bucket count, n-gram
+  sizes, regularisation), not on the test sets.
+
+| Test | Rasa v4 (DIET) | Backup model |
+|---|---|---|
+| 5-fold cross-validation (accuracy / macro F1) | 73.7% / 0.75 | 72.4% / 0.74 |
+| `test_nlu.yml`, 48 phrases | 95.8% | 85.4% |
+| `test_names.yml`, 12 phrases | 83.3% | 83.3% |
+
+The backup is close to Rasa in cross-validation but clearly weaker on the
+held-out test phrases (7 mistakes against 2), so it is a safety net, not a
+replacement. The admin dashboard counts how many replies the backup gave
+(Overview: "Rasa down", System health card), which also shows how often the
+Rasa server was unreachable (NFR-SPEC-02).
+
+To retrain after changing the training data:
+
+```
+pip install scikit-learn pyyaml numpy
+python nlp/backup/train_backup.py
+```

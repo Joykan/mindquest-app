@@ -91,8 +91,10 @@ sends `{ "text": "...", "session_id": "..." }` with the user's access token.
      that doesn't introduce anyone ("I feel joy") is checked first; if Rasa
      says "name" but finds none and the message has a happy word (joy,
      furaha, amani...), it is read as feeling good
-   - if Rasa can't be reached, the user gets a "try again" reply and the
-     crisis check still works
+   - if Rasa can't be reached (no answer within 3 s), a small backup model
+     built into the function (`backup_nlu.ts`, trained from the same data,
+     see `nlp/README.md`) reads the message instead, so Chipu still answers;
+     the reply is saved with `nlu_source = 'backup'`
 3. **Saved.** Both messages go into `messages`, with the intent and confidence
    on the user's message and the reply key on the bot's. Saving the user's
    message awards chat XP through the existing trigger.
@@ -106,6 +108,19 @@ Secrets (Dashboard > Edge Functions > Secrets):
 |---|---|
 | `RASA_URL` | Public address of the Rasa server, e.g. the ngrok address |
 | `RASA_TOKEN` | Same token Rasa was started with (`nlp/rasa/.rasa-token`) |
+
+## Deploying the Edge Functions
+
+CI deploys `chat`, `delete-account` and `health` after every change to `main`
+that passes the tests, once this secret is in GitHub → Settings → Secrets and
+variables → Actions:
+
+| Secret | Where to find it |
+|---|---|
+| `SUPABASE_ACCESS_TOKEN` | Supabase → your account (top right) → Access Tokens → Generate new token |
+
+By hand instead: `npx supabase login`, then
+`npx supabase functions deploy chat --project-ref dqcgeugyhpiemucdypok --use-api`.
 
 ## Helplines shown in the crisis sheet
 

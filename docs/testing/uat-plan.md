@@ -74,40 +74,24 @@ unknown apps" for the browser or Files app when Android asks → Install.
 
 ### Keeping Chipu online
 
-The chatbot's NLU model (Rasa) runs on the PC through ngrok. For a 5-day
-remote test, the PC would have to stay on and connected the whole time.
-Two options:
+Chipu's main NLU model (Rasa) runs on its own server. If that server can't
+be reached, a backup model inside the chat function answers instead
+(`nlp/README.md`), so Chipu never goes silent; the backup is a little less
+accurate (85% against 96% on the test phrases). For the test, Rasa should
+still be online as much as possible, because the test measures Rasa. Options:
 
-1. **Hugging Face Space (free, recommended).** `nlp/rasa/Dockerfile` builds
-   and trains the model on a free Hugging Face Space:
-   1. Create a free account at huggingface.co → New Space → name
-      `mindquest-nlu`, SDK **Docker**, template **Blank**, hardware **CPU basic
-      (free)**, visibility **Public** (the endpoint still needs the token).
-   2. In the Space's Files, upload `Dockerfile`, `config.yml` and
-      `data/nlu.yml` (inside a `data` folder), from `nlp/rasa`.
-   3. Edit the Space's `README.md` so its first lines are:
-      ```
-      ---
-      title: MindQuest NLU
-      sdk: docker
-      app_port: 7860
-      ---
-      ```
-   4. Settings → Variables and secrets → New secret: `RASA_TOKEN` = the same
-      value as in `.rasa-token`.
-   5. Wait for the build (Logs tab, a few minutes; it trains the model).
-      Open `https://<username>-mindquest-nlu.hf.space/status?token=<token>`:
-      it should show the model file.
-   6. Supabase → Edge Functions → Secrets → set `RASA_URL` to
-      `https://<username>-mindquest-nlu.hf.space`. Chat in the app to check.
+1. **Hugging Face Space with PRO** (about USD 9 for the month; Docker Spaces
+   are no longer free). `nlp/rasa/Dockerfile` builds and trains the model
+   there: new Space → SDK Docker → upload `Dockerfile`, `config.yml` and
+   `data/nlu.yml` → secret `RASA_TOKEN` → set `RASA_URL` in Supabase to the
+   Space address.
+2. **Azure for Students** (free credit, no card): a small Linux server running
+   the same Dockerfile.
+3. **The PC with ngrok**, at fixed times. Free; at other times the backup
+   model answers.
 
-   Free Spaces go to sleep after 2 days without use; the first message after
-   that may get "try again" while it wakes up (about a minute). During the
-   test it is used every day, so it stays awake. (Not tried yet: run the
-   chatbot system tests ST-10 to ST-16 after moving it.)
-2. **The PC with ngrok**, as now. Free, but if the PC sleeps, loses power or
-   internet, Chipu replies "try again" (mood check-ins, articles, rewards and
-   the helplines keep working).
+Whichever is used, the admin Overview shows how many replies the backup gave
+("Rasa down") over the test period; report it with the results.
 
 Email sign-up sends a confirmation email, and Supabase's built-in email
 service only sends a few per hour. Ask testers to use **Continue anonymously**

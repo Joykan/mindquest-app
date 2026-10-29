@@ -77,6 +77,7 @@ final Map<String, dynamic> liveStats = <String, dynamic>{
   'new_users': 5,
   'mood_split': <String, dynamic>{'1': 3, '2': 2, '3': 3, '4': 1, '5': 3},
   'unavailable': 0,
+  'backup_replies': 2,
   'active_users': 5,
   'average_mood': 2.92,
   'mood_entries': 12,
@@ -277,6 +278,7 @@ void main() {
     expect(s.moodSplit[1], 3);
     expect(s.tags.first.tag, 'school');
     expect(s.topics['feel_stressed'], 5);
+    expect(s.backupReplies, 2);
     expect(s.languages, <String, int>{'en': 5});
     expect(s.articles.first.title, 'Box breathing for a racing mind');
     // 32 messages, 4 crisis (answered before the model), 1 not understood.

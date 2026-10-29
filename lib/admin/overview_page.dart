@@ -71,7 +71,8 @@ String buildReport(AdminStats s) {
     ..writeln(
         'Reply time: median ${_seconds(s.replyMedianMs)}, 95% within ${_seconds(s.replyP95Ms)}; '
         '${_percent(s.replyWithin2s)} of ${s.replyCount} replies within 2 s')
-    ..writeln('Chatbot server unavailable: ${s.unavailable} replies')
+    ..writeln('Chatbot server (Rasa) unavailable: ${s.backupReplies + s.unavailable} replies '
+        '(${s.backupReplies} answered by the backup model)')
     ..writeln('Articles read: ${s.articlesRead}')
     ..writeln('Badges earned: ${s.badgesAwarded}')
     ..writeln('Crisis responses (helplines shown): ${s.crisisEvents}')
@@ -265,7 +266,7 @@ class _OverviewPageState extends State<OverviewPage> {
               ? '–'
               : '${(s.understoodShare! * 100).round()}%',
           detail: '${s.notUnderstood} not understood'
-              '${s.unavailable > 0 ? ' · NLU server down ${s.unavailable}x' : ''}',
+              '${s.backupReplies + s.unavailable > 0 ? ' · Rasa down ${s.backupReplies + s.unavailable}x' : ''}',
         ),
         StatTile(
           key: const Key('tile-reply'),
@@ -327,7 +328,10 @@ class _OverviewPageState extends State<OverviewPage> {
         s.ages.values.fold<int>(0, (int a, int b) => a > b ? a : b);
 
     return <Widget>[
-      HealthCard(repository: widget.repository, unavailable: s.unavailable),
+      HealthCard(
+          repository: widget.repository,
+          unavailable: s.unavailable,
+          backupReplies: s.backupReplies),
       SectionCard(
         key: const Key('chart-checkins'),
         title: 'Check-ins per day',
@@ -504,12 +508,18 @@ class _OverviewPageState extends State<OverviewPage> {
 /// NLU server up with its model loaded? Checked when the Overview opens.
 class HealthCard extends StatefulWidget {
   const HealthCard(
-      {super.key, required this.repository, required this.unavailable});
+      {super.key,
+      required this.repository,
+      required this.unavailable,
+      this.backupReplies = 0});
 
   final AdminRepository repository;
 
   /// Replies in the period where the NLU server could not be reached.
   final int unavailable;
+
+  /// Replies the backup model gave while Rasa couldn't be reached.
+  final int backupReplies;
 
   @override
   State<HealthCard> createState() => _HealthCardState();
@@ -542,10 +552,11 @@ class _HealthCardState extends State<HealthCard> {
     return SectionCard(
       key: const Key('card-health'),
       title: 'System health',
-      subtitle: widget.unavailable == 0
+      subtitle: widget.unavailable + widget.backupReplies == 0
           ? 'The chatbot server answered every message in this period.'
-          : 'The chatbot server could not be reached for ${widget.unavailable} '
-              'replies in this period.',
+          : 'The chatbot server (Rasa) could not be reached for '
+              '${widget.unavailable + widget.backupReplies} replies in this period'
+              '${widget.backupReplies > 0 ? '; the backup model answered ${widget.backupReplies} of them' : ''}.',
       trailing: TextButton(
         key: const Key('check-health'),
         onPressed: _check,
