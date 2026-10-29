@@ -42,3 +42,6 @@ nlp/rasa/.rasa/
 nlp/dialogflow/.venv/
 *-key.json
 nlp/rasa/.rasa-token
+
+# Python caches
+__pycache__/
