@@ -441,12 +441,16 @@ void main() {
 
   test('the report has the totals and one line per day', () {
     final String report = buildReport(AdminStats.fromJson(liveStats));
-    expect(report, contains('MindQuest report: 2026-10-07 to 2026-10-13 (7 days)'));
+    expect(report,
+        contains('MindQuest report: 2026-10-07 to 2026-10-13 (7 days)'));
     expect(report, contains('Mood check-ins: 12'));
     expect(report, contains('Chipu understood: 96%'));
-    expect(report,
-        contains('Reply time: median 0.4 s, 95% within 1.2 s; 98% of 40 replies within 2 s'));
-    expect(report, contains('Day,Check-ins,Average mood,Chats,Crisis responses'));
+    expect(
+        report,
+        contains(
+            'Reply time: median 0.4 s, 95% within 1.2 s; 98% of 40 replies within 2 s'));
+    expect(
+        report, contains('Day,Check-ins,Average mood,Chats,Crisis responses'));
     expect(report, contains('2026-10-10,5,3.80,8,3'));
     expect(report, contains('2026-10-07,0,,0,0'));
   });

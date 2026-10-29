@@ -92,8 +92,7 @@ void main() {
       final OfflineStore s = await store();
       final SlowServer server = SlowServer();
       bool done = false;
-      final Future<dynamic> f =
-          s.load('home', server.ask).then((dynamic v) {
+      final Future<dynamic> f = s.load('home', server.ask).then((dynamic v) {
         done = true;
         return v;
       });
@@ -139,8 +138,7 @@ void main() {
     await tester.pumpWidget(ValueListenableBuilder<bool>(
       valueListenable: shown,
       builder: (context, visible, _) => TickerMode(
-          enabled: visible,
-          child: _Tab(signal: signal, onLoad: () => loads++)),
+          enabled: visible, child: _Tab(signal: signal, onLoad: () => loads++)),
     ));
 
     signal.value++; // progress changed while the tab is hidden

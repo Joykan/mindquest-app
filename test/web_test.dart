@@ -45,8 +45,7 @@ void screen(WidgetTester tester, Size logical) {
 
 void main() {
   test('web sign-in comes back to the site itself', () {
-    expect(
-        webHome(Uri.parse('https://mindquest.netlify.app/?code=abc#/home')),
+    expect(webHome(Uri.parse('https://mindquest.netlify.app/?code=abc#/home')),
         'https://mindquest.netlify.app/');
     expect(webHome(Uri.parse('https://example.org/mindquest/#/welcome')),
         'https://example.org/mindquest/');

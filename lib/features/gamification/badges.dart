@@ -111,10 +111,5 @@ const List<(String, String, String, int)> xpRules =
     'Changamoto ya wiki: rekodi hisia siku 5',
     25
   ),
-  (
-    '🏅',
-    'Finish a 7-day challenge',
-    'Kamilisha changamoto ya siku 7',
-    40
-  ),
+  ('🏅', 'Finish a 7-day challenge', 'Kamilisha changamoto ya siku 7', 40),
 ];

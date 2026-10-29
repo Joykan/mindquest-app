@@ -30,8 +30,8 @@ Future<(BadgeWatcher, FakeBadges, List<List<RewardBadge>>)> newWatcher() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final FakeBadges source = FakeBadges()..have = <RewardBadge>[firstCheckin];
   final List<List<RewardBadge>> unlocked = <List<RewardBadge>>[];
-  final BadgeWatcher w = BadgeWatcher(prefs, source,
-      userId: () => 'u1', onUnlocked: unlocked.add);
+  final BadgeWatcher w =
+      BadgeWatcher(prefs, source, userId: () => 'u1', onUnlocked: unlocked.add);
   return (w, source, unlocked);
 }
 
@@ -47,8 +47,11 @@ void main() {
   });
 
   test('a badge earned later is announced once', () async {
-    final (BadgeWatcher w, FakeBadges source, List<List<RewardBadge>> unlocked) =
-        await newWatcher();
+    final (
+      BadgeWatcher w,
+      FakeBadges source,
+      List<List<RewardBadge>> unlocked
+    ) = await newWatcher();
     await w.check();
     source.have = <RewardBadge>[firstCheckin, firstChat];
     await w.check();
@@ -62,8 +65,11 @@ void main() {
   });
 
   test('badges already celebrated elsewhere are not announced', () async {
-    final (BadgeWatcher w, FakeBadges source, List<List<RewardBadge>> unlocked) =
-        await newWatcher();
+    final (
+      BadgeWatcher w,
+      FakeBadges source,
+      List<List<RewardBadge>> unlocked
+    ) = await newWatcher();
     await w.check();
     await w.markSeen(<String>['first_chat']);
     source.have = <RewardBadge>[firstCheckin, firstChat];

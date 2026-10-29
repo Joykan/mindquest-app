@@ -158,28 +158,18 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
       return to;
     },
     routes: <RouteBase>[
-      page(
-          '/', (context, state) => const SetupStatusScreen()),
-      page(
-          '/setup',
-          (context, state) => const SetupStatusScreen()),
+      page('/', (context, state) => const SetupStatusScreen()),
+      page('/setup', (context, state) => const SetupStatusScreen()),
       if (session != null) ...<RouteBase>[
-        page(
-            '/welcome',
-            (context, state) => WelcomeScreen(session: session)),
-        page(
-            '/sign-in',
-            (context, state) => SignInScreen(session: session)),
+        page('/welcome', (context, state) => WelcomeScreen(session: session)),
+        page('/sign-in', (context, state) => SignInScreen(session: session)),
         page(
           '/sign-up',
           (context, state) =>
               SignInScreen(session: session, createAccount: true),
         ),
-        page(
-            '/loading',
-            (context, state) => LoadingScreen(session: session)),
-        page(
-            '/onboarding',
+        page('/loading', (context, state) => LoadingScreen(session: session)),
+        page('/onboarding',
             (context, state) => OnboardingScreen(session: session)),
         page(
           '/profile',

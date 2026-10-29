@@ -398,8 +398,8 @@ void main() {
       (tester) async {
     tallScreen(tester);
     final (FakeAccount _, SessionController s) = await anonymousUser();
-    await tester.pumpWidget(wrap(ProfileScreen(
-        session: s, theme: ThemeController(), feedbackUrl: '')));
+    await tester.pumpWidget(wrap(
+        ProfileScreen(session: s, theme: ThemeController(), feedbackUrl: '')));
     expect(find.byKey(const Key('give-feedback')), findsNothing);
 
     await tester.pumpWidget(wrap(ProfileScreen(

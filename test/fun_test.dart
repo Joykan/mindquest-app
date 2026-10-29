@@ -83,7 +83,8 @@ Map<String, dynamic> myChallenges({bool active = true}) => <String, dynamic>{
           'emoji': '📝',
           'title': 'Exam calm',
           'title_sw': 'Utulivu wa mitihani',
-          'description': 'Stay steady through a busy week of exams or deadlines.',
+          'description':
+              'Stay steady through a busy week of exams or deadlines.',
           'description_sw':
               'Baki mtulivu katika wiki yenye mitihani au kazi nyingi.',
           'days': 7,
@@ -162,8 +163,7 @@ void main() {
       expect(streakRun(days(<int>[17, 20]), day(20)).length, 1);
     });
     test('a full week', () {
-      expect(
-          streakRun(days(<int>[12, 13, 14, 15, 16, 17, 18]), day(18)).length,
+      expect(streakRun(days(<int>[12, 13, 14, 15, 16, 17, 18]), day(18)).length,
           7);
     });
     test('the newest missed day takes the week\'s rest day', () {
@@ -180,8 +180,7 @@ void main() {
       expect(s.restUsedThisWeek, isTrue);
     });
     test('two days missed: no streak', () {
-      expect(
-          streakStatus(today: day(22), checkins: days(<int>[19])).days, 0);
+      expect(streakStatus(today: day(22), checkins: days(<int>[19])).days, 0);
     });
     test("last week's rest day doesn't use this week's", () {
       final StreakStatus s =
@@ -202,14 +201,15 @@ void main() {
 
   group('outfits', () {
     test('unlock at the same levels as public.outfit_level', () {
-      expect(<String, int>{for (final Outfit o in outfits) o.id: o.level},
-          <String, int>{
-            'daisy': 2,
-            'glasses': 3,
-            'beads': 4,
-            'medal': 5,
-            'cape': 6,
-          });
+      expect(<String, int>{
+        for (final Outfit o in outfits) o.id: o.level
+      }, <String, int>{
+        'daisy': 2,
+        'glasses': 3,
+        'beads': 4,
+        'medal': 5,
+        'cape': 6,
+      });
       expect(outfitsUnlocked(1, 3).map((Outfit o) => o.id),
           <String>['daisy', 'glasses']);
     });
@@ -238,8 +238,7 @@ void main() {
       questsCompleted: 0,
       outfit: 'daisy',
     ));
-    final OutfitController outfits = OutfitController()
-      ..save = repo.wearOutfit;
+    final OutfitController outfits = OutfitController()..save = repo.wearOutfit;
     await tester.pumpWidget(app(
         RewardsScreen(repository: repo, outfits: outfits),
         outfits: outfits));
@@ -254,7 +253,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(outfits.id, 'glasses');
     expect(repo.worn, <String?>['glasses']);
-    expect(find.text('Chipu is wearing the reading glasses 👓'), findsOneWidget);
+    expect(
+        find.text('Chipu is wearing the reading glasses 👓'), findsOneWidget);
 
     await tester.ensureVisible(find.byKey(const Key('outfit-cape')));
     await tester.pumpAndSettle();
@@ -409,8 +409,8 @@ void main() {
 
       expect(find.byKey(const Key('active-challenge')), findsOneWidget);
       // Another one can't start while one is running.
-      final FilledButton start = tester
-          .widget<FilledButton>(find.byKey(const Key('start-exam_calm')));
+      final FilledButton start =
+          tester.widget<FilledButton>(find.byKey(const Key('start-exam_calm')));
       expect(start.onPressed, isNull);
 
       await tester.tap(find.byKey(const Key('step-grounding')));
@@ -428,8 +428,8 @@ void main() {
       await tester.tap(find.byKey(const Key('start-exam_calm')));
       await tester.pumpAndSettle();
       expect(repo.started, <String>['exam_calm']);
-      expect(find.text("📝 Exam calm started. You've got this!"),
-          findsOneWidget);
+      expect(
+          find.text("📝 Exam calm started. You've got this!"), findsOneWidget);
     });
 
     testWidgets('a challenge already running is explained', (tester) async {

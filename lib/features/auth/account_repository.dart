@@ -46,6 +46,7 @@ abstract class AccountRepository {
 
   Future<void> signOut();
   Future<Profile?> loadProfile();
+
   /// [ageRange] is one of [ageRanges] (age_ranges.dart).
   Future<void> completeOnboarding(
       {required String username, required String language, String? ageRange});
@@ -140,12 +141,11 @@ class SupabaseAccountRepository implements AccountRepository {
   @override
   Future<bool> signUp({required String email, required String password}) =>
       _guard(() async {
-        final AuthResponse res =
-            await _client.auth.signUp(
-                email: email.trim(),
-                password: password,
-                // The confirmation link opens the website on the web.
-                emailRedirectTo: kIsWeb ? webHome(Uri.base) : null);
+        final AuthResponse res = await _client.auth.signUp(
+            email: email.trim(),
+            password: password,
+            // The confirmation link opens the website on the web.
+            emailRedirectTo: kIsWeb ? webHome(Uri.base) : null);
         return res.session != null;
       });
 

@@ -97,7 +97,8 @@ class Challenge {
         badgeId: json['badge_id'] as String?,
         completed: (json['completed'] as num?)?.toInt() ?? 0,
         steps: <ChallengeStep>[
-          for (final dynamic s in json['steps'] as List<dynamic>? ?? <dynamic>[])
+          for (final dynamic s
+              in json['steps'] as List<dynamic>? ?? <dynamic>[])
             ChallengeStep.fromJson(s as Map<String, dynamic>),
         ],
       );
@@ -119,7 +120,9 @@ class Challenge {
   String name(String language) =>
       language == 'sw' && titleSw.isNotEmpty ? titleSw : title;
   String describe(String language) =>
-      language == 'sw' && descriptionSw.isNotEmpty ? descriptionSw : description;
+      language == 'sw' && descriptionSw.isNotEmpty
+          ? descriptionSw
+          : description;
 }
 
 /// The challenge the user is doing now.
@@ -159,7 +162,8 @@ class ChallengesState {
 
   factory ChallengesState.fromJson(Map<String, dynamic> json) {
     final List<Challenge> list = <Challenge>[
-      for (final dynamic c in json['challenges'] as List<dynamic>? ?? <dynamic>[])
+      for (final dynamic c
+          in json['challenges'] as List<dynamic>? ?? <dynamic>[])
         Challenge.fromJson(c as Map<String, dynamic>),
     ];
     Challenge? find(String? id) {
@@ -181,7 +185,8 @@ class ChallengesState {
               challenge: activeChallenge,
               endsAt: DateTime.parse(a['ends_at'] as String),
               steps: <ChallengeStep>[
-                for (final dynamic s in a['steps'] as List<dynamic>? ?? <dynamic>[])
+                for (final dynamic s
+                    in a['steps'] as List<dynamic>? ?? <dynamic>[])
                   ChallengeStep.fromJson(s as Map<String, dynamic>),
               ],
             ),

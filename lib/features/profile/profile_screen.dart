@@ -303,8 +303,8 @@ class ProfileScreen extends StatelessWidget {
                   child: ListTile(
                     key: const Key('give-feedback'),
                     leading: const Text('📝', style: TextStyle(fontSize: 22)),
-                    title: Text(context.tr(
-                        'Give feedback on MindQuest', 'Toa maoni kuhusu MindQuest')),
+                    title: Text(context.tr('Give feedback on MindQuest',
+                        'Toa maoni kuhusu MindQuest')),
                     subtitle: Text(context.tr(
                         'A short questionnaire (about 10 minutes)',
                         'Dodoso fupi (kama dakika 10)')),

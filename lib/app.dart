@@ -47,8 +47,7 @@ class MindQuestApp extends StatefulWidget {
 class _MindQuestAppState extends State<MindQuestApp> {
   late final ThemeController _theme =
       widget.themeController ?? ThemeController();
-  late final OutfitController _outfits =
-      widget.outfits ?? OutfitController();
+  late final OutfitController _outfits = widget.outfits ?? OutfitController();
   late final GoRouter _router = createRouter(_theme, widget.session,
       offline: widget.offline,
       reminders: widget.reminders,

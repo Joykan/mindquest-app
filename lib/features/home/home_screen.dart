@@ -109,6 +109,7 @@ class HomeScreenState extends State<HomeScreen>
       showLevelUp(context, level: level, unlocked: unlocked, outfits: outfits);
     }
   }
+
   late Future<HomeExtras> _extras = _loadExtras();
 
   /// Extras are a bonus: if any part fails, Home still shows the rest.
@@ -132,7 +133,8 @@ class HomeScreenState extends State<HomeScreen>
       optional<ChallengesState>(challengeRepo?.load),
       optional<List<Article>>(learn?.loadArticles),
     ]);
-    final List<MoodEntry> week = r[0] as List<MoodEntry>? ?? const <MoodEntry>[];
+    final List<MoodEntry> week =
+        r[0] as List<MoodEntry>? ?? const <MoodEntry>[];
     final Map<String, int> feelings =
         r[1] as Map<String, int>? ?? const <String, int>{};
     final List<Article>? articles = r[3] as List<Article>?;

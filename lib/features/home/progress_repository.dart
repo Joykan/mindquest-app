@@ -153,8 +153,8 @@ Future<dynamic> checkinDaysQuery(SupabaseClient client, String uid) => client
 
 Set<DateTime> parseCheckinDays(dynamic rows) => <DateTime>{
       for (final dynamic r in rows as List<dynamic>)
-        nairobiDay(
-            DateTime.parse((r as Map<String, dynamic>)['created_at'] as String)),
+        nairobiDay(DateTime.parse(
+            (r as Map<String, dynamic>)['created_at'] as String)),
     };
 
 /// Start of this Monday-to-Sunday week in Nairobi, as a UTC instant.

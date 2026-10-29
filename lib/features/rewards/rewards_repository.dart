@@ -153,8 +153,8 @@ class SupabaseRewardsRepository implements RewardsRepository {
     for (final PendingAction a in store.pending('outfit')) {
       await store.removePending(a.id);
     }
-    await store.addPending(
-        PendingAction(id: newId(), kind: 'outfit', data: data));
+    await store
+        .addPending(PendingAction(id: newId(), kind: 'outfit', data: data));
     await store.flush();
   }
 

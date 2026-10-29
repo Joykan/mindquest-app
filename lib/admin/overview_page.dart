@@ -31,7 +31,8 @@ const Set<String> smallTalk = <String>{
 
 String _mood(double? m) => m == null ? '–' : m.toStringAsFixed(1);
 
-String _seconds(int? ms) => ms == null ? '–' : '${(ms / 1000).toStringAsFixed(1)} s';
+String _seconds(int? ms) =>
+    ms == null ? '–' : '${(ms / 1000).toStringAsFixed(1)} s';
 
 String _percent(double? share) =>
     share == null ? '–' : '${(share * 100).round()}%';
@@ -54,15 +55,21 @@ String _date(DateTime d) =>
 /// per day as comma-separated values that paste into Excel or Word.
 String buildReport(AdminStats s) {
   final StringBuffer b = StringBuffer()
-    ..writeln('MindQuest report: ${_date(s.from)} to ${_date(s.to)} (${s.days} days)')
-    ..writeln('Totals only. Averages from fewer than ${s.minGroup} check-ins are hidden.')
+    ..writeln(
+        'MindQuest report: ${_date(s.from)} to ${_date(s.to)} (${s.days} days)')
+    ..writeln(
+        'Totals only. Averages from fewer than ${s.minGroup} check-ins are hidden.')
     ..writeln()
-    ..writeln('Students: ${s.users} (new ${s.newUsers}, saved with email or Google ${s.savedAccounts})')
+    ..writeln(
+        'Students: ${s.users} (new ${s.newUsers}, saved with email or Google ${s.savedAccounts})')
     ..writeln('Active students: ${s.activeUsers}')
-    ..writeln('Mood check-ins: ${s.moodEntries} (average mood ${_mood(s.averageMood)} / 5)')
+    ..writeln(
+        'Mood check-ins: ${s.moodEntries} (average mood ${_mood(s.averageMood)} / 5)')
     ..writeln('Chats with Chipu: ${s.chatSessions} (${s.messages} messages)')
-    ..writeln('Chipu understood: ${_percent(s.understoodShare)} (${s.notUnderstood} not understood)')
-    ..writeln('Reply time: median ${_seconds(s.replyMedianMs)}, 95% within ${_seconds(s.replyP95Ms)}; '
+    ..writeln(
+        'Chipu understood: ${_percent(s.understoodShare)} (${s.notUnderstood} not understood)')
+    ..writeln(
+        'Reply time: median ${_seconds(s.replyMedianMs)}, 95% within ${_seconds(s.replyP95Ms)}; '
         '${_percent(s.replyWithin2s)} of ${s.replyCount} replies within 2 s')
     ..writeln('Chatbot server unavailable: ${s.unavailable} replies')
     ..writeln('Articles read: ${s.articlesRead}')
@@ -71,7 +78,8 @@ String buildReport(AdminStats s) {
     ..writeln()
     ..writeln('Day,Check-ins,Average mood,Chats,Crisis responses');
   for (final DailyStat d in s.daily) {
-    b.writeln('${_date(d.day)},${d.checkIns},${d.averageMood?.toStringAsFixed(2) ?? ''},'
+    b.writeln(
+        '${_date(d.day)},${d.checkIns},${d.averageMood?.toStringAsFixed(2) ?? ''},'
         '${d.chats},${d.crisisEvents}');
   }
   return b.toString();
@@ -201,8 +209,8 @@ class _OverviewPageState extends State<OverviewPage> {
   Future<void> _copyReport(AdminStats s) async {
     await Clipboard.setData(ClipboardData(text: buildReport(s)));
     if (mounted) {
-      showMessage(context,
-          'Report copied. Paste it into Word, Excel or an email.');
+      showMessage(
+          context, 'Report copied. Paste it into Word, Excel or an email.');
     }
   }
 

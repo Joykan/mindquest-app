@@ -187,8 +187,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 12),
               FilledButton(
                 key: const Key('finish-onboarding'),
-                onPressed:
-                    _nameOk && _age != null && _agreed && !_busy ? _finish : null,
+                onPressed: _nameOk && _age != null && _agreed && !_busy
+                    ? _finish
+                    : null,
                 child: _busy
                     ? const SizedBox(
                         width: 22,

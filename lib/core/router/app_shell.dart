@@ -54,7 +54,11 @@ class AppShell extends StatelessWidget {
         Icons.sentiment_satisfied,
         context.tr('Mood', 'Hisia')
       ),
-      (Icons.menu_book_outlined, Icons.menu_book, context.tr('Learn', 'Jifunze')),
+      (
+        Icons.menu_book_outlined,
+        Icons.menu_book,
+        context.tr('Learn', 'Jifunze')
+      ),
       (
         Icons.emoji_events_outlined,
         Icons.emoji_events,
@@ -85,8 +89,11 @@ class AppShell extends StatelessWidget {
                       child: LogoMark(size: 40),
                     ),
                     destinations: <NavigationRailDestination>[
-                      for (final (IconData icon, IconData selected, String label)
-                          in tabs)
+                      for (final (
+                            IconData icon,
+                            IconData selected,
+                            String label
+                          ) in tabs)
                         NavigationRailDestination(
                           icon: Icon(icon),
                           selectedIcon: Icon(selected),

@@ -217,15 +217,17 @@ void main() {
       // Server: 9-11 Oct. Offline: 12 and 13 Oct.
       expect(
           streakToday(
-              profile: profile(3, '2026-10-11'),
-              pending: <DateTime>[day(12), day(13)],
-              now: now).days,
+                  profile: profile(3, '2026-10-11'),
+                  pending: <DateTime>[day(12), day(13)],
+                  now: now)
+              .days,
           5);
       expect(
           streakToday(
-              profile: profile(0, null),
-              pending: <DateTime>[day(13)],
-              now: now).days,
+                  profile: profile(0, null),
+                  pending: <DateTime>[day(13)],
+                  now: now)
+              .days,
           1);
     });
   });

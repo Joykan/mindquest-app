@@ -7,7 +7,8 @@ import 'challenges.dart';
 /// The challenge card on Home: the running challenge with its progress, a
 /// "well done" after finishing one, or this week's suggestion.
 class ChallengeHomeCard extends StatelessWidget {
-  const ChallengeHomeCard({super.key, required this.state, required this.onOpen});
+  const ChallengeHomeCard(
+      {super.key, required this.state, required this.onOpen});
 
   final ChallengesState state;
   final VoidCallback onOpen;
@@ -71,7 +72,8 @@ class ChallengeHomeCard extends StatelessWidget {
         children: <Widget>[
           _Header(
               emoji: featured.emoji,
-              title: tr(lang, "This week's challenge", 'Changamoto ya wiki hii'),
+              title:
+                  tr(lang, "This week's challenge", 'Changamoto ya wiki hii'),
               trailing: '+${featured.xp} XP'),
           const SizedBox(height: 6),
           Text('${featured.name(lang)}: ${featured.describe(lang)}',
@@ -158,7 +160,8 @@ class _StepLine extends StatelessWidget {
         children: <Widget>[
           Icon(done ? Icons.check_circle : Icons.radio_button_unchecked,
               size: 20,
-              color: done ? theme.colorScheme.primary : theme.colorScheme.outline),
+              color:
+                  done ? theme.colorScheme.primary : theme.colorScheme.outline),
           const SizedBox(width: 8),
           Expanded(
             child: Text(step.label(context.lang),
@@ -221,7 +224,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
   String _problem(String lang, Object e) {
     final String reason = e is ChallengeException ? e.reason : 'other';
     return switch (reason) {
-      'offline' => tr(lang, 'You need internet for this. Try again when online.',
+      'offline' => tr(
+          lang,
+          'You need internet for this. Try again when online.',
           'Unahitaji mtandao kwa hili. Jaribu tena ukiwa mtandaoni.'),
       'busy' => tr(lang, 'Finish or leave your current challenge first.',
           'Kamilisha au acha changamoto yako ya sasa kwanza.'),
@@ -376,8 +381,8 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                             child: TextButton(
                               key: const Key('leave-challenge'),
                               onPressed: _busy ? null : () => _leave(active),
-                              child: Text(tr(lang, 'Leave challenge',
-                                  'Acha changamoto')),
+                              child: Text(tr(
+                                  lang, 'Leave challenge', 'Acha changamoto')),
                             ),
                           ),
                         ],
@@ -450,7 +455,8 @@ class _ChallengeTile extends StatelessWidget {
                     _Pill(
                         text: tr(lang, '✓ Done ${c.completed}×',
                             '✓ Umeimaliza mara ${c.completed}'),
-                        color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                        color:
+                            theme.colorScheme.primary.withValues(alpha: 0.15),
                         textColor: theme.colorScheme.primary),
                 ],
               ),
@@ -488,7 +494,8 @@ class _ChallengeTile extends StatelessWidget {
 }
 
 class _Pill extends StatelessWidget {
-  const _Pill({required this.text, required this.color, required this.textColor});
+  const _Pill(
+      {required this.text, required this.color, required this.textColor});
 
   final String text;
   final Color color;
@@ -497,8 +504,8 @@ class _Pill extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration:
-            BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(
+            color: color, borderRadius: BorderRadius.circular(10)),
         child: Text(text,
             style: Theme.of(context)
                 .textTheme

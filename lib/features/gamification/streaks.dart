@@ -56,7 +56,9 @@ StreakRun streakRun(Set<DateTime> checkins, DateTime last,
 /// What Home and Rewards show about the streak.
 class StreakStatus {
   const StreakStatus(
-      {this.days = 0, this.restUsedThisWeek = false, this.restYesterday = false});
+      {this.days = 0,
+      this.restUsedThisWeek = false,
+      this.restYesterday = false});
 
   /// Days in the streak (0: no streak).
   final int days;

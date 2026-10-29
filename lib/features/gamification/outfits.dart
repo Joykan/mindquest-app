@@ -134,8 +134,6 @@ class OutfitScope extends InheritedNotifier<OutfitController> {
       : super(notifier: controller);
 
   /// The outfit to show here, or null (also when there is no scope).
-  static String? of(BuildContext context) => context
-      .dependOnInheritedWidgetOfExactType<OutfitScope>()
-      ?.notifier
-      ?.id;
+  static String? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<OutfitScope>()?.notifier?.id;
 }

@@ -59,7 +59,9 @@ class _RewardsScreenState extends State<RewardsScreen>
           content: Text(o == null
               ? tr(lang, 'Chipu is wearing nothing special now.',
                   'Chipu hajavaa kitu maalum sasa.')
-              : tr(lang, 'Chipu is wearing the ${o.en.toLowerCase()} ${o.emoji}',
+              : tr(
+                  lang,
+                  'Chipu is wearing the ${o.en.toLowerCase()} ${o.emoji}',
                   'Chipu amevaa ${o.sw.toLowerCase()} ${o.emoji}'))));
     } catch (_) {
       messenger.hideCurrentSnackBar();
@@ -454,7 +456,8 @@ class WardrobeCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               next == null
-                  ? context.tr('Chipu has grown into a forest. Everything is unlocked!',
+                  ? context.tr(
+                      'Chipu has grown into a forest. Everything is unlocked!',
                       'Chipu amekua msitu. Kila kitu kimefunguliwa!')
                   : context.tr(
                       'Chipu grows with you. Reach Level ${next.level} to unlock the ${next.en.toLowerCase()} ${next.emoji}.',
@@ -483,8 +486,7 @@ class WardrobeCard extends StatelessWidget {
                       selected: wearing == o.id,
                       locked: o.level > level,
                       onTap: () => onWear(o.id),
-                      child:
-                          Mascot(size: 64, outfit: o.id, followScope: false),
+                      child: Mascot(size: 64, outfit: o.id, followScope: false),
                     ),
                 ],
               ),
@@ -522,9 +524,8 @@ class _OutfitTile extends StatelessWidget {
       child: Semantics(
         button: !locked,
         selected: selected,
-        label: locked
-            ? context.tr('$label, locked', '$label, imefungwa')
-            : label,
+        label:
+            locked ? context.tr('$label, locked', '$label, imefungwa') : label,
         excludeSemantics: true,
         child: InkWell(
           key: Key('outfit-$keyName'),
