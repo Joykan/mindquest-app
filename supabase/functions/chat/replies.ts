@@ -224,6 +224,60 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
     ],
     sw: ["Niko hapa nawe, na ni sawa kujisikia hivi.", "Asante kwa kunieleza zaidi. Bado niko hapa nawe."],
   },
+  // Chipu checks in on a worry from a recent chat ("follow_up:<cause>"). Only
+  // the saved label (school, money, ...) is used, never the student's words.
+  follow_up_school: {
+    en: ["Hey{ nick}! Last time you told me school was weighing on you. How is it going now?"],
+    sw: ["Habari{ nick}! Mara ya mwisho uliniambia masomo yalikuwa yanakulemea. Mambo yanaendaje sasa?"],
+  },
+  follow_up_money: {
+    en: ["Hey{ nick}! Last time you told me money was worrying you. How are things now?"],
+    sw: ["Habari{ nick}! Mara ya mwisho uliniambia mambo ya pesa yalikuwa yanakusumbua. Hali ikoje sasa?"],
+  },
+  follow_up_family: {
+    en: ["Hey{ nick}! Last time you told me things at home were hard. How are things now?"],
+    sw: ["Habari{ nick}! Mara ya mwisho uliniambia mambo ya familia yalikuwa magumu. Hali ikoje sasa?"],
+  },
+  follow_up_friends: {
+    en: ["Hey{ nick}! Last time you told me things with friends were hard. How are things now?"],
+    sw: ["Habari{ nick}! Mara ya mwisho uliniambia mambo na marafiki yalikuwa magumu. Hali ikoje sasa?"],
+  },
+  follow_up_health: {
+    en: ["Hey{ nick}! Last time you told me you weren't feeling well. How are you feeling now?"],
+    sw: ["Habari{ nick}! Mara ya mwisho uliniambia hukuwa unajisikia vizuri. Unajisikiaje sasa?"],
+  },
+  follow_up_exhausted: {
+    en: ["Hey{ nick}! Last time you told me you were really drained. How is your energy today?"],
+    sw: ["Habari{ nick}! Mara ya mwisho uliniambia ulikuwa umechoka sana. Nguvu zako zikoje leo?"],
+  },
+  follow_up_overwhelmed: {
+    en: ["Hey{ nick}! Last time you told me there was too much going on. How are things today?"],
+    sw: ["Habari{ nick}! Mara ya mwisho uliniambia ulikuwa umelemewa na mambo mengi. Hali ikoje leo?"],
+  },
+  follow_up_empty: {
+    en: ["Hey{ nick}! Last time you told me you were feeling empty. How are you feeling today?"],
+    sw: ["Habari{ nick}! Mara ya mwisho uliniambia ulikuwa unajihisi mtupu. Unajisikiaje leo?"],
+  },
+  follow_better: {
+    en: [
+      "That's really good to hear{, nick}! 🎉 Whatever you did, it helped. I'm here whenever you want to talk.",
+    ],
+    sw: [
+      "Nafurahi sana kusikia hivyo{, nick}! 🎉 Ulichofanya kimesaidia. Niko hapa wakati wowote ukitaka kuongea.",
+    ],
+  },
+  follow_same: {
+    en: ["Thanks for letting me know. Some things take time, and you're still looking after yourself."],
+    sw: ["Asante kwa kunijulisha. Mambo mengine huchukua muda, na bado unajijali."],
+  },
+  follow_worse: {
+    en: [
+      "I'm sorry it's got harder{, nick}. You don't have to carry this alone: talking to someone you trust, or a counsellor on the Support page, can really help.",
+    ],
+    sw: [
+      "Pole sana kwamba mambo yamekuwa magumu zaidi{, nick}. Huhitaji kubeba hili peke yako: kuongea na mtu unayemwamini, au mshauri kwenye ukurasa wa Msaada, kunaweza kusaidia sana.",
+    ],
+  },
   feel_good: {
     en: [
       "That's great to hear! Why not log it in your mood check-in?",

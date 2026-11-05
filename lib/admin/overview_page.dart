@@ -30,6 +30,11 @@ const Map<String, String> topicNames = <String, String>{
   'cause_overwhelmed': 'Behind it: too much at once',
   'cause_empty': 'Behind it: feeling empty',
   'cause_other': 'Behind it: something else',
+  'cause_unsure': "Behind it: didn't know or didn't say",
+  // How students answered Chipu's check-in on a recent worry.
+  'follow_better': 'Check-in: feeling better',
+  'follow_same': 'Check-in: about the same',
+  'follow_worse': 'Check-in: feeling worse',
 };
 
 /// Greetings, thanks, yes/no and names: counted together.

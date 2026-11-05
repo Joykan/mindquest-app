@@ -3,6 +3,15 @@
 // POST { "text": "...", "session_id": "..." (optional) }
 // with the signed-in user's access token in the Authorization header.
 //
+// POST { "action": "opening" } when the app opens a new chat: if the user
+// told Chipu about a worry on one of the last three days (not today), Chipu
+// starts the chat by checking in on it ("Last time you told me school was
+// weighing on you..."). Only the saved label (cause_school) is used, never
+// the user's words, and each worry is checked in on once.
+//
+// Replies that ask something come with tappable answers ("options"). A tapped
+// answer is read without the model (chipParse), so it always means what it says.
+//
 // 1. Check the message for crisis phrases. If found: log a crisis event (no
 //    message text), skip the model and return the verified helplines.
 // 2. Otherwise send the text to the Rasa server and pick a reply (logic.ts).
@@ -22,10 +31,20 @@
 import { createClient } from "@supabase/supabase-js";
 import { isCrisis } from "./crisis.ts";
 import { BACKUP_THRESHOLD, backupParse } from "./backup_nlu.ts";
-import { decide, nickname, type RasaParse, THRESHOLD } from "./logic.ts";
+import { chipParse, decide, followUp, nickname, optionsFor, type RasaParse, THRESHOLD } from "./logic.ts";
 import { type Lang, REPLIES } from "./replies.ts";
 
 const MAX_LENGTH = 1000;
+/** How many days back (not counting today) Chipu checks in on a worry. */
+const FOLLOW_UP_DAYS = 3;
+const NAIROBI_OFFSET_MS = 3 * 60 * 60 * 1000;
+
+/** Midnight in Nairobi, `daysBack` days before today, as a UTC timestamp. */
+function nairobiMidnight(daysBack: number): string {
+  const local = new Date(Date.now() + NAIROBI_OFFSET_MS);
+  const midnight = Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate() - daysBack);
+  return new Date(midnight - NAIROBI_OFFSET_MS).toISOString();
+}
 // Rasa normally answers in well under a second; after 3 s the backup model
 // answers instead, so the student isn't kept waiting.
 const RASA_TIMEOUT_MS = 3000;
@@ -100,12 +119,13 @@ Deno.serve(async (req) => {
   const userId = auth.user.id;
 
   // What did they send?
-  let body: { text?: unknown; session_id?: unknown };
+  let body: { text?: unknown; session_id?: unknown; action?: unknown };
   try {
     body = await req.json();
   } catch {
     return json({ error: "invalid JSON" }, 400);
   }
+  if (body.action === "opening") return await opening(userId);
   const text = typeof body.text === "string" ? body.text.trim() : "";
   if (!text) return json({ error: "text is required" }, 400);
   if (text.length > MAX_LENGTH) return json({ error: `text is longer than ${MAX_LENGTH} characters` }, 400);
@@ -168,18 +188,21 @@ Deno.serve(async (req) => {
   const { data: last } = await db.from("messages").select("reply_key")
     .eq("session_id", sessionId).eq("sender", "bot")
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
+  const previousKey: string | null = last?.reply_key ?? null;
   const nluStarted = performance.now();
-  const fromRasa = await askRasa(text);
-  const nluSource = fromRasa ? "rasa" : "backup";
-  const parse = fromRasa ?? backupParse(text);
+  // A tapped answer needs no model.
+  const tapped = chipParse(text, previousKey);
+  const fromRasa = tapped ? null : await askRasa(text);
+  const nluSource = tapped ? "tap" : fromRasa ? "rasa" : "backup";
+  const parse = tapped ?? fromRasa ?? backupParse(text);
   const nluMs = Math.round(performance.now() - nluStarted);
   const decision = decide(
     parse,
-    last?.reply_key ?? null,
+    previousKey,
     lang,
     Math.random,
     text,
-    fromRasa ? THRESHOLD : BACKUP_THRESHOLD,
+    tapped ? 0 : fromRasa ? THRESHOLD : BACKUP_THRESHOLD,
     nickname(profile?.username),
   );
   const responseMs = elapsed();
@@ -209,5 +232,43 @@ Deno.serve(async (req) => {
     crisis: false,
     intent: decision.intent,
     confidence: decision.confidence,
+    options: optionsFor(decision.replyKey, lang),
   });
 });
+
+/**
+ * Chipu's check-in on the latest worry from the last few days, in a new
+ * session. Returns no reply when there is nothing to check in on: the
+ * latest worry is from today, is older, is "other"/"unsure", or was already
+ * checked in on.
+ */
+async function opening(userId: string): Promise<Response> {
+  const none = json({ session_id: null, reply: null, crisis: false, options: [] });
+  const { data: latest } = await db.from("messages")
+    .select("intent, created_at, chat_sessions!inner(user_id)")
+    .eq("chat_sessions.user_id", userId).eq("sender", "user").like("intent", "cause_%")
+    .gte("created_at", nairobiMidnight(FOLLOW_UP_DAYS))
+    .order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (!latest || new Date(latest.created_at) >= new Date(nairobiMidnight(0))) return none;
+
+  const { count } = await db.from("messages")
+    .select("id, chat_sessions!inner(user_id)", { count: "exact", head: true })
+    .eq("chat_sessions.user_id", userId).eq("sender", "bot").like("reply_key", "follow_up:%")
+    .gt("created_at", latest.created_at);
+  if ((count ?? 0) > 0) return none;
+
+  const { data: profile } = await db.from("profiles").select("language, username").eq("id", userId).single();
+  const lang: Lang = profile?.language === "sw" ? "sw" : "en";
+  const check = followUp(latest.intent, lang, Math.random, nickname(profile?.username));
+  if (!check) return none;
+
+  const { data: s, error } = await db.from("chat_sessions").insert({ user_id: userId }).select("id").single();
+  if (error) return none;
+  await db.from("messages").insert({
+    session_id: s.id,
+    sender: "bot",
+    content: check.text,
+    reply_key: check.replyKey,
+  });
+  return json({ session_id: s.id, reply: check.text, crisis: false, options: check.options });
+}

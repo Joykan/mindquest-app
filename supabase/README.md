@@ -75,6 +75,8 @@ supabase link --project-ref dqcgeugyhpiemucdypok
 
 `functions/chat` is the Edge Function behind the chat screen (UC-01). The app
 sends `{ "text": "...", "session_id": "..." }` with the user's access token.
+The reply comes back as `{ session_id, reply, crisis, intent, confidence,
+options }`, with `helplines` on a crisis.
 
 1. **Crisis check first.** Every message is checked against a list of English,
    Kiswahili and Sheng crisis phrases (`crisis.ts`). On a match the model is
@@ -93,6 +95,12 @@ sends `{ "text": "...", "session_id": "..." }` with the user's access token.
      already says why ("stressed about exams"), Chipu doesn't ask. The answer
      is recorded as `cause_school`, `cause_money`... (labels only), which the
      admin dashboard counts
+   - tappable answers: replies that ask something come with `options` the app
+     shows as chips (School · Money · Family · Friends · Something else ·
+     I don't know; Yes, please · No, thanks; in Kiswahili for Kiswahili
+     users). A tapped answer is read without a model (`chipParse`), so it
+     always means what it says, and the reply is saved with
+     `nlu_source = 'tap'`. Typing instead of tapping works as before
    - names: a name only counts if Rasa extracted one. "My name is Joy" or
      "naitwa Furaha" is used straight away; a feeling-word name in a message
      that doesn't introduce anyone ("I feel joy") is checked first; if Rasa
@@ -105,6 +113,18 @@ sends `{ "text": "...", "session_id": "..." }` with the user's access token.
 3. **Saved.** Both messages go into `messages`, with the intent and confidence
    on the user's message and the reply key on the bot's. Saving the user's
    message awards chat XP through the existing trigger.
+
+**Chipu remembers.** When the app opens a new chat it sends
+`{ "action": "opening" }`. If the student's latest worry (`cause_school`,
+`cause_money`...) was from one of the last three days, not today, and Chipu
+hasn't checked in on it yet, the function starts a session with a check-in
+("Hey Candy! Last time you told me school was weighing on you. How is it
+going now?") and the answers Better · About the same · Worse. Only the saved
+label is used, never the student's words. Better is celebrated; about the
+same or worse gets an understanding reply (worse also points to someone they
+trust and the Support page) and the breathing offer. The answers are recorded
+as `follow_better`, `follow_same`, `follow_worse` for the dashboard. With
+nothing to check in on, the app shows its usual greeting.
 
 Replies in both languages are in `replies.ts`; the user's `profiles.language`
 picks which. Tests: `cd supabase/functions/chat && deno test` (also run in CI).

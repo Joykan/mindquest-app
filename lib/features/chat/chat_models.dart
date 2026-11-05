@@ -70,6 +70,7 @@ class ChatReply {
     this.sessionId,
     this.crisis = false,
     this.helplines = const <Helpline>[],
+    this.options = const <String>[],
   });
 
   factory ChatReply.fromJson(Map<String, dynamic> json) => ChatReply(
@@ -79,10 +80,18 @@ class ChatReply {
         helplines: (json['helplines'] as List<dynamic>? ?? <dynamic>[])
             .map((dynamic h) => Helpline.fromJson(h as Map<String, dynamic>))
             .toList(),
+        options: <String>[
+          for (final dynamic o
+              in json['options'] as List<dynamic>? ?? <dynamic>[])
+            if (o is String && o.isNotEmpty) o,
+        ],
       );
 
   final String reply;
   final String? sessionId;
   final bool crisis;
   final List<Helpline> helplines;
+
+  /// Tappable answers to Chipu's question (empty when there are none).
+  final List<String> options;
 }

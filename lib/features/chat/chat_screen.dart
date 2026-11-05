@@ -117,7 +117,11 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       final RestoredChat? chat = await widget.backend.restore();
       // Only if the user hasn't started typing in the meantime.
-      if (chat == null || !mounted || _messages.length > 1 || _sending) return;
+      if (chat == null) {
+        await _checkIn();
+        return;
+      }
+      if (!mounted || _messages.length > 1 || _sending) return;
       final String time = clock(chat.startedAt);
       setState(() {
         _messages
@@ -132,6 +136,31 @@ class _ChatScreenState extends State<ChatScreen> {
       });
     } catch (_) {
       // Start fresh if the old chat can't be loaded.
+    }
+  }
+
+  /// Opens a new chat with Chipu's check-in on a recent worry, if there is
+  /// one. Otherwise the usual greeting stays.
+  Future<void> _checkIn() async {
+    try {
+      final ChatReply? reply = await widget.backend.opening();
+      // Only if the user hasn't started in the meantime.
+      if (reply == null ||
+          !mounted ||
+          _sending ||
+          _messages.length != 1 ||
+          _messages.first.fromUser) {
+        return;
+      }
+      setState(() {
+        _messages
+          ..clear()
+          ..add(ChatMessage(text: reply.reply, fromUser: false));
+        _picked.clear();
+        _options = reply.options;
+      });
+    } catch (_) {
+      // The greeting is fine.
     }
   }
 
@@ -166,18 +195,24 @@ class _ChatScreenState extends State<ChatScreen> {
         ..clear()
         ..add(_firstMessage());
       _picked.clear();
+      _options = const <String>[];
     });
     try {
       await widget.backend.startNewChat();
     } catch (_) {
       // The next message starts a new chat anyway.
     }
+    await _checkIn();
   }
 
   /// Mood picked in each picker (by its index in [_messages]).
   final Map<int, int> _picked = <int, int>{};
   List<MoodEntry> _week = <MoodEntry>[];
   bool _sending = false;
+
+  /// Tappable answers to Chipu's last question, shown in place of the usual
+  /// suggestions until the user answers.
+  List<String> _options = const <String>[];
 
   @override
   void dispose() {
@@ -196,6 +231,7 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _messages.add(ChatMessage(text: text, fromUser: true));
       _sending = true;
+      _options = const <String>[];
       _input.clear();
     });
 
@@ -205,6 +241,7 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _addBot(reply.reply);
         _sending = false;
+        _options = reply.options;
       });
       widget.onMessageSent?.call();
       if (reply.crisis) {
@@ -344,10 +381,13 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final MindQuestColors mq = theme.extension<MindQuestColors>()!;
-    final List<String> chips = <String>[
-      if (widget.progress != null) context.tr(checkInChip, checkInChipSw),
-      ...(context.isSw ? quickRepliesSw : quickReplies),
-    ];
+    final bool answering = _options.isNotEmpty;
+    final List<String> chips = answering
+        ? _options
+        : <String>[
+            if (widget.progress != null) context.tr(checkInChip, checkInChipSw),
+            ...(context.isSw ? quickRepliesSw : quickReplies),
+          ];
     // Newest first, because the list is reversed. Index 0 may be "typing".
     final int extra = _sending ? 1 : 0;
     return Scaffold(
@@ -432,11 +472,18 @@ class _ChatScreenState extends State<ChatScreen> {
                 separatorBuilder: (BuildContext context, int i) =>
                     const SizedBox(width: 8),
                 itemBuilder: (BuildContext context, int i) => ActionChip(
-                  avatar: _isCheckIn(chips[i]) ? const Text('📝') : null,
+                  key: answering ? Key('answer-$i') : null,
+                  avatar: !answering && _isCheckIn(chips[i])
+                      ? const Text('📝')
+                      : null,
                   label: Text(chips[i]),
+                  // Answers to Chipu's question stand out from suggestions.
+                  backgroundColor:
+                      answering ? theme.colorScheme.secondaryContainer : null,
+                  side: answering ? BorderSide.none : null,
                   onPressed: _sending
                       ? null
-                      : _isCheckIn(chips[i])
+                      : !answering && _isCheckIn(chips[i])
                           ? _askMood
                           : () => _send(chips[i]),
                 ),

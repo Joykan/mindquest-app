@@ -104,7 +104,7 @@ const CHANGES_SUBJECT = new Set([
 const CAUSES: [string, RegExp][] = [
   [
     "school",
-    /\b(exams?|tests?|cats?|school|class(es)?|assignments?|homework|revision|grades?|results|marks|campus|university|uni|college|lectures?|units?|kcse|supp|mtihani|mitihani|shule|darasa|masomo|kusoma|matokeo|chuo)\b/,
+    /\b(exams?|tests?|cats?|school|schools|class(es)?|assignments?|homework|revision|grades?|results|marks|campus|university|uni|college|lectures?|units?|kcse|supp|mtihani|mitihani|shule|darasa|masomo|kusoma|matokeo|chuo|shuleni|darasani)\b/,
   ],
   [
     "money",
@@ -116,11 +116,11 @@ const CAUSES: [string, RegExp][] = [
   ],
   [
     "friends",
-    /\b(friends?|boyfriend|girlfriend|bf|gf|partner|relationships?|break ?up|broke up|crush|lonely|alone|rafiki|marafiki|mpenzi|uhusiano|dem|msupa|boychild|upweke|peke yangu)\b/,
+    /\b(friends?|boyfriend|girlfriend|bf|gf|partner|relationships?|break ?up|broke up|crush|lonely|alone|left out|rafiki|marafiki|mpenzi|uhusiano|dem|msupa|boychild|upweke|peke yangu|nimetengwa|kutengwa)\b/,
   ],
   [
     "health",
-    /\b(sick|ill|illness|health|pain|sleep|insomnia|hospital|doctor|mgonjwa|ugonjwa|afya|maumivu|usingizi|hospitali|daktari)\b/,
+    /\b(sick|ill|illness|health|pain|sleep|sleeping|insomnia|hospital|doctor|mgonjwa|ugonjwa|afya|maumivu|usingizi|hospitali|daktari)\b/,
   ],
   [
     "exhausted",
@@ -135,6 +135,80 @@ const CAUSES: [string, RegExp][] = [
     /\b(empty|nothing matters|hollow|numb|mtupu|tupu|sina hisia)\b/,
   ],
 ];
+
+/**
+ * Tappable answers shown under some of Chipu's questions, in the user's
+ * language. Tapping one sends its text, which is read without the NLU model
+ * (chipParse), so a tap always means what it says.
+ */
+const OPTIONS: Record<string, Record<Lang, string[]>> = {
+  causes: {
+    en: ["School", "Money", "Family", "Friends", "Something else", "I don't know"],
+    sw: ["Masomo", "Pesa", "Familia", "Marafiki", "Jambo lingine", "Sijui"],
+  },
+  ask_cause_numb: {
+    en: ["Exhausted", "Overwhelmed", "Empty", "Something happened", "I don't know"],
+    sw: ["Nimechoka", "Nimelemewa", "Najihisi mtupu", "Kuna jambo lilitokea", "Sijui"],
+  },
+  ask_cause_lonely: {
+    en: ["I miss my family", "I feel left out", "At school", "Something else"],
+    sw: ["Nawakumbuka familia yangu", "Nahisi nimetengwa", "Shuleni", "Jambo lingine"],
+  },
+  ask_cause_tired: {
+    en: ["Not sleeping well", "Too much going on", "Both"],
+    sw: ["Sipati usingizi", "Mambo mengi sana", "Vyote viwili"],
+  },
+  yes_no: { en: ["Yes, please", "No, thanks"], sw: ["Ndiyo, tafadhali", "Hapana, asante"] },
+  confirm: { en: ["Yes", "No"], sw: ["Ndiyo", "Hapana"] },
+  follow_up: {
+    en: ["Better 🙂", "About the same", "Worse"],
+    sw: ["Vizuri zaidi 🙂", "Bado vile vile", "Mbaya zaidi"],
+  },
+};
+
+const YES_NO_AFTER = new Set([
+  "offer_breathing",
+  "offer_ideas",
+  "offer_rest",
+  "feel_stressed",
+  "feel_anxious",
+]);
+
+/** The tappable answers for a reply (empty when there are none). */
+export function optionsFor(replyKey: string | null, lang: Lang): string[] {
+  if (!replyKey) return [];
+  if (replyKey === "ask_cause_stress" || replyKey === "ask_cause_anxious" || replyKey === "ask_cause_sad") {
+    return OPTIONS.causes[lang];
+  }
+  if (replyKey in OPTIONS) return OPTIONS[replyKey][lang];
+  if (YES_NO_AFTER.has(replyKey)) return OPTIONS.yes_no[lang];
+  if (replyKey.startsWith("confirm_name:")) return OPTIONS.confirm[lang];
+  if (replyKey.startsWith("follow_up:")) return OPTIONS.follow_up[lang];
+  return [];
+}
+
+/**
+ * A tapped answer, read without the model: yes/no as affirm/deny, the
+ * check-in answers as follow_better/same/worse, and a "what's behind it"
+ * answer as no particular intent (the words say what it is about). Null if
+ * the text isn't one of the answers shown.
+ */
+export function chipParse(text: string, previousReplyKey: string | null): RasaParse | null {
+  const t = words(text);
+  for (const lang of ["en", "sw"] as Lang[]) {
+    const options = optionsFor(previousReplyKey, lang);
+    const i = options.findIndex((o) => words(o) === t);
+    if (i < 0) continue;
+    let name = "nlu_fallback";
+    if (options === OPTIONS.yes_no[lang] || options === OPTIONS.confirm[lang]) {
+      name = i === 0 ? "affirm" : "deny";
+    } else if (options === OPTIONS.follow_up[lang]) {
+      name = ["follow_better", "follow_same", "follow_worse"][i];
+    }
+    return { intent: { name, confidence: 1 }, entities: [] };
+  }
+  return null;
+}
 
 /** "I don't know", "nothing", "sijui", "sitaki kuongea". */
 const UNSURE =
@@ -272,6 +346,21 @@ export function decide(
     if (r.intent === "affirm") return out("ask_ideas");
     if (r.intent === "deny") return out("deny");
   }
+  // Answers to a check-in on a recent worry.
+  if (previousReplyKey?.startsWith("follow_up:")) {
+    const how = r.intent === "feel_good" ? "follow_better" : r.intent;
+    if (how === "follow_better") return { ...out("follow_better"), intent: how };
+    if (how === "follow_same" || how === "follow_worse") {
+      return {
+        intent: how,
+        confidence: r.confidence,
+        replyKey: "offer_breathing",
+        text: `${pick(how, lang, rng, undefined, nick)} ${
+          pick("offer_breathing", lang, rng, undefined, nick)
+        }`,
+      };
+    }
+  }
   if (previousReplyKey === "offer_rest") {
     if (r.intent === "affirm") return out("rest_tips");
     if (r.intent === "deny") return out("deny");
@@ -296,7 +385,7 @@ export function decide(
     const feeling = ASKED[previousReplyKey];
     const kind = findCause(text);
     if (kind === "other" && (r.intent === "deny" || UNSURE.test(words(text)))) {
-      return cause(feeling, "unsure", r.intent);
+      return cause(feeling, "unsure", "cause_unsure");
     }
     return cause(feeling, kind, `cause_${kind}`);
   }
@@ -339,4 +428,36 @@ export function decide(
     default:
       return out(r.intent in REPLIES ? r.intent : "fallback");
   }
+}
+
+/** Worries Chipu can check in on later (not "other" or "unsure"). */
+export const FOLLOW_UP_CAUSES = [
+  "school",
+  "money",
+  "family",
+  "friends",
+  "health",
+  "exhausted",
+  "overwhelmed",
+  "empty",
+];
+
+/**
+ * The check-in that opens a new chat, from the label of the latest worry
+ * the user told Chipu about (cause_school, ...), or null for none.
+ */
+export function followUp(
+  causeIntent: string | null,
+  lang: Lang,
+  rng: () => number = Math.random,
+  nick: string | null = null,
+): { replyKey: string; text: string; options: string[] } | null {
+  const kind = causeIntent?.startsWith("cause_") ? causeIntent.slice("cause_".length) : null;
+  if (!kind || !FOLLOW_UP_CAUSES.includes(kind)) return null;
+  const replyKey = `follow_up:${kind}`;
+  return {
+    replyKey,
+    text: pick(`follow_up_${kind}`, lang, rng, undefined, nick),
+    options: optionsFor(replyKey, lang),
+  };
 }

@@ -45,6 +45,11 @@ abstract class ChatBackend {
   /// Ends the current conversation; the next message starts a new one.
   Future<void> startNewChat() async {}
 
+  /// Chipu's check-in on a worry from a recent chat ("Last time you told me
+  /// school was weighing on you..."), which starts a new conversation. Null
+  /// when there is nothing to check in on.
+  Future<ChatReply?> opening() async => null;
+
   /// The latest unfinished conversation, if the last message was recent.
   Future<RestoredChat?> restore() async => null;
 
@@ -91,6 +96,22 @@ class SupabaseChatBackend extends ChatBackend {
     final ChatReply reply =
         ChatReply.fromJson(Map<String, dynamic>.from(response.data as Map));
     _sessionId = reply.sessionId ?? _sessionId;
+    return reply;
+  }
+
+  /// How long to wait for the check-in before showing the usual greeting.
+  static const Duration openingTimeout = Duration(seconds: 8);
+
+  @override
+  Future<ChatReply?> opening() async {
+    final FunctionResponse response = await _client.functions.invoke(
+      'chat',
+      body: <String, dynamic>{'action': 'opening'},
+    ).timeout(openingTimeout);
+    final ChatReply reply =
+        ChatReply.fromJson(Map<String, dynamic>.from(response.data as Map));
+    if (reply.reply.isEmpty || reply.sessionId == null) return null;
+    _sessionId = reply.sessionId;
     return reply;
   }
 

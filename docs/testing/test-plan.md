@@ -12,9 +12,9 @@ the fourth is with students.
 
 | Level | What is tested | How | Where the results are |
 |---|---|---|---|
-| 1. Unit and widget tests | App logic and every screen, in English and Kiswahili | 169 Flutter tests + 33 Edge Function tests, run by CI on every push | GitHub Actions; test/ and supabase/functions/chat/logic_test.ts |
+| 1. Unit and widget tests | App logic and every screen, in English and Kiswahili | 174 Flutter tests + 39 Edge Function tests, run by CI on every push | GitHub Actions; test/ and supabase/functions/chat/logic_test.ts |
 | 2. Database tests | XP, streaks, badges, row-level security, admin functions | SQL run on the live database inside transactions that are rolled back | Step write-ups (below) |
-| 3. System tests | The whole app on a real phone, the website, and the admin dashboard | 66 manual test cases | [MindQuest_testing.xlsx](MindQuest_testing.xlsx), sheet System tests |
+| 3. System tests | The whole app on a real phone, the website, and the admin dashboard | 68 manual test cases | [MindQuest_testing.xlsx](MindQuest_testing.xlsx), sheet System tests |
 | 4. User acceptance testing | Whether students can use it and find it useful | 10–20 students, remote, Google Form with SUS | [uat-plan.md](uat-plan.md); workbook sheets UAT tasks, SUS, Likert |
 
 The NLU model is evaluated separately (held-out test phrases and 5-fold
@@ -30,7 +30,7 @@ only finished when CI is green.
 | Test file | Tests | Covers |
 |---|---|---|
 | `auth_test.dart` | 14 | Welcome, sign in, create account, onboarding (nickname, age range, consent), router redirects, save progress, delete my data, Google, feedback link |
-| `chat_screen_test.dart` | 12 | Replies, crisis sheet (cannot be dismissed by accident, call buttons), quick replies, errors, mood check-in in chat, week graph, new chat, past chats |
+| `chat_screen_test.dart` | 17 | Replies, crisis sheet (cannot be dismissed by accident, call buttons), quick replies, tappable answers to Chipu's questions, Chipu's check-in on a recent worry, errors, mood check-in in chat, week graph, new chat, past chats |
 | `home_mood_test.dart` | 12 | Level thresholds, Nairobi day and week boundaries, Home, mood check-in and summary, mood history, delete |
 | `mood_insights_test.dart` | 15 | Every insight rule (hard days, weekdays, time of day, tags, notes, chat feelings, habit) |
 | `learn_rewards_test.dart` | 11 | Articles, read XP and badge pop-up, Rewards, badge progress, recommendations |
@@ -45,7 +45,7 @@ only finished when CI is green.
 | `badge_watcher_test.dart` | 5 | New badges found once, not twice, not after the article pop-up; pop-up; badge notification in Kiswahili |
 | `widget_test.dart` | 1 | App starts without keys |
 | `supabase/functions/chat/backup_nlu_test.ts` | 6 | Backup model: same hash, clean-up and answers as the Python model on all 72 test phrases, names, replies with the backup |
-| `supabase/functions/chat/logic_test.ts` | 27 | Crisis phrases (EN/SW/Sheng, whole words), reply rules, names, confidence threshold, asking what's behind a feeling and the help offered, nicknames, every reply in both languages |
+| `supabase/functions/chat/logic_test.ts` | 33 | Crisis phrases (EN/SW/Sheng, whole words), reply rules, names, confidence threshold, asking what's behind a feeling and the help offered, nicknames, every tappable answer understood in both languages, check-ins on a recent worry, every reply in both languages |
 
 ## 2. Database tests
 

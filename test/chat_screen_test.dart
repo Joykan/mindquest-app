@@ -13,9 +13,12 @@ import 'fakes.dart';
 /// Answers from a fixed list instead of calling Supabase.
 class FakeBackend extends ChatBackend {
   FakeBackend(this.replies,
-      {this.restored, this.past = const <ChatSessionSummary>[]});
+      {this.restored, this.past = const <ChatSessionSummary>[], this.checkIn});
 
   final List<ChatReply> replies;
+
+  /// Chipu's check-in on a recent worry, given once.
+  ChatReply? checkIn;
   final List<String> sent = <String>[];
   final RestoredChat? restored;
   final List<ChatSessionSummary> past;
@@ -28,6 +31,13 @@ class FakeBackend extends ChatBackend {
 
   @override
   Future<RestoredChat?> restore() async => restored;
+
+  @override
+  Future<ChatReply?> opening() async {
+    final ChatReply? c = checkIn;
+    checkIn = null;
+    return c;
+  }
 
   @override
   Future<List<ChatSessionSummary>> loadPastChats() async => past;
@@ -324,5 +334,102 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('old question'), findsOneWidget);
     expect(find.text('old answer'), findsOneWidget);
+  });
+
+  testWidgets('answers to Chipu\'s question can be tapped, then go away',
+      (tester) async {
+    final FakeBackend backend = FakeBackend(<ChatReply>[
+      const ChatReply(
+          reply: "What's been weighing on you?",
+          options: <String>['School', 'Money', 'Something else']),
+      const ChatReply(
+          reply:
+              'Exams and schoolwork can pile up. Would a short breathing exercise help?',
+          options: <String>['Yes, please', 'No, thanks']),
+      const ChatReply(reply: "Let's breathe together."),
+    ]);
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: ChatScreen(backend: backend)));
+    // The usual suggestions first.
+    expect(find.text(quickReplies[1]), findsOneWidget);
+
+    await sendMessage(tester, "I'm stressed");
+    expect(find.byKey(const Key('answer-0')), findsOneWidget);
+    expect(find.text('Money'), findsOneWidget);
+    expect(find.text(quickReplies[1]), findsNothing);
+
+    await tester.tap(find.text('School'));
+    await tester.pumpAndSettle();
+    expect(backend.sent.last, 'School');
+    expect(find.text('Yes, please'), findsOneWidget);
+    expect(find.text('Money'), findsNothing);
+
+    await tester.tap(find.text('Yes, please'));
+    await tester.pumpAndSettle();
+    expect(backend.sent, <String>["I'm stressed", 'School', 'Yes, please']);
+    // A reply without a question brings the suggestions back.
+    expect(find.byKey(const Key('answer-0')), findsNothing);
+    expect(find.text(quickReplies[1]), findsOneWidget);
+  });
+
+  testWidgets('typing instead of tapping also clears the answers',
+      (tester) async {
+    final FakeBackend backend = FakeBackend(<ChatReply>[
+      const ChatReply(
+          reply: "What's been weighing on you?",
+          options: <String>['School', 'Money']),
+      const ChatReply(reply: 'Thank you for telling me.'),
+    ]);
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: ChatScreen(backend: backend)));
+    await sendMessage(tester, "I'm stressed");
+    await sendMessage(tester, 'my roommate is loud');
+    expect(find.text('School'), findsNothing);
+  });
+
+  testWidgets('Chipu opens a new chat by checking in on a recent worry',
+      (tester) async {
+    final FakeBackend backend = FakeBackend(
+      <ChatReply>[
+        const ChatReply(reply: "That's really good to hear! 🎉"),
+      ],
+      checkIn: const ChatReply(
+          reply: 'Hey Candy! Last time you told me school was weighing on you. '
+              'How is it going now?',
+          sessionId: 's9',
+          options: <String>['Better 🙂', 'About the same', 'Worse']),
+    );
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: ChatScreen(backend: backend)));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Last time you told me school'), findsOneWidget);
+    expect(find.text('About the same'), findsOneWidget);
+    await tester.tap(find.text('Better 🙂'));
+    await tester.pumpAndSettle();
+    expect(backend.sent, <String>['Better 🙂']);
+    expect(find.text("That's really good to hear! 🎉"), findsOneWidget);
+    expect(find.text('About the same'), findsNothing);
+  });
+
+  testWidgets('with nothing to check in on, the usual greeting stays',
+      (tester) async {
+    final FakeBackend backend = FakeBackend(<ChatReply>[]);
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: ChatScreen(backend: backend)));
+    await tester.pumpAndSettle();
+    expect(find.textContaining("I'm Chipu"), findsOneWidget);
+    expect(find.byKey(const Key('answer-0')), findsNothing);
+  });
+
+  test('the reply\'s answers are read from the server', () {
+    final ChatReply r = ChatReply.fromJson(<String, dynamic>{
+      'reply': 'Would a short breathing exercise help?',
+      'session_id': 's1',
+      'options': <dynamic>['Yes, please', 'No, thanks', 7, ''],
+    });
+    expect(r.options, <String>['Yes, please', 'No, thanks']);
+    expect(
+        ChatReply.fromJson(<String, dynamic>{'reply': 'Hi'}).options, isEmpty);
   });
 }

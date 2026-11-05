@@ -1,11 +1,15 @@
 import { deepStrictEqual as assertEquals, ok as assert } from "node:assert";
 import { isCrisis, normalize } from "./crisis.ts";
 import {
+  chipParse,
   cleanName,
   decide,
   findCause,
+  FOLLOW_UP_CAUSES,
+  followUp,
   introducesName,
   nickname,
+  optionsFor,
   type RasaParse,
   resolve,
   soundsHappy,
@@ -345,10 +349,121 @@ Deno.test("a cause in the first message skips the question", () => {
 Deno.test("not knowing, or changing the subject, is fine", () => {
   const d = decide(parse("deny", 0.9), "ask_cause_anxious", "en", first, "I don't know");
   assertEquals(d.replyKey, "offer_breathing");
+  assertEquals(d.intent, "cause_unsure");
   assert(d.text.startsWith("That's okay"));
   assertEquals(
     decide(parse("ask_breathing", 0.9), "ask_cause_stress", "en", first, "help me breathe").replyKey,
     "breathing",
   );
   assertEquals(decide(parse("thank", 0.9), "ask_cause_stress", "en", first, "thanks").replyKey, "thank");
+});
+
+// --- tappable answers -------------------------------------------------------
+
+/** What Chipu replies when the user taps an answer under `previousKey`. */
+function tap(answer: string, previousKey: string, lang: "en" | "sw" = "en") {
+  const p = chipParse(answer, previousKey);
+  assert(p, `"${answer}" is read as a tap after ${previousKey}`);
+  return decide(p, previousKey, lang, first, answer, 0);
+}
+
+Deno.test("Chipu's questions come with answers to tap, in the user's language", () => {
+  assertEquals(optionsFor("ask_cause_stress", "en"), [
+    "School",
+    "Money",
+    "Family",
+    "Friends",
+    "Something else",
+    "I don't know",
+  ]);
+  assertEquals(optionsFor("ask_cause_sad", "sw")[0], "Masomo");
+  assertEquals(optionsFor("offer_breathing", "en"), ["Yes, please", "No, thanks"]);
+  assertEquals(optionsFor("confirm_name:Joy", "sw"), ["Ndiyo", "Hapana"]);
+  assertEquals(optionsFor("follow_up:school", "en").length, 3);
+  // Plain replies have none.
+  assertEquals(optionsFor("breathing", "en"), []);
+  assertEquals(optionsFor("greet", "en"), []);
+  assertEquals(optionsFor(null, "en"), []);
+});
+
+Deno.test("every tapped cause answer is understood, in both languages", () => {
+  const expected: Record<string, string[]> = {
+    ask_cause_stress: ["school", "money", "family", "friends", "other", "unsure"],
+    ask_cause_numb: ["exhausted", "overwhelmed", "empty", "other", "unsure"],
+    ask_cause_lonely: ["family", "friends", "school", "other"],
+    ask_cause_tired: ["health", "overwhelmed", "other"],
+  };
+  for (const [question, causes] of Object.entries(expected)) {
+    for (const lang of ["en", "sw"] as const) {
+      const options = optionsFor(question, lang);
+      assertEquals(options.length, causes.length, `${question} ${lang}`);
+      options.forEach((answer, i) => {
+        const d = tap(answer, question, lang);
+        assertEquals(d.intent, `cause_${causes[i]}`, `${question} ${lang} "${answer}"`);
+        assert(d.replyKey.startsWith("offer_"));
+      });
+    }
+  }
+});
+
+Deno.test("tapped yes and no answer Chipu's offer", () => {
+  assertEquals(tap("Yes, please", "offer_breathing").replyKey, "breathing");
+  assertEquals(tap("No, thanks", "offer_breathing").replyKey, "declined_breathing");
+  assertEquals(tap("Ndiyo, tafadhali", "offer_ideas", "sw").replyKey, "ask_ideas");
+  assertEquals(tap("Ndiyo, tafadhali", "offer_rest", "sw").replyKey, "rest_tips");
+  assertEquals(tap("Yes", "confirm_name:Joy").replyKey, "nice_to_meet");
+  assertEquals(tap("No", "confirm_name:Joy").replyKey, "name_declined");
+});
+
+Deno.test("only the answers shown count as taps; typing goes to the model", () => {
+  assertEquals(chipParse("School", "greet"), null);
+  assertEquals(chipParse("yes", "offer_breathing"), null);
+  assertEquals(chipParse("my exams are hard", "ask_cause_stress"), null);
+  assertEquals(chipParse("  school!  ", "ask_cause_stress")?.intent.name, "nlu_fallback");
+});
+
+// --- Chipu remembers --------------------------------------------------------
+
+Deno.test("Chipu checks in on a recent worry using only its label", () => {
+  const c = followUp("cause_school", "en", first, "Candy");
+  assertEquals(c?.replyKey, "follow_up:school");
+  assertEquals(c?.text, "Hey Candy! Last time you told me school was weighing on you. How is it going now?");
+  assertEquals(c?.options, ["Better 🙂", "About the same", "Worse"]);
+  assert(followUp("cause_money", "sw", first)?.text.startsWith("Habari! "));
+  // Nothing to check in on.
+  assertEquals(followUp("cause_other", "en"), null);
+  assertEquals(followUp("cause_unsure", "en"), null);
+  assertEquals(followUp("feel_stressed", "en"), null);
+  assertEquals(followUp(null, "en"), null);
+  for (const kind of FOLLOW_UP_CAUSES) {
+    for (const lang of ["en", "sw"] as const) assert(followUp(`cause_${kind}`, lang), `${kind} ${lang}`);
+  }
+});
+
+Deno.test("the check-in's answers: better is celebrated, same or worse gets help", () => {
+  const better = tap("Better 🙂", "follow_up:school");
+  assertEquals(better.intent, "follow_better");
+  assertEquals(better.replyKey, "follow_better");
+  assertEquals(optionsFor(better.replyKey, "en"), []);
+
+  const same = tap("Bado vile vile", "follow_up:money", "sw");
+  assertEquals(same.intent, "follow_same");
+  assertEquals(same.replyKey, "offer_breathing");
+
+  const worse = tap("Worse", "follow_up:family");
+  assertEquals(worse.intent, "follow_worse");
+  assert(worse.text.includes("Support page"));
+  assertEquals(worse.replyKey, "offer_breathing");
+  // Then the offer's own answers.
+  assertEquals(tap("Yes, please", worse.replyKey).replyKey, "breathing");
+
+  // Typed instead of tapped: a good mood counts as better; a feeling starts over.
+  assertEquals(
+    decide(parse("feel_good", 0.9), "follow_up:school", "en", first, "much better").intent,
+    "follow_better",
+  );
+  assertEquals(
+    decide(parse("feel_stressed", 0.9), "follow_up:school", "en", first, "still stressed").replyKey,
+    "ask_cause_stress",
+  );
 });
