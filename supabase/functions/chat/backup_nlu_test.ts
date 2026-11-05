@@ -15,7 +15,7 @@ Deno.test("text clean-up", () => {
   assertEquals(clean("Nina stress ya mitihani 😩"), "nina stress ya mitihani");
 });
 
-Deno.test("same answers as the Python model on all 60 test phrases", () => {
+Deno.test("same answers as the Python model on every test phrase", () => {
   for (const e of expected as { text: string; intent: string; confidence: number }[]) {
     const p = backupParse(e.text);
     assertEquals(p.intent.name, e.intent, e.text);

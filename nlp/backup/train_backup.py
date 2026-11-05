@@ -30,8 +30,8 @@ from sklearn.model_selection import StratifiedKFold
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / 'nlp/rasa/data/nlu.yml'
-TESTS = {'test_nlu (48)': ROOT / 'nlp/rasa/tests/test_nlu.yml',
-         'test_names (12)': ROOT / 'nlp/rasa/tests/test_names.yml'}
+TESTS = {'test_nlu': ROOT / 'nlp/rasa/tests/test_nlu.yml',
+         'test_names': ROOT / 'nlp/rasa/tests/test_names.yml'}
 OUT = ROOT / 'supabase/functions/chat/backup_model.ts'
 
 DIM = 2048          # hash buckets (small, so the model is only ~35 KB)

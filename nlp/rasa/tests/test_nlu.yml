@@ -84,3 +84,24 @@ nlu:
     - what could I do to feel less bored
     - nipe wazo la kitu cha kufanya
     - nifanye nini kupitisha muda
+
+- intent: feel_numb
+  examples: |
+    - I just feel nothing lately
+    - I feel completely empty inside
+    - sihisi chochote siku hizi
+    - niko tu bila hisia
+
+- intent: feel_lonely
+  examples: |
+    - I feel so alone these days
+    - nobody wants to hang out with me
+    - sina mtu wa kuniongelesha
+    - nahisi niko peke yangu sana
+
+- intent: feel_tired
+  examples: |
+    - I'm completely exhausted today
+    - I have zero energy
+    - nimechoka mno leo
+    - sina nguvu kabisa

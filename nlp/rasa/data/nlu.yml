@@ -356,22 +356,18 @@ nlu:
     - nina woga
 
 - intent: feel_sad
-  # User describes sadness or loneliness
+  # User describes sadness (loneliness and numbness have their own intents)
   examples: |
     - I feel sad
     - I'm feeling down
     - I feel low today
     - I've been crying
-    - I feel empty
     - nothing makes me happy
-    - I feel lonely
     - I'm really depressed
-    - I feel like nobody cares
     - I'm heartbroken
     - I miss my family
     - I'm not okay
     - I feel unhappy
-    - I feel alone
     - I've been sad for days
     - my heart feels heavy
     - I don't feel good
@@ -380,35 +376,27 @@ nlu:
     - I'm not fine
     - I feel really low
     - I'm so unhappy
-    - I've been feeling empty
-    - I'm feeling lonely
     - everything feels sad
     - I can't stop crying
     - nobody understands me
-    - I feel left out
     - I'm grieving
     - nina huzuni
     - najisikia vibaya
     - nimeshuka moyo
     - nimekuwa nikilia
-    - najihisi mtupu
     - hakuna kinachonifurahisha
-    - nahisi upweke
     - nina majonzi
-    - hakuna anayenijali
     - moyo wangu umevunjika
     - sijisikii vizuri
     - nimevunjika moyo
     - nawakumbuka familia yangu
     - siko sawa
-    - najisikia mpweke
     - moyo wangu uko chini
     - nimejawa na huzuni
     - sina furaha
     - siko vizuri
     - sijisikii sawa
     - nimehuzunika
-    - nimekuwa mpweke
     - sina raha
     - nalia kila siku
     - nimekosa furaha
@@ -626,6 +614,169 @@ nlu:
     - nipe mbinu za kujishughulisha
     - nifanye nini sasa
     - leo nifanye nini iwe siku nzuri
+
+- intent: feel_numb
+  # User feels numb, empty or emotionless
+  examples: |
+    - I feel numb
+    - I feel emotionless
+    - I don't feel anything
+    - I feel empty
+    - I've been feeling empty
+    - I feel nothing at all
+    - I can't feel anything anymore
+    - I feel dead inside
+    - everything feels flat
+    - I feel disconnected
+    - I feel blank
+    - I'm just numb
+    - I can't even cry anymore
+    - I don't care about anything anymore
+    - nothing feels real
+    - I feel hollow
+    - I'm feeling emotionless and stressed
+    - I feel switched off
+    - I'm on autopilot
+    - I feel like a robot
+    - I feel detached from everything
+    - my emotions are gone
+    - I feel numb inside
+    - I feel empty and tired
+    - I don't feel happy or sad, just nothing
+    - najihisi mtupu
+    - sijisikii chochote
+    - sihisi kitu chochote
+    - nimekufa ganzi moyoni
+    - sina hisia
+    - hisia zangu zimepotea
+    - najihisi tupu ndani
+    - sina hisia yoyote
+    - siwezi hata kulia
+    - sijali chochote tena
+    - kila kitu kimepoteza ladha
+    - najihisi kama roboti
+    - nimejitenga na kila kitu
+    - moyo wangu umekufa ganzi
+    - sihisi furaha wala huzuni
+    - najihisi baridi ndani
+    - niko tu, sihisi kitu
+    - akili yangu imezima
+    - nimepoteza hisia
+    - sina hamu ya kitu chochote
+    - kila kitu ni sawa tu kwangu
+    - niko blank
+    - niko numb
+    - sifeel kitu
+    - najiskia empty
+
+- intent: feel_lonely
+  # User feels lonely or left out
+  examples: |
+    - I feel lonely
+    - I'm so lonely
+    - I feel alone
+    - I'm feeling lonely
+    - I feel left out
+    - I feel like nobody cares
+    - nobody cares about me
+    - I have no friends
+    - I feel isolated
+    - I'm always alone
+    - no one talks to me
+    - I feel invisible
+    - I have no one to talk to
+    - everyone left me
+    - I miss having friends
+    - I feel lonely at school
+    - I feel lonely at home
+    - I feel like an outsider
+    - nobody checks on me
+    - I don't belong anywhere
+    - I'm lonely even with people around
+    - I feel forgotten
+    - I wish I had someone to talk to
+    - all my friends are busy
+    - I feel abandoned
+    - I sit alone every day
+    - nahisi upweke
+    - najisikia mpweke
+    - nimekuwa mpweke
+    - hakuna anayenijali
+    - niko peke yangu
+    - sina marafiki
+    - hakuna anayeongea nami
+    - najihisi nimetengwa
+    - sina mtu wa kuongea naye
+    - kila mtu ameniacha
+    - najihisi kama sionekani
+    - nimeachwa peke yangu
+    - najihisi sihusiki popote
+    - nakosa marafiki
+    - upweke unaniumiza
+    - niko pekee shuleni
+    - hakuna anayenitafuta
+    - nahisi nimesahaulika
+    - natamani mtu wa kuongea naye
+    - marafiki zangu wote wako busy
+    - niko solo
+    - sina mabeshte
+    - hakuna anajali
+    - najiskia lonely
+    - niko mwenyewe kila siku
+
+- intent: feel_tired
+  # User feels tired, drained or burnt out
+  examples: |
+    - I'm so tired
+    - I'm exhausted
+    - I feel drained
+    - I'm burnt out
+    - I have no energy
+    - I'm worn out
+    - I feel so tired all the time
+    - I'm mentally exhausted
+    - I'm physically exhausted
+    - I'm too tired to do anything
+    - I just want to sleep
+    - I'm running on empty
+    - I'm fatigued
+    - I'm sleepy all the time
+    - I'm drained from school
+    - I'm exhausted from work
+    - I feel heavy and tired
+    - I'm burned out
+    - I have no strength left
+    - my body is so tired
+    - I'm tired but I can't sleep
+    - everything takes so much energy
+    - I'm too worn out to care
+    - I'm tired all the time
+    - I need rest so badly
+    - nimechoka
+    - nimechoka sana
+    - sina nguvu
+    - nimechoka kabisa
+    - nimechoshwa
+    - mwili wangu umechoka
+    - akili yangu imechoka
+    - sina nguvu ya kufanya chochote
+    - nataka kulala tu
+    - nimeishiwa nguvu
+    - nimelemewa na uchovu
+    - nimechoka na shule
+    - nimechoka na kazi
+    - nina uchovu mwingi
+    - nahisi uzito na uchovu
+    - nimechoka lakini siwezi kulala
+    - kila kitu kinanichosha
+    - nimechoka kiakili
+    - nimechoka kimwili
+    - sina energy
+    - niko tired sana
+    - nimechoka mbaya
+    - nimechoka kinoma
+    - niko exhausted
+    - nahitaji kupumzika sana
 
 - intent: tell_name
   # User says their name (name is extracted as an entity)

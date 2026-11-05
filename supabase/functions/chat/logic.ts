@@ -62,15 +62,32 @@ export function soundsHappy(text: string): boolean {
 const OFFERS_BREATHING = new Set(["feel_stressed", "feel_anxious", "offer_breathing"]);
 
 /**
- * Feelings Chipu asks about first ("What's been stressing you out?") before
- * offering help. The reply key says which feeling, so the next message is
- * read as the answer.
+ * Feelings Chipu asks about first ("What's been weighing on you?") before
+ * offering help: the question's reply key (the next message is read as the
+ * answer) and the help offered afterwards.
  */
-const ASK_CAUSE: Record<string, string> = {
-  feel_stressed: "ask_cause_stress",
-  feel_anxious: "ask_cause_anxious",
-  feel_sad: "ask_cause_sad",
+const FEELINGS: Record<string, { ask: string; offer: string }> = {
+  feel_stressed: { ask: "ask_cause_stress", offer: "offer_breathing" },
+  feel_anxious: { ask: "ask_cause_anxious", offer: "offer_breathing" },
+  feel_sad: { ask: "ask_cause_sad", offer: "offer_ideas" },
+  feel_numb: { ask: "ask_cause_numb", offer: "offer_ideas" },
+  feel_lonely: { ask: "ask_cause_lonely", offer: "offer_ideas" },
+  feel_tired: { ask: "ask_cause_tired", offer: "offer_rest" },
 };
+
+/**
+ * A cause that only repeats the feeling ("I'm so tired" is not a cause of
+ * feeling tired), so Chipu still asks. Loneliness is always asked about.
+ */
+const feelingWord: Record<string, string> = {
+  feel_tired: "exhausted",
+  feel_numb: "empty",
+};
+
+/** The feeling a question was about (ask_cause_stress → feel_stressed). */
+const ASKED: Record<string, string> = Object.fromEntries(
+  Object.entries(FEELINGS).map(([feeling, f]) => [f.ask, feeling]),
+);
 
 /** Intents that change the subject instead of answering "what's behind it". */
 const CHANGES_SUBJECT = new Set([
@@ -105,6 +122,18 @@ const CAUSES: [string, RegExp][] = [
     "health",
     /\b(sick|ill|illness|health|pain|sleep|insomnia|hospital|doctor|mgonjwa|ugonjwa|afya|maumivu|usingizi|hospitali|daktari)\b/,
   ],
+  [
+    "exhausted",
+    /\b(exhausted|tired|drained|burnt out|burned out|worn out|no energy|nimechoka|uchovu|sina nguvu|sina energy)\b/,
+  ],
+  [
+    "overwhelmed",
+    /\b(overwhelmed|too much|so much going on|everything at once|nimelemewa|mengi sana|kila kitu kwa wakati mmoja)\b/,
+  ],
+  [
+    "empty",
+    /\b(empty|nothing matters|hollow|numb|mtupu|tupu|sina hisia)\b/,
+  ],
 ];
 
 /** "I don't know", "nothing", "sijui", "sitaki kuongea". */
@@ -115,7 +144,7 @@ function words(text: string): string {
   return text.toLowerCase().replace(/['’`]/g, " ").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 }
 
-/** school, money, family, friends, health, or other. */
+/** school, money, family, friends, health, exhausted, overwhelmed, empty, or other. */
 export function findCause(text: string): string {
   const t = words(text);
   for (const [cause, re] of CAUSES) {
@@ -175,10 +204,29 @@ export function resolve(parse: RasaParse, threshold = THRESHOLD): Resolved {
   return { intent: top.name, confidence: top.confidence };
 }
 
-function pick(key: string, lang: Lang, rng: () => number, name?: string): string {
+/**
+ * One of the reply's variants. {name} is a name just given; "{ nick}" and
+ * "{, nick}" put the user's nickname in ("Hey Candy!", "I'm sorry, Candy.")
+ * or leave nothing when there is none.
+ */
+export function pick(
+  key: string,
+  lang: Lang,
+  rng: () => number,
+  name?: string,
+  nick?: string | null,
+): string {
   const options = REPLIES[key]?.[lang] ?? REPLIES.fallback[lang];
-  const text = options[Math.floor(rng() * options.length)];
-  return name ? text.replaceAll("{name}", name) : text;
+  let text = options[Math.floor(rng() * options.length)];
+  if (name) text = text.replaceAll("{name}", name);
+  return text.replaceAll("{ nick}", nick ? ` ${nick}` : "").replaceAll("{, nick}", nick ? `, ${nick}` : "");
+}
+
+/** The nickname to use in replies, or null ("Friend" is the default for no name). */
+export function nickname(username: string | null | undefined): string | null {
+  const n = (username ?? "").trim();
+  if (!n || n.toLowerCase() === "friend" || n.length > 30) return null;
+  return n;
 }
 
 /**
@@ -194,6 +242,7 @@ export function decide(
   rng: () => number = Math.random,
   text = "",
   threshold = THRESHOLD,
+  nick: string | null = null,
 ): Decision {
   if (!parse) {
     return { intent: null, confidence: null, replyKey: "unavailable", text: pick("unavailable", lang, rng) };
@@ -206,7 +255,7 @@ export function decide(
     intent: r.intent,
     confidence: r.confidence,
     replyKey,
-    text: pick(textKey, lang, rng, name),
+    text: pick(textKey, lang, rng, name, nick),
   });
 
   // Answers to the bot's last question.
@@ -223,21 +272,28 @@ export function decide(
     if (r.intent === "affirm") return out("ask_ideas");
     if (r.intent === "deny") return out("deny");
   }
+  if (previousReplyKey === "offer_rest") {
+    if (r.intent === "affirm") return out("rest_tips");
+    if (r.intent === "deny") return out("deny");
+  }
 
-  // The answer to "What's been stressing you out?": an understanding reply
-  // about that (school, money, ...) and an offer of help. The message is
-  // recorded as cause_<what> (labels only, for the dashboard).
+  // An understanding reply about what's behind the feeling (school, money,
+  // ...) and an offer of help. The answer to Chipu's question is recorded as
+  // cause_<what> (labels only, for the dashboard).
+  // Some feelings have their own wording (cause_family_lonely).
   const cause = (feeling: string, kind: string, intent: string): Decision => {
-    const offer = feeling === "sad" ? "offer_ideas" : "offer_breathing";
+    const offer = FEELINGS[feeling].offer;
+    const own = `cause_${kind}_${feeling.slice("feel_".length)}`;
+    const key = own in REPLIES ? own : `cause_${kind}`;
     return {
       intent,
       confidence: r.confidence,
       replyKey: offer,
-      text: `${pick(`cause_${kind}`, lang, rng)} ${pick(offer, lang, rng)}`,
+      text: `${pick(key, lang, rng, undefined, nick)} ${pick(offer, lang, rng, undefined, nick)}`,
     };
   };
-  if (previousReplyKey?.startsWith("ask_cause_") && !CHANGES_SUBJECT.has(r.intent)) {
-    const feeling = previousReplyKey.slice("ask_cause_".length);
+  if (previousReplyKey && previousReplyKey in ASKED && !CHANGES_SUBJECT.has(r.intent)) {
+    const feeling = ASKED[previousReplyKey];
     const kind = findCause(text);
     if (kind === "other" && (r.intent === "deny" || UNSURE.test(words(text)))) {
       return cause(feeling, "unsure", r.intent);
@@ -257,25 +313,28 @@ export function decide(
       return out("breathing");
     case "feel_stressed":
     case "feel_anxious":
-    case "feel_sad": {
-      const feeling = ASK_CAUSE[r.intent].slice("ask_cause_".length);
+    case "feel_sad":
+    case "feel_numb":
+    case "feel_lonely":
+    case "feel_tired": {
+      const f = FEELINGS[r.intent];
       // "I'm stressed about exams": the cause is already there.
       const kind = findCause(text);
-      if (kind !== "other") return cause(feeling, kind, r.intent);
+      if (kind !== "other" && kind !== feelingWord[r.intent] && r.intent !== "feel_lonely") {
+        return cause(r.intent, kind, r.intent);
+      }
       // Already talking about it: offer help instead of asking again.
       const inThread = previousReplyKey !== null &&
-        (previousReplyKey.startsWith("ask_cause_") || previousReplyKey.startsWith("offer_") ||
-          previousReplyKey in ASK_CAUSE);
-      if (!inThread) return out(ASK_CAUSE[r.intent]);
-      if (r.intent === "feel_sad") {
-        return {
-          intent: r.intent,
-          confidence: r.confidence,
-          replyKey: "offer_ideas",
-          text: `${pick("feel_sad_again", lang, rng)} ${pick("offer_ideas", lang, rng)}`,
-        };
-      }
-      return out(r.intent);
+        (previousReplyKey in ASKED || previousReplyKey.startsWith("offer_") ||
+          previousReplyKey in FEELINGS);
+      if (!inThread) return out(f.ask);
+      if (f.offer === "offer_breathing") return out(r.intent);
+      return {
+        intent: r.intent,
+        confidence: r.confidence,
+        replyKey: f.offer,
+        text: `${pick("with_you", lang, rng, undefined, nick)} ${pick(f.offer, lang, rng, undefined, nick)}`,
+      };
     }
     default:
       return out(r.intent in REPLIES ? r.intent : "fallback");

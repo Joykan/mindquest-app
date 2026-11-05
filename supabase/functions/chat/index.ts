@@ -22,7 +22,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { isCrisis } from "./crisis.ts";
 import { BACKUP_THRESHOLD, backupParse } from "./backup_nlu.ts";
-import { decide, type RasaParse, THRESHOLD } from "./logic.ts";
+import { decide, nickname, type RasaParse, THRESHOLD } from "./logic.ts";
 import { type Lang, REPLIES } from "./replies.ts";
 
 const MAX_LENGTH = 1000;
@@ -110,7 +110,7 @@ Deno.serve(async (req) => {
   if (!text) return json({ error: "text is required" }, 400);
   if (text.length > MAX_LENGTH) return json({ error: `text is longer than ${MAX_LENGTH} characters` }, 400);
 
-  const { data: profile } = await db.from("profiles").select("language").eq("id", userId).single();
+  const { data: profile } = await db.from("profiles").select("language, username").eq("id", userId).single();
   const lang: Lang = profile?.language === "sw" ? "sw" : "en";
 
   // Use the given session if it is theirs and still open, otherwise start one.
@@ -180,6 +180,7 @@ Deno.serve(async (req) => {
     Math.random,
     text,
     fromRasa ? THRESHOLD : BACKUP_THRESHOLD,
+    nickname(profile?.username),
   );
   const responseMs = elapsed();
 

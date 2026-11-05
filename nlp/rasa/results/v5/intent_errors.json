@@ -1,0 +1,34 @@
+[
+  {
+    "text": "good day",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "feel_good",
+      "confidence": 0.9999402761459351
+    }
+  },
+  {
+    "text": "akili haitulii",
+    "intent": "feel_anxious",
+    "intent_prediction": {
+      "name": "ask_breathing",
+      "confidence": 0.9206095337867737
+    }
+  },
+  {
+    "text": "unanisaidiaje",
+    "intent": "ask_about_bot",
+    "intent_prediction": {
+      "name": "thank",
+      "confidence": 0.6232683062553406
+    }
+  },
+  {
+    "text": "sina mtu wa kuniongelesha",
+    "intent": "feel_lonely",
+    "intent_prediction": {
+      "name": "feel_stressed",
+      "confidence": 0.4787358045578003
+    }
+  }
+]

@@ -5,9 +5,11 @@ import {
   decide,
   findCause,
   introducesName,
+  nickname,
   type RasaParse,
   resolve,
   soundsHappy,
+  THRESHOLD,
 } from "./logic.ts";
 
 const first = () => 0; // always pick the first reply variant
@@ -186,6 +188,95 @@ Deno.test("every intent the model knows has a reply in both languages", async ()
   ) {
     assert(REPLIES[key]?.en?.length && REPLIES[key]?.sw?.length, key);
   }
+  // Every reply key the feeling flow can give.
+  for (const key of Object.keys(REPLIES).filter((k) => /^(ask_cause_|cause_|offer_)/.test(k))) {
+    assertEquals(REPLIES[key].en.length > 0 && REPLIES[key].sw.length > 0, true, key);
+  }
+  for (const f of ["stress", "anxious", "sad", "numb", "lonely", "tired"]) {
+    assert(REPLIES[`ask_cause_${f}`], f);
+  }
+  for (
+    const k of [
+      "school",
+      "money",
+      "family",
+      "friends",
+      "health",
+      "exhausted",
+      "overwhelmed",
+      "empty",
+      "other",
+      "unsure",
+    ]
+  ) {
+    assert(REPLIES[`cause_${k}`], k);
+  }
+  for (const k of ["rest_tips", "with_you", "offer_breathing", "offer_ideas", "offer_rest"]) {
+    assert(REPLIES[k], k);
+  }
+});
+
+Deno.test("numb, lonely and tired: asked about, then the right help", () => {
+  const numb = decide(
+    parse("feel_numb", 0.9),
+    null,
+    "en",
+    first,
+    "I feel stressed and emotionless",
+    THRESHOLD,
+    "Candy",
+  );
+  assertEquals(numb.replyKey, "ask_cause_numb");
+  assert(numb.text.startsWith("I'm sorry, Candy."));
+  assert(numb.text.includes("exhausted, overwhelmed, empty"));
+  const after = decide(parse("nlu_fallback", 0.3), "ask_cause_numb", "en", first, "just exhausted honestly");
+  assertEquals(after.intent, "cause_exhausted");
+  assertEquals(after.replyKey, "offer_ideas");
+  assertEquals(decide(parse("affirm", 0.9), "offer_ideas", "en", first).replyKey, "ask_ideas");
+
+  // Loneliness is always asked about, with its own wording afterwards.
+  assertEquals(
+    decide(parse("feel_lonely", 0.9), null, "sw", first, "niko peke yangu shuleni").replyKey,
+    "ask_cause_lonely",
+  );
+  const lonely = decide(
+    parse("feel_lonely", 0.8),
+    "ask_cause_lonely",
+    "en",
+    first,
+    "I feel left out by my friends",
+  );
+  assertEquals(lonely.intent, "cause_friends");
+  assert(lonely.text.startsWith("Feeling left out really hurts."));
+
+  // "I'm so tired" doesn't count as the cause of being tired.
+  assertEquals(
+    decide(parse("feel_tired", 0.9), null, "en", first, "I'm so tired").replyKey,
+    "ask_cause_tired",
+  );
+  const rest = decide(parse("nlu_fallback", 0.2), "ask_cause_tired", "en", first, "I can't sleep at night");
+  assertEquals(rest.intent, "cause_health");
+  assertEquals(rest.replyKey, "offer_rest");
+  assertEquals(decide(parse("affirm", 0.9), "offer_rest", "en", first).replyKey, "rest_tips");
+  assertEquals(decide(parse("deny", 0.9), "offer_rest", "en", first).replyKey, "deny");
+});
+
+Deno.test("the nickname is used when there is one", () => {
+  assertEquals(
+    decide(parse("greet", 0.9), null, "en", first, "hey", THRESHOLD, "Candy").text,
+    "Hey Candy! 😊 I'm here. How are you feeling today?",
+  );
+  assertEquals(
+    decide(parse("greet", 0.9), null, "en", first, "hey").text,
+    "Hey! 😊 I'm here. How are you feeling today?",
+  );
+  assertEquals(
+    decide(parse("greet", 0.9), null, "sw", first, "mambo", THRESHOLD, "Amani").text,
+    "Mambo Amani! 😊 Niko hapa. Unajisikiaje leo?",
+  );
+  assertEquals(nickname("Friend"), null);
+  assertEquals(nickname("  Candy "), "Candy");
+  assertEquals(nickname(""), null);
 });
 
 Deno.test("rule 3: a name with no name found, plus a happy word, is read as feeling good", () => {
@@ -210,7 +301,7 @@ Deno.test("soundsHappy only matches whole happy words", () => {
 Deno.test("a feeling: Chipu first asks what's behind it", () => {
   const d = decide(parse("feel_stressed", 0.9), null, "en", first, "I'm stressed");
   assertEquals(d.replyKey, "ask_cause_stress");
-  assert(d.text.includes("What's been stressing you out?"));
+  assert(d.text.includes("What's been weighing on you?"));
   assertEquals(
     decide(parse("feel_anxious", 0.9), "greet", "sw", first, "nina wasiwasi").replyKey,
     "ask_cause_anxious",

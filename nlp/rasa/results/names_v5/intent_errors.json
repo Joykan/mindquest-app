@@ -1,0 +1,18 @@
+[
+  {
+    "text": "I feel joy",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "tell_name",
+      "confidence": 0.9630773663520813
+    }
+  },
+  {
+    "text": "so much joy today",
+    "intent": "feel_good",
+    "intent_prediction": {
+      "name": "tell_name",
+      "confidence": 0.7291102409362793
+    }
+  }
+]

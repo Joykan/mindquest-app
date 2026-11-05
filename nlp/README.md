@@ -288,6 +288,62 @@ respondents raised privacy). The cost is that Rasa needs its own server, which
 is planned in step 7. Dialogflow's habit of giving no answer when unsure is a
 useful idea, and MindQuest's fallback reply plays the same role.
 
+## v5: numb, lonely and tired (Nov 2026)
+
+From testing the app: "I'm feeling stressed and emotionless" got the same
+short breathing offer as plain stress. To make Chipu more caring without
+leaving the proposal's design (Rasa + written replies), v5 adds three
+feelings and a conversation flow around all of them:
+
+- **New intents:** `feel_numb` (numb, empty, emotionless), `feel_lonely`
+  (lonely, left out, no one to talk to) and `feel_tired` (exhausted,
+  drained, burnt out), each about 25 English and 25 Kiswahili/Sheng
+  examples. Twelve phrases about loneliness and emptiness moved from
+  `feel_sad` to the new intents. 4 new test phrases each (2 English,
+  2 Kiswahili), not in the training data.
+- **Chipu asks what's behind a feeling** (stress, worry, sadness, numbness,
+  loneliness, tiredness), then answers what the student says (school, money,
+  family, friends, health, exhaustion, too much at once, emptiness, or
+  something else, found from English, Kiswahili and Sheng words) and offers
+  help that fits: breathing for stress and worry, small ideas for sadness,
+  numbness and loneliness, ways to recharge for tiredness. This is in the
+  chat function (`logic.ts`, `replies.ts`), not in Rasa.
+- **Warmer replies, with the student's nickname** ("Hey Candy! 😊",
+  "I'm sorry, Candy. Feeling numb or emotionless can be ...").
+
+Trained and tested with Rasa 3.6.21 (same config, same commands as v4):
+
+| Test | v4 | v5 |
+|---|---|---|
+| 5-fold cross-validation (accuracy / macro F1) | 73.7% / 0.75 (619 phrases, 13 intents) | 71.2% / 0.72 (758 phrases, 16 intents) |
+| `test_nlu.yml` | 95.8% (46 of 48) | 93.3% (56 of 60) |
+| New intents, 12 new test phrases | n/a | 11 of 12 |
+| `test_names.yml`, 12 phrases | 83.3% | 83.3% |
+
+What the numbers show:
+
+- **The new feelings work on new wording:** 11 of the 12 held-out phrases
+  were right. The miss, "sina mtu wa kuniongelesha" (lonely), was read as
+  stressed with 0.48 confidence, below the 0.5 cut-off, so Chipu says it
+  didn't understand rather than answering the wrong feeling.
+- **Cross-validation fell by 2.5 points.** The new feelings are close to the
+  old ones: stressed and tired were swapped 15 times, sad was read as lonely
+  or numb 5 times each way. In the chat these mix-ups are mild, because Chipu
+  now asks what's behind the feeling before offering anything.
+- The other 2 errors on `test_nlu.yml` are old ones ("good day",
+  "akili haitulii"); "unanisaidiaje" (how can you help me) was read as thank.
+- The backup model was retrained on the same data (cross-validation 69.3%,
+  `test_nlu.yml` 86.7%).
+
+To use v5 on the PC that runs Rasa (in `nlp/rasa` with the venv active):
+
+```
+rasa train nlu --out models
+```
+
+then restart `serve.ps1`. Results are in `rasa/results/v5`, `names_v5`
+and `cv_v5`.
+
 ## Backup model (when Rasa can't be reached)
 
 Rasa runs on a separate server. If that server is off (for example the PC
@@ -303,7 +359,7 @@ Rasa doesn't answer within 3 seconds.
   `supabase/functions/chat/backup_model.ts`.
 - **Same answers in Python and in the function:** the TypeScript code
   (`backup_nlu.ts`) cleans the text, builds the features and hashes them
-  exactly like the script. `backup_nlu_test.ts` checks that all 60 test
+  exactly like the script. `backup_nlu_test.ts` checks that all 72 test
   phrases get the same intent (and confidence within 0.02) as in Python.
 - **Names:** the backup finds the name in introductions with patterns
   ("my name is …", "naitwa …", "… here"); the name rules in `logic.ts` then
@@ -314,15 +370,16 @@ Rasa doesn't answer within 3 seconds.
 - **Settings chosen by 5-fold cross-validation only** (bucket count, n-gram
   sizes, regularisation), not on the test sets.
 
-| Test | Rasa v4 (DIET) | Backup model |
+| Test | Rasa v5 (DIET) | Backup model |
 |---|---|---|
-| 5-fold cross-validation (accuracy / macro F1) | 73.7% / 0.75 | 72.4% / 0.74 |
-| `test_nlu.yml`, 48 phrases | 95.8% | 85.4% |
+| 5-fold cross-validation (accuracy / macro F1) | 71.2% / 0.72 | 69.3% / 0.70 |
+| `test_nlu.yml`, 60 phrases | 93.3% | 86.7% |
 | `test_names.yml`, 12 phrases | 83.3% | 83.3% |
 
-The backup is close to Rasa in cross-validation but clearly weaker on the
-held-out test phrases (7 mistakes against 2), so it is a safety net, not a
-replacement. The admin dashboard counts how many replies the backup gave
+(With v4's data, before numb, lonely and tired: Rasa 73.7% / 95.8% / 83.3%,
+backup 72.4% / 85.4% / 83.3%.) The backup is close to Rasa in
+cross-validation but clearly weaker on the held-out test phrases (8 mistakes
+against 4), so it is a safety net, not a replacement. The admin dashboard counts how many replies the backup gave
 (Overview: "Rasa down", System health card), which also shows how often the
 Rasa server was unreachable (NFR-SPEC-02).
 

@@ -14,6 +14,9 @@ const Map<String, String> topicNames = <String, String>{
   'feel_anxious': 'Anxious or worried',
   'feel_sad': 'Sad or low',
   'feel_good': 'Feeling good',
+  'feel_numb': 'Numb or empty',
+  'feel_lonely': 'Lonely',
+  'feel_tired': 'Tired or drained',
   'ask_breathing': 'Asked for a breathing exercise',
   'ask_ideas': 'Asked for ideas',
   'ask_about_bot': 'Asked about Chipu',
@@ -23,6 +26,9 @@ const Map<String, String> topicNames = <String, String>{
   'cause_family': 'Behind it: family or home',
   'cause_friends': 'Behind it: friends or relationships',
   'cause_health': 'Behind it: health or sleep',
+  'cause_exhausted': 'Behind it: exhaustion',
+  'cause_overwhelmed': 'Behind it: too much at once',
+  'cause_empty': 'Behind it: feeling empty',
   'cause_other': 'Behind it: something else',
 };
 
