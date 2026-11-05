@@ -17,6 +17,13 @@ const Map<String, String> topicNames = <String, String>{
   'ask_breathing': 'Asked for a breathing exercise',
   'ask_ideas': 'Asked for ideas',
   'ask_about_bot': 'Asked about Chipu',
+  // What students said was behind a feeling, when Chipu asked.
+  'cause_school': 'Behind it: school or exams',
+  'cause_money': 'Behind it: money',
+  'cause_family': 'Behind it: family or home',
+  'cause_friends': 'Behind it: friends or relationships',
+  'cause_health': 'Behind it: health or sleep',
+  'cause_other': 'Behind it: something else',
 };
 
 /// Greetings, thanks, yes/no and names: counted together.

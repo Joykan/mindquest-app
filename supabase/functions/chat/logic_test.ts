@@ -1,6 +1,14 @@
 import { deepStrictEqual as assertEquals, ok as assert } from "node:assert";
 import { isCrisis, normalize } from "./crisis.ts";
-import { cleanName, decide, introducesName, type RasaParse, resolve, soundsHappy } from "./logic.ts";
+import {
+  cleanName,
+  decide,
+  findCause,
+  introducesName,
+  type RasaParse,
+  resolve,
+  soundsHappy,
+} from "./logic.ts";
 
 const first = () => 0; // always pick the first reply variant
 
@@ -118,7 +126,8 @@ Deno.test("an ordinary name is used straight away", () => {
 // --- conversation flow ------------------------------------------------------
 
 Deno.test("stress offers breathing; yes gives the exercise, no gives alternatives", () => {
-  assertEquals(decide(parse("feel_stressed", 0.9), null, "en", first).replyKey, "feel_stressed");
+  // Already talking about it (after a cause was asked): the breathing offer.
+  assertEquals(decide(parse("feel_stressed", 0.9), "offer_breathing", "en", first).replyKey, "feel_stressed");
   assertEquals(decide(parse("affirm", 0.9), "feel_stressed", "en", first).replyKey, "breathing");
   assertEquals(decide(parse("deny", 0.9), "feel_anxious", "en", first).replyKey, "declined_breathing");
 });
@@ -196,4 +205,59 @@ Deno.test("soundsHappy only matches whole happy words", () => {
   assert(soundsHappy("nimefurahi sana"));
   assert(!soundsHappy("joyce is here"));
   assert(!soundsHappy("I feel low"));
+});
+
+Deno.test("a feeling: Chipu first asks what's behind it", () => {
+  const d = decide(parse("feel_stressed", 0.9), null, "en", first, "I'm stressed");
+  assertEquals(d.replyKey, "ask_cause_stress");
+  assert(d.text.includes("What's been stressing you out?"));
+  assertEquals(
+    decide(parse("feel_anxious", 0.9), "greet", "sw", first, "nina wasiwasi").replyKey,
+    "ask_cause_anxious",
+  );
+  assertEquals(decide(parse("feel_sad", 0.9), null, "en", first, "I feel low").replyKey, "ask_cause_sad");
+});
+
+Deno.test("the answer gets an understanding reply about it and an offer", () => {
+  const d = decide(parse("nlu_fallback", 0.3), "ask_cause_stress", "en", first, "my exams next week");
+  assertEquals(d.intent, "cause_school");
+  assertEquals(d.replyKey, "offer_breathing");
+  assert(d.text.startsWith("Exams and schoolwork"));
+  assert(d.text.includes("breathing exercise"));
+  // Then "yes" gives the exercise.
+  assertEquals(decide(parse("affirm", 0.9), "offer_breathing", "en", first).replyKey, "breathing");
+
+  const sw = decide(parse("feel_sad", 0.8), "ask_cause_sad", "sw", first, "wazazi wangu wanagombana");
+  assertEquals(sw.intent, "cause_family");
+  assertEquals(sw.replyKey, "offer_ideas");
+  assert(sw.text.startsWith("Mambo ya nyumbani"));
+  assertEquals(decide(parse("affirm", 0.9), "offer_ideas", "en", first).replyKey, "ask_ideas");
+  assertEquals(decide(parse("deny", 0.9), "offer_ideas", "en", first).replyKey, "deny");
+});
+
+Deno.test("causes in English, Kiswahili and Sheng", () => {
+  assertEquals(findCause("fees haijalipwa"), "money");
+  assertEquals(findCause("sina doo"), "money");
+  assertEquals(findCause("my girlfriend left me"), "friends");
+  assertEquals(findCause("siwezi kulala, usingizi hakuna"), "health");
+  assertEquals(findCause("matokeo ya mtihani"), "school");
+  assertEquals(findCause("everything"), "other");
+});
+
+Deno.test("a cause in the first message skips the question", () => {
+  const d = decide(parse("feel_stressed", 0.9), null, "en", first, "I'm so stressed about money");
+  assertEquals(d.intent, "feel_stressed");
+  assertEquals(d.replyKey, "offer_breathing");
+  assert(d.text.startsWith("Money worries"));
+});
+
+Deno.test("not knowing, or changing the subject, is fine", () => {
+  const d = decide(parse("deny", 0.9), "ask_cause_anxious", "en", first, "I don't know");
+  assertEquals(d.replyKey, "offer_breathing");
+  assert(d.text.startsWith("That's okay"));
+  assertEquals(
+    decide(parse("ask_breathing", 0.9), "ask_cause_stress", "en", first, "help me breathe").replyKey,
+    "breathing",
+  );
+  assertEquals(decide(parse("thank", 0.9), "ask_cause_stress", "en", first, "thanks").replyKey, "thank");
 });

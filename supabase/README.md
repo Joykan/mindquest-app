@@ -84,8 +84,15 @@ sends `{ "text": "...", "session_id": "..." }` with the user's access token.
 2. **Otherwise Rasa.** The text goes to the Rasa server (`/model/parse`). The
    reply is chosen in `logic.ts`:
    - below 0.5 confidence, or `nlu_fallback`, gives the fallback reply
-   - stress and anxiety offer a breathing exercise; the next "yes"/"no" is read
-     against that offer
+   - stress, anxiety and sadness: Chipu first asks what's behind it ("What's
+     been stressing you out?"). The answer gets an understanding reply about
+     it (school, money, family, friends, health or something else, found from
+     English, Kiswahili and Sheng words) and an offer: a breathing exercise
+     for stress and worry, small ideas for sadness. The next "yes"/"no" is
+     read against that offer. "I don't know" is fine; if the first message
+     already says why ("stressed about exams"), Chipu doesn't ask. The answer
+     is recorded as `cause_school`, `cause_money`... (labels only), which the
+     admin dashboard counts
    - names: a name only counts if Rasa extracted one. "My name is Joy" or
      "naitwa Furaha" is used straight away; a feeling-word name in a message
      that doesn't introduce anyone ("I feel joy") is checked first; if Rasa

@@ -47,6 +47,94 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
       "Hiyo inaonekana ngumu. Huhitaji kulipitia peke yako. Kuongea kulihusu kunaweza kusaidia?",
     ],
   },
+  // Asking what's behind a feeling (logic.ts), then an understanding reply
+  // about it and an offer of help.
+  ask_cause_stress: {
+    en: [
+      "That sounds like a lot to carry. What's been stressing you out? It could be school, money, family, friends, or something else.",
+      "I'm sorry you're feeling stressed. Do you want to tell me what's behind it?",
+    ],
+    sw: [
+      "Inaonekana una mzigo mzito. Nini kinakuletea msongo wa mawazo? Inaweza kuwa masomo, pesa, familia, marafiki au jambo lingine.",
+      "Pole kwa msongo unaohisi. Ungependa kuniambia unasababishwa na nini?",
+    ],
+  },
+  ask_cause_anxious: {
+    en: [
+      "I'm sorry you're feeling anxious. What's on your mind right now?",
+      "Worry can make everything feel bigger. What's been worrying you?",
+    ],
+    sw: [
+      "Pole kwa wasiwasi unaohisi. Nini kinakusumbua akilini sasa hivi?",
+      "Wasiwasi unaweza kufanya kila kitu kionekane kikubwa. Nini kimekuwa kikikutia wasiwasi?",
+    ],
+  },
+  ask_cause_sad: {
+    en: [
+      "I'm sorry you're feeling this way. It's okay to feel sad. Do you want to tell me what's going on?",
+      "That sounds hard. You don't have to go through it alone. What's been making you feel down?",
+    ],
+    sw: [
+      "Pole kwa unavyohisi. Ni sawa kuhisi huzuni wakati mwingine. Ungependa kunieleza kinachoendelea?",
+      "Hiyo inaonekana ngumu. Huhitaji kulipitia peke yako. Nini kimekufanya uhisi huzuni?",
+    ],
+  },
+  cause_school: {
+    en: ["Exams and schoolwork can put a lot of pressure on you. It makes sense that you feel this way."],
+    sw: ["Mitihani na masomo yanaweza kuleta shinikizo kubwa. Inaeleweka kwa nini unajisikia hivi."],
+  },
+  cause_money: {
+    en: [
+      "Money worries are really hard, especially when things feel out of your control. You're not alone in this.",
+    ],
+    sw: ["Shida za pesa ni ngumu sana, hasa mambo yanapoonekana kuwa nje ya uwezo wako. Hauko peke yako."],
+  },
+  cause_family: {
+    en: ["Things at home can weigh on us a lot. Thank you for sharing that with me."],
+    sw: ["Mambo ya nyumbani yanaweza kutulemea sana. Asante kwa kunieleza."],
+  },
+  cause_friends: {
+    en: [
+      "Friendships and relationships matter so much, so it really hurts when they're difficult. Thank you for telling me.",
+    ],
+    sw: [
+      "Urafiki na mahusiano ni muhimu sana, ndiyo maana inauma sana yanapokuwa magumu. Asante kwa kuniambia.",
+    ],
+  },
+  cause_health: {
+    en: [
+      "Not feeling well can make everything harder. Be gentle with yourself, and see a health worker if it doesn't get better.",
+    ],
+    sw: [
+      "Kutojisikia vizuri kunaweza kufanya kila kitu kiwe kigumu. Jitunze, na umwone mhudumu wa afya hali isipoimarika.",
+    ],
+  },
+  cause_other: {
+    en: [
+      "Thank you for telling me. That sounds like a lot to deal with.",
+      "I hear you. That sounds really hard.",
+    ],
+    sw: [
+      "Asante kwa kunieleza. Hilo linaonekana kuwa jambo zito.",
+      "Nakusikia. Hilo linaonekana kuwa gumu kweli.",
+    ],
+  },
+  cause_unsure: {
+    en: ["That's okay, you don't have to explain."],
+    sw: ["Ni sawa, huhitaji kueleza."],
+  },
+  offer_breathing: {
+    en: ["Would a short breathing exercise help right now? You can also keep telling me about it."],
+    sw: ["Zoezi fupi la kupumua linaweza kusaidia sasa hivi? Unaweza pia kuendelea kunieleza."],
+  },
+  offer_ideas: {
+    en: ["Would a few small ideas to lift your mood help? You can also keep telling me about it."],
+    sw: ["Mawazo machache madogo ya kuinua hisia zako yanaweza kusaidia? Unaweza pia kuendelea kunieleza."],
+  },
+  feel_sad_again: {
+    en: ["I'm here with you, and it's okay to feel this way."],
+    sw: ["Niko hapa nawe, na ni sawa kujisikia hivi."],
+  },
   feel_good: {
     en: [
       "That's great to hear! Why not log it in your mood check-in?",

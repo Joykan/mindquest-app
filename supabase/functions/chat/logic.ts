@@ -59,7 +59,70 @@ export function soundsHappy(text: string): boolean {
 }
 
 /** Replies after which a yes/no answer means something specific. */
-const OFFERS_BREATHING = new Set(["feel_stressed", "feel_anxious"]);
+const OFFERS_BREATHING = new Set(["feel_stressed", "feel_anxious", "offer_breathing"]);
+
+/**
+ * Feelings Chipu asks about first ("What's been stressing you out?") before
+ * offering help. The reply key says which feeling, so the next message is
+ * read as the answer.
+ */
+const ASK_CAUSE: Record<string, string> = {
+  feel_stressed: "ask_cause_stress",
+  feel_anxious: "ask_cause_anxious",
+  feel_sad: "ask_cause_sad",
+};
+
+/** Intents that change the subject instead of answering "what's behind it". */
+const CHANGES_SUBJECT = new Set([
+  "greet",
+  "goodbye",
+  "thank",
+  "ask_about_bot",
+  "ask_breathing",
+  "ask_ideas",
+  "tell_name",
+]);
+
+/** What a worry is about, from words in English, Kiswahili and Sheng. First match wins. */
+const CAUSES: [string, RegExp][] = [
+  [
+    "school",
+    /\b(exams?|tests?|cats?|school|class(es)?|assignments?|homework|revision|grades?|results|marks|campus|university|uni|college|lectures?|units?|kcse|supp|mtihani|mitihani|shule|darasa|masomo|kusoma|matokeo|chuo)\b/,
+  ],
+  [
+    "money",
+    /\b(money|cash|fees?|rent|broke|bills?|jobs?|loans?|debts?|pesa|doo|mula|ganji|munde|karo|kodi|deni|ajira|kibarua)\b/,
+  ],
+  [
+    "family",
+    /\b(family|parents?|mum|mom|mother|dad|father|home|siblings?|brother|sister|familia|wazazi|mzazi|mama|baba|nyumbani|ndugu|kaka|dada|boma)\b/,
+  ],
+  [
+    "friends",
+    /\b(friends?|boyfriend|girlfriend|bf|gf|partner|relationships?|break ?up|broke up|crush|lonely|alone|rafiki|marafiki|mpenzi|uhusiano|dem|msupa|boychild|upweke|peke yangu)\b/,
+  ],
+  [
+    "health",
+    /\b(sick|ill|illness|health|pain|sleep|insomnia|hospital|doctor|mgonjwa|ugonjwa|afya|maumivu|usingizi|hospitali|daktari)\b/,
+  ],
+];
+
+/** "I don't know", "nothing", "sijui", "sitaki kuongea". */
+const UNSURE =
+  /\b(i don t know|i dont know|dont know|don t know|idk|not sure|no idea|nothing|nothing really|rather not|sijui|sielewi|hakuna kitu|sitaki)\b/;
+
+function words(text: string): string {
+  return text.toLowerCase().replace(/['’`]/g, " ").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+}
+
+/** school, money, family, friends, health, or other. */
+export function findCause(text: string): string {
+  const t = words(text);
+  for (const [cause, re] of CAUSES) {
+    if (re.test(t)) return cause;
+  }
+  return "other";
+}
 
 export interface RasaParse {
   intent: { name: string; confidence: number };
@@ -156,6 +219,31 @@ export function decide(
     if (r.intent === "affirm") return out("breathing");
     if (r.intent === "deny") return out("declined_breathing");
   }
+  if (previousReplyKey === "offer_ideas") {
+    if (r.intent === "affirm") return out("ask_ideas");
+    if (r.intent === "deny") return out("deny");
+  }
+
+  // The answer to "What's been stressing you out?": an understanding reply
+  // about that (school, money, ...) and an offer of help. The message is
+  // recorded as cause_<what> (labels only, for the dashboard).
+  const cause = (feeling: string, kind: string, intent: string): Decision => {
+    const offer = feeling === "sad" ? "offer_ideas" : "offer_breathing";
+    return {
+      intent,
+      confidence: r.confidence,
+      replyKey: offer,
+      text: `${pick(`cause_${kind}`, lang, rng)} ${pick(offer, lang, rng)}`,
+    };
+  };
+  if (previousReplyKey?.startsWith("ask_cause_") && !CHANGES_SUBJECT.has(r.intent)) {
+    const feeling = previousReplyKey.slice("ask_cause_".length);
+    const kind = findCause(text);
+    if (kind === "other" && (r.intent === "deny" || UNSURE.test(words(text)))) {
+      return cause(feeling, "unsure", r.intent);
+    }
+    return cause(feeling, kind, `cause_${kind}`);
+  }
 
   switch (r.intent) {
     case "tell_name":
@@ -167,6 +255,28 @@ export function decide(
       return out("nice_to_meet", "nice_to_meet", r.name);
     case "ask_breathing":
       return out("breathing");
+    case "feel_stressed":
+    case "feel_anxious":
+    case "feel_sad": {
+      const feeling = ASK_CAUSE[r.intent].slice("ask_cause_".length);
+      // "I'm stressed about exams": the cause is already there.
+      const kind = findCause(text);
+      if (kind !== "other") return cause(feeling, kind, r.intent);
+      // Already talking about it: offer help instead of asking again.
+      const inThread = previousReplyKey !== null &&
+        (previousReplyKey.startsWith("ask_cause_") || previousReplyKey.startsWith("offer_") ||
+          previousReplyKey in ASK_CAUSE);
+      if (!inThread) return out(ASK_CAUSE[r.intent]);
+      if (r.intent === "feel_sad") {
+        return {
+          intent: r.intent,
+          confidence: r.confidence,
+          replyKey: "offer_ideas",
+          text: `${pick("feel_sad_again", lang, rng)} ${pick("offer_ideas", lang, rng)}`,
+        };
+      }
+      return out(r.intent);
+    }
     default:
       return out(r.intent in REPLIES ? r.intent : "fallback");
   }
