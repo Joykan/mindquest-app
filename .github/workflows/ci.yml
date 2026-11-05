@@ -155,8 +155,15 @@ jobs:
       - name: Deploy
         if: steps.setup.outputs.ready == 'true'
         run: |
+          set -o pipefail
           for f in chat delete-account health; do
-            supabase functions deploy "$f" --project-ref dqcgeugyhpiemucdypok --use-api
+            if ! supabase functions deploy "$f" --project-ref dqcgeugyhpiemucdypok --use-api 2>&1 | tee deploy.log; then
+              # Show the reason on the run's summary page.
+              tail -n 15 deploy.log | sed 's/%/%25/g' | while IFS= read -r line; do
+                echo "::error title=Deploy $f::$line"
+              done
+              exit 1
+            fi
           done
 
   # Puts the website (and the admin dashboard) online on Netlify after every
