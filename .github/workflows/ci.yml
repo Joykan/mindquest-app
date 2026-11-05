@@ -157,7 +157,7 @@ jobs:
         run: |
           set -o pipefail
           for f in chat delete-account health; do
-            if ! supabase functions deploy "$f" --project-ref dqcgeugyhpiemucdypok --use-api 2>&1 | tee deploy.log; then
+            if ! supabase functions deploy "$f" --project-ref dqcgeugyhpiemucdypok --use-api --yes 2>&1 | tee deploy.log; then
               # Show the reason on the run's summary page.
               tail -n 15 deploy.log | sed 's/%/%25/g' | while IFS= read -r line; do
                 echo "::error title=Deploy $f::$line"
