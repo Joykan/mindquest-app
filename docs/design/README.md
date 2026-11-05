@@ -14,3 +14,4 @@
 | Gamification mechanics | Draw.io | `MindQuest_gamification_mechanics.drawio` (this folder) |
 | Co-design workshop board | Miro | https://miro.com/app/board/uXjVEd0f4fw=/ |
 | Chipu's outfits (one per level), drawn as layers over the mascot | Python (cairosvg) | `mascot/make_outfits.py`, preview `mascot/outfits_preview.png` (this folder) |
+| Context diagram, Level-1 DFD (Gane and Sarson, balanced), use case diagram (UML), ERD (crow's foot) and chat message flowchart (ANSI symbols) | Python (cairosvg) | `analysis/` (this folder): one script per diagram, with PNG and SVG output; run `python3 dfd1.py` etc. inside the folder |
