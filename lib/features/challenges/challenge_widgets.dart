@@ -7,8 +7,11 @@ import 'challenges.dart';
 /// The challenge card on Home: the running challenge with its progress, a
 /// "well done" after finishing one, or this week's suggestion.
 class ChallengeHomeCard extends StatelessWidget {
-  const ChallengeHomeCard(
-      {super.key, required this.state, required this.onOpen});
+  const ChallengeHomeCard({
+    super.key,
+    required this.state,
+    required this.onOpen,
+  });
 
   final ChallengesState state;
   final VoidCallback onOpen;
@@ -31,8 +34,11 @@ class ChallengeHomeCard extends StatelessWidget {
           _Header(
             emoji: active.challenge.emoji,
             title: active.challenge.name(lang),
-            trailing: tr(lang, left == 1 ? 'Last day' : '$left days left',
-                left == 1 ? 'Siku ya mwisho' : 'Siku $left zimebaki'),
+            trailing: tr(
+              lang,
+              left == 1 ? 'Last day' : '$left days left',
+              left == 1 ? 'Siku ya mwisho' : 'Siku $left zimebaki',
+            ),
           ),
           const SizedBox(height: 10),
           ClipRRect(
@@ -53,15 +59,17 @@ class ChallengeHomeCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _Header(
-              emoji: '🎉',
-              title: tr(lang, 'Challenge complete!', 'Changamoto imekamilika!'),
-              trailing: '+${recent.xp} XP'),
+            emoji: '🎉',
+            title: tr(lang, 'Challenge complete!', 'Changamoto imekamilika!'),
+            trailing: '+${recent.xp} XP',
+          ),
           const SizedBox(height: 6),
           Text(
             tr(
-                lang,
-                'You finished ${recent.emoji} ${recent.name(lang)}. Ready for another one?',
-                'Umekamilisha ${recent.emoji} ${recent.name(lang)}. Uko tayari kwa nyingine?'),
+              lang,
+              'You finished ${recent.emoji} ${recent.name(lang)}. Ready for another one?',
+              'Umekamilisha ${recent.emoji} ${recent.name(lang)}. Uko tayari kwa nyingine?',
+            ),
             style: theme.textTheme.bodyMedium,
           ),
         ],
@@ -71,17 +79,22 @@ class ChallengeHomeCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _Header(
-              emoji: featured.emoji,
-              title:
-                  tr(lang, "This week's challenge", 'Changamoto ya wiki hii'),
-              trailing: '+${featured.xp} XP'),
+            emoji: featured.emoji,
+            title: tr(lang, "This week's challenge", 'Changamoto ya wiki hii'),
+            trailing: '+${featured.xp} XP',
+          ),
           const SizedBox(height: 6),
-          Text('${featured.name(lang)}: ${featured.describe(lang)}',
-              style: theme.textTheme.bodyMedium),
+          Text(
+            '${featured.name(lang)}: ${featured.describe(lang)}',
+            style: theme.textTheme.bodyMedium,
+          ),
           const SizedBox(height: 4),
           Text(
-            tr(lang, '${featured.days} days · a badge at the end',
-                'Siku ${featured.days} · beji mwishoni'),
+            tr(
+              lang,
+              '${featured.days} days · a badge at the end',
+              'Siku ${featured.days} · beji mwishoni',
+            ),
             style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
           ),
         ],
@@ -108,8 +121,9 @@ class ChallengeHomeCard extends StatelessWidget {
                   active != null
                       ? tr(lang, 'Open →', 'Fungua →')
                       : tr(lang, 'See challenges →', 'Ona changamoto →'),
-                  style: theme.textTheme.labelLarge
-                      ?.copyWith(color: theme.colorScheme.primary),
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
               ),
             ],
@@ -121,8 +135,11 @@ class ChallengeHomeCard extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header(
-      {required this.emoji, required this.title, required this.trailing});
+  const _Header({
+    required this.emoji,
+    required this.title,
+    required this.trailing,
+  });
 
   final String emoji;
   final String title;
@@ -158,19 +175,25 @@ class _StepLine extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: <Widget>[
-          Icon(done ? Icons.check_circle : Icons.radio_button_unchecked,
-              size: 20,
-              color:
-                  done ? theme.colorScheme.primary : theme.colorScheme.outline),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(step.label(context.lang),
-                style: theme.textTheme.bodyMedium?.copyWith(
-                    decoration: done ? TextDecoration.lineThrough : null)),
+          Icon(
+            done ? Icons.check_circle : Icons.radio_button_unchecked,
+            size: 20,
+            color: done ? theme.colorScheme.primary : theme.colorScheme.outline,
           ),
           const SizedBox(width: 8),
-          Text('${step.done.clamp(0, step.target)} / ${step.target}',
-              style: theme.textTheme.labelLarge?.copyWith(color: mq.textMuted)),
+          Expanded(
+            child: Text(
+              step.label(context.lang),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                decoration: done ? TextDecoration.lineThrough : null,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '${step.done.clamp(0, step.target)} / ${step.target}',
+            style: theme.textTheme.labelLarge?.copyWith(color: mq.textMuted),
+          ),
           if (onTap != null && !done)
             Icon(Icons.chevron_right, size: 20, color: mq.textMuted),
         ],
@@ -178,18 +201,23 @@ class _StepLine extends StatelessWidget {
     );
     if (onTap == null || done) return row;
     return InkWell(
-        key: Key('step-${step.kind}'),
-        borderRadius: BorderRadius.circular(8),
-        onTap: onTap,
-        child: row);
+      key: Key('step-${step.kind}'),
+      borderRadius: BorderRadius.circular(8),
+      onTap: onTap,
+      child: row,
+    );
   }
 }
 
 /// All challenges: the running one with its progress (each step opens the
 /// place to do it), and the others to start. One at a time.
 class ChallengesScreen extends StatefulWidget {
-  const ChallengesScreen(
-      {super.key, required this.repository, this.onStep, this.onChanged});
+  const ChallengesScreen({
+    super.key,
+    required this.repository,
+    this.onStep,
+    this.onChanged,
+  });
 
   final ChallengesRepository repository;
 
@@ -204,15 +232,23 @@ class ChallengesScreen extends StatefulWidget {
 }
 
 class _ChallengesScreenState extends State<ChallengesScreen> {
-  late Future<ChallengesState> _state = widget.repository.load();
+  late Future<ChallengesState> _state = widget.repository.load(fresh: true);
   bool _busy = false;
 
-  Future<void> _reload() async {
-    final Future<ChallengesState> next = widget.repository.load();
+  /// The challenge whose Start was just tapped (only its button shows a
+  /// spinner; the others stay as they are).
+  String? _starting;
+
+  Future<void> _reload({bool fresh = true}) async {
+    final Future<ChallengesState> next = widget.repository.load(fresh: fresh);
     setState(() {
       _state = next;
     });
-    await next;
+    try {
+      await next;
+    } catch (_) {
+      // The screen shows its own "tap to try again".
+    }
   }
 
   void _say(String text) {
@@ -225,30 +261,52 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     final String reason = e is ChallengeException ? e.reason : 'other';
     return switch (reason) {
       'offline' => tr(
-          lang,
-          'You need internet for this. Try again when online.',
-          'Unahitaji mtandao kwa hili. Jaribu tena ukiwa mtandaoni.'),
-      'busy' => tr(lang, 'Finish or leave your current challenge first.',
-          'Kamilisha au acha changamoto yako ya sasa kwanza.'),
-      _ => tr(lang, 'Something went wrong. Try again.',
-          'Kuna tatizo. Jaribu tena.'),
+        lang,
+        'You need internet for this. Try again when online.',
+        'Unahitaji mtandao kwa hili. Jaribu tena ukiwa mtandaoni.',
+      ),
+      'busy' => tr(
+        lang,
+        'Finish or leave your current challenge first.',
+        'Kamilisha au acha changamoto yako ya sasa kwanza.',
+      ),
+      _ => tr(
+        lang,
+        'Something went wrong. Try again.',
+        'Kuna tatizo. Jaribu tena.',
+      ),
     };
   }
 
   Future<void> _start(Challenge c) async {
+    if (_busy) return;
     final String lang = context.lang;
-    setState(() => _busy = true);
+    setState(() {
+      _busy = true;
+      _starting = c.id;
+    });
     try {
       await widget.repository.start(c.id);
       widget.onChanged?.call();
-      _say(tr(lang, "${c.emoji} ${c.name(lang)} started. You've got this!",
-          '${c.emoji} ${c.name(lang)} imeanza. Unaweza!'));
-      await _reload();
+      _say(
+        tr(
+          lang,
+          "${c.emoji} ${c.name(lang)} started. You've got this!",
+          '${c.emoji} ${c.name(lang)} imeanza. Unaweza!',
+        ),
+      );
     } catch (e) {
       _say(_problem(lang, e));
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _starting = null;
+        });
+      }
     }
+    // Show what the server now says, so the running one appears at the top.
+    if (mounted) await _reload();
   }
 
   Future<void> _leave(ActiveChallenge a) async {
@@ -257,18 +315,23 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
       context: context,
       builder: (BuildContext context) => AlertDialog(
         title: Text(tr(lang, 'Leave this challenge?', 'Acha changamoto hii?')),
-        content: Text(tr(
+        content: Text(
+          tr(
             lang,
             'Your progress in it will be lost. XP and badges you already have stay. You can start it again any time.',
-            'Maendeleo yako ndani yake yatapotea. XP na beji ulizonazo zitabaki. Unaweza kuianza tena wakati wowote.')),
+            'Maendeleo yako ndani yake yatapotea. XP na beji ulizonazo zitabaki. Unaweza kuianza tena wakati wowote.',
+          ),
+        ),
         actions: <Widget>[
           TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(tr(lang, 'Keep going', 'Endelea'))),
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(tr(lang, 'Keep going', 'Endelea')),
+          ),
           TextButton(
-              key: const Key('confirm-leave'),
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text(tr(lang, 'Leave', 'Acha'))),
+            key: const Key('confirm-leave'),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(tr(lang, 'Leave', 'Acha')),
+          ),
         ],
       ),
     );
@@ -277,12 +340,12 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
     try {
       await widget.repository.leave();
       widget.onChanged?.call();
-      await _reload();
     } catch (e) {
       _say(_problem(lang, e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+    if (mounted) await _reload();
   }
 
   @override
@@ -299,10 +362,13 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
             return Center(
               child: TextButton(
                 onPressed: _reload,
-                child: Text(tr(
+                child: Text(
+                  tr(
                     lang,
                     "Couldn't load the challenges. Tap to try again.",
-                    'Imeshindikana kupakia changamoto. Gusa ujaribu tena.')),
+                    'Imeshindikana kupakia changamoto. Gusa ujaribu tena.',
+                  ),
+                ),
               ),
             );
           }
@@ -319,11 +385,13 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
               children: <Widget>[
                 Text(
                   tr(
-                      lang,
-                      'Pick one challenge at a time. Finish it within its days for bonus XP and its own badge. No pressure: you can leave and come back any time.',
-                      'Chagua changamoto moja kwa wakati. Ikamilishe ndani ya siku zake upate XP ya ziada na beji yake. Hakuna shinikizo: unaweza kuiacha na kurudi wakati wowote.'),
-                  style:
-                      theme.textTheme.bodyMedium?.copyWith(color: mq.textMuted),
+                    lang,
+                    'Pick one challenge at a time. Finish it within its days for bonus XP and its own badge. No pressure: you can leave and come back any time.',
+                    'Chagua changamoto moja kwa wakati. Ikamilishe ndani ya siku zake upate XP ya ziada na beji yake. Hakuna shinikizo: unaweza kuiacha na kurudi wakati wowote.',
+                  ),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: mq.textMuted,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 if (active != null) ...<Widget>[
@@ -338,17 +406,20 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                             emoji: active.challenge.emoji,
                             title: active.challenge.name(lang),
                             trailing: tr(
-                                lang,
-                                active.daysLeft() == 1
-                                    ? 'Last day'
-                                    : '${active.daysLeft()} days left',
-                                active.daysLeft() == 1
-                                    ? 'Siku ya mwisho'
-                                    : 'Siku ${active.daysLeft()} zimebaki'),
+                              lang,
+                              active.daysLeft() == 1
+                                  ? 'Last day'
+                                  : '${active.daysLeft()} days left',
+                              active.daysLeft() == 1
+                                  ? 'Siku ya mwisho'
+                                  : 'Siku ${active.daysLeft()} zimebaki',
+                            ),
                           ),
                           const SizedBox(height: 6),
-                          Text(active.challenge.describe(lang),
-                              style: theme.textTheme.bodyMedium),
+                          Text(
+                            active.challenge.describe(lang),
+                            style: theme.textTheme.bodyMedium,
+                          ),
                           const SizedBox(height: 10),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(6),
@@ -370,19 +441,22 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                           const SizedBox(height: 6),
                           Text(
                             tr(
-                                lang,
-                                'Finish for +${active.challenge.xp} XP and a badge.',
-                                'Ikamilishe upate XP +${active.challenge.xp} na beji.'),
-                            style: theme.textTheme.bodySmall
-                                ?.copyWith(color: mq.textMuted),
+                              lang,
+                              'Finish for +${active.challenge.xp} XP and a badge.',
+                              'Ikamilishe upate XP +${active.challenge.xp} na beji.',
+                            ),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: mq.textMuted,
+                            ),
                           ),
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               key: const Key('leave-challenge'),
                               onPressed: _busy ? null : () => _leave(active),
-                              child: Text(tr(
-                                  lang, 'Leave challenge', 'Acha changamoto')),
+                              child: Text(
+                                tr(lang, 'Leave challenge', 'Acha changamoto'),
+                              ),
                             ),
                           ),
                         ],
@@ -390,8 +464,10 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(tr(lang, 'Other challenges', 'Changamoto nyingine'),
-                      style: theme.textTheme.titleMedium),
+                  Text(
+                    tr(lang, 'Other challenges', 'Changamoto nyingine'),
+                    style: theme.textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 8),
                 ],
                 for (final Challenge c in s.challenges)
@@ -399,7 +475,9 @@ class _ChallengesScreenState extends State<ChallengesScreen> {
                     _ChallengeTile(
                       challenge: c,
                       featured: c.id == featuredId,
-                      canStart: active == null && !_busy,
+                      running: active != null,
+                      busy: _busy,
+                      starting: _starting == c.id,
                       onStart: () => _start(c),
                     ),
               ],
@@ -415,13 +493,23 @@ class _ChallengeTile extends StatelessWidget {
   const _ChallengeTile({
     required this.challenge,
     required this.featured,
-    required this.canStart,
+    required this.running,
+    required this.busy,
+    required this.starting,
     required this.onStart,
   });
 
   final Challenge challenge;
   final bool featured;
-  final bool canStart;
+
+  /// Another challenge is already running.
+  final bool running;
+
+  /// A start or leave is in progress.
+  final bool busy;
+
+  /// This tile's own Start was tapped.
+  final bool starting;
   final VoidCallback onStart;
 
   @override
@@ -439,7 +527,10 @@ class _ChallengeTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _Header(
-                emoji: c.emoji, title: c.name(lang), trailing: '+${c.xp} XP'),
+              emoji: c.emoji,
+              title: c.name(lang),
+              trailing: '+${c.xp} XP',
+            ),
             if (featured || c.completed > 0) ...<Widget>[
               const SizedBox(height: 6),
               Wrap(
@@ -448,16 +539,20 @@ class _ChallengeTile extends StatelessWidget {
                 children: <Widget>[
                   if (featured)
                     _Pill(
-                        text: tr(lang, '⭐ This week', '⭐ Wiki hii'),
-                        color: mq.reward,
-                        textColor: mq.onReward),
+                      text: tr(lang, '⭐ This week', '⭐ Wiki hii'),
+                      color: mq.reward,
+                      textColor: mq.onReward,
+                    ),
                   if (c.completed > 0)
                     _Pill(
-                        text: tr(lang, '✓ Done ${c.completed}×',
-                            '✓ Umeimaliza mara ${c.completed}'),
-                        color:
-                            theme.colorScheme.primary.withValues(alpha: 0.15),
-                        textColor: theme.colorScheme.primary),
+                      text: tr(
+                        lang,
+                        '✓ Done ${c.completed}×',
+                        '✓ Umeimaliza mara ${c.completed}',
+                      ),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                      textColor: theme.colorScheme.primary,
+                    ),
                 ],
               ),
             ],
@@ -467,25 +562,49 @@ class _ChallengeTile extends StatelessWidget {
             for (final ChallengeStep st in c.steps)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Text('•  ${st.label(lang)}',
-                    style: theme.textTheme.bodySmall),
+                child: Text(
+                  '•  ${st.label(lang)}',
+                  style: theme.textTheme.bodySmall,
+                ),
               ),
             const SizedBox(height: 4),
             Text(
-              tr(lang, '${c.days} days, starting today',
-                  'Siku ${c.days}, kuanzia leo'),
+              tr(
+                lang,
+                '${c.days} days, starting today',
+                'Siku ${c.days}, kuanzia leo',
+              ),
               style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
             ),
             const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton(
-                key: Key('start-${c.id}'),
-                style: FilledButton.styleFrom(minimumSize: const Size(120, 44)),
-                onPressed: canStart ? onStart : null,
-                child: Text(tr(lang, 'Start', 'Anza')),
+            if (running)
+              Text(
+                tr(
+                  lang,
+                  'Finish or leave your current challenge to start this one.',
+                  'Kamilisha au acha changamoto yako ya sasa ili uanze hii.',
+                ),
+                key: Key('waiting-${c.id}'),
+                style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
+              )
+            else
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton(
+                  key: Key('start-${c.id}'),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(120, 44),
+                  ),
+                  onPressed: busy ? null : onStart,
+                  child: starting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2.5),
+                        )
+                      : Text(tr(lang, 'Start', 'Anza')),
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -494,8 +613,11 @@ class _ChallengeTile extends StatelessWidget {
 }
 
 class _Pill extends StatelessWidget {
-  const _Pill(
-      {required this.text, required this.color, required this.textColor});
+  const _Pill({
+    required this.text,
+    required this.color,
+    required this.textColor,
+  });
 
   final String text;
   final Color color;
@@ -503,13 +625,14 @@ class _Pill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(10)),
-        child: Text(text,
-            style: Theme.of(context)
-                .textTheme
-                .labelSmall
-                ?.copyWith(color: textColor)),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Text(
+      text,
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: textColor),
+    ),
+  );
 }

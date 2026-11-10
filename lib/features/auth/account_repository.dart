@@ -5,10 +5,11 @@ import '../../core/offline/offline_store.dart';
 
 /// The parts of the profile the app needs to decide where to go.
 class Profile {
-  const Profile(
-      {required this.username,
-      required this.language,
-      required this.onboarded});
+  const Profile({
+    required this.username,
+    required this.language,
+    required this.onboarded,
+  });
 
   final String username;
   final String language;
@@ -38,6 +39,13 @@ abstract class AccountRepository {
   Stream<void> get changes;
 
   Future<void> signInAnonymously();
+
+  /// Phone sign-in, step 1: texts a 6-digit code to [phone] (+2547...).
+  /// A new number creates a new account.
+  Future<void> sendPhoneCode(String phone);
+
+  /// Step 2: signs in with the code from the text message.
+  Future<void> verifyPhoneCode({required String phone, required String code});
   Future<void> signIn({required String email, required String password});
 
   /// Returns true if the user is signed in straight away, false if they must
@@ -48,8 +56,11 @@ abstract class AccountRepository {
   Future<Profile?> loadProfile();
 
   /// [ageRange] is one of [ageRanges] (age_ranges.dart).
-  Future<void> completeOnboarding(
-      {required String username, required String language, String? ageRange});
+  Future<void> completeOnboarding({
+    required String username,
+    required String language,
+    String? ageRange,
+  });
 
   /// Changes the language the chatbot replies in ('en' or 'sw').
   Future<void> updateLanguage(String language);
@@ -83,6 +94,27 @@ abstract class AccountRepository {
   Future<void> linkGoogle();
 }
 
+/// Writes a phone number the way Supabase wants it (+254712345678). Accepts
+/// 0712 345 678, 712345678, 254712345678 and +254 712 345 678. Returns null
+/// when it doesn't look like a phone number.
+String? normalizePhone(String input) {
+  String d = input.replaceAll(RegExp(r'[\s\-().]'), '');
+  if (d.startsWith('+')) {
+    // already international
+  } else if (d.startsWith('00')) {
+    d = '+${d.substring(2)}';
+  } else if (d.startsWith('0')) {
+    d = '+254${d.substring(1)}';
+  } else if (d.startsWith('254')) {
+    d = '+$d';
+  } else if (RegExp(r'^[71]\d{8}$').hasMatch(d)) {
+    d = '+254$d';
+  } else {
+    return null;
+  }
+  return RegExp(r'^\+\d{9,15}$').hasMatch(d) ? d : null;
+}
+
 /// Where Supabase sends the user back after Google sign-in. Must match the
 /// intent filter in AndroidManifest.xml and the Supabase redirect URLs.
 const String authRedirect = 'ke.ac.maseno.mindquest://login-callback';
@@ -96,7 +128,7 @@ String get _redirect => kIsWeb ? webHome(Uri.base) : authRedirect;
 
 class SupabaseAccountRepository implements AccountRepository {
   SupabaseAccountRepository({SupabaseClient? client, this.offline})
-      : _client = client ?? Supabase.instance.client;
+    : _client = client ?? Supabase.instance.client;
 
   final SupabaseClient _client;
 
@@ -125,7 +157,8 @@ class SupabaseAccountRepository implements AccountRepository {
       throw AccountException(e.message);
     } catch (_) {
       throw const AccountException(
-          'Something went wrong. Check your connection and try again.');
+        'Something went wrong. Check your connection and try again.',
+      );
     }
   }
 
@@ -134,70 +167,87 @@ class SupabaseAccountRepository implements AccountRepository {
       _guard(() => _client.auth.signInAnonymously());
 
   @override
+  Future<void> sendPhoneCode(String phone) =>
+      _guard(() => _client.auth.signInWithOtp(phone: phone));
+
+  @override
+  Future<void> verifyPhoneCode({required String phone, required String code}) =>
+      _guard(
+        () => _client.auth.verifyOTP(
+          type: OtpType.sms,
+          phone: phone,
+          token: code.trim(),
+        ),
+      );
+
+  @override
   Future<void> signIn({required String email, required String password}) =>
-      _guard(() => _client.auth
-          .signInWithPassword(email: email.trim(), password: password));
+      _guard(
+        () => _client.auth.signInWithPassword(
+          email: email.trim(),
+          password: password,
+        ),
+      );
 
   @override
   Future<bool> signUp({required String email, required String password}) =>
       _guard(() async {
         final AuthResponse res = await _client.auth.signUp(
-            email: email.trim(),
-            password: password,
-            // The confirmation link opens the website on the web.
-            emailRedirectTo: kIsWeb ? webHome(Uri.base) : null);
+          email: email.trim(),
+          password: password,
+          // The confirmation link opens the website on the web.
+          emailRedirectTo: kIsWeb ? webHome(Uri.base) : null,
+        );
         return res.session != null;
       });
 
   @override
   Future<void> signOut() => _guard(() async {
-        final String? id = userId;
-        await _client.auth.signOut();
-        await _forget(id);
-      });
+    final String? id = userId;
+    await _client.auth.signOut();
+    await _forget(id);
+  });
 
   @override
   Future<Profile?> loadProfile() => _guard(() async {
-        final String? id = userId;
-        if (id == null) return null;
-        Future<Map<String, dynamic>?> query() => _client
-            .from('profiles')
-            .select('username, language, consent_at')
-            .eq('id', id)
-            .maybeSingle();
-        final OfflineStore? store = offline;
-        final dynamic found =
-            store == null ? await query() : await store.load('profile', query);
-        if (found == null) return null;
-        final Map<String, dynamic> row =
-            Map<String, dynamic>.from(found as Map);
-        return Profile(
-          username: row['username'] as String? ?? 'Friend',
-          language: row['language'] as String? ?? 'en',
-          onboarded: row['consent_at'] != null,
-        );
-      });
+    final String? id = userId;
+    if (id == null) return null;
+    Future<Map<String, dynamic>?> query() => _client
+        .from('profiles')
+        .select('username, language, consent_at')
+        .eq('id', id)
+        .maybeSingle();
+    final OfflineStore? store = offline;
+    final dynamic found = store == null
+        ? await query()
+        : await store.load('profile', query);
+    if (found == null) return null;
+    final Map<String, dynamic> row = Map<String, dynamic>.from(found as Map);
+    return Profile(
+      username: row['username'] as String? ?? 'Friend',
+      language: row['language'] as String? ?? 'en',
+      onboarded: row['consent_at'] != null,
+    );
+  });
 
   @override
-  Future<void> completeOnboarding(
-          {required String username,
-          required String language,
-          String? ageRange}) =>
-      _guard(() async {
-        await _client.rpc<void>(
-          'complete_onboarding',
-          params: <String, dynamic>{
-            'p_username': username,
-            'p_language': language
-          },
-        );
-        final String? id = userId;
-        if (ageRange != null && id != null) {
-          await _client
-              .from('profiles')
-              .update(<String, dynamic>{'age_range': ageRange}).eq('id', id);
-        }
-      });
+  Future<void> completeOnboarding({
+    required String username,
+    required String language,
+    String? ageRange,
+  }) => _guard(() async {
+    await _client.rpc<void>(
+      'complete_onboarding',
+      params: <String, dynamic>{'p_username': username, 'p_language': language},
+    );
+    final String? id = userId;
+    if (ageRange != null && id != null) {
+      await _client
+          .from('profiles')
+          .update(<String, dynamic>{'age_range': ageRange})
+          .eq('id', id);
+    }
+  });
 
   @override
   String? get email {
@@ -208,22 +258,27 @@ class SupabaseAccountRepository implements AccountRepository {
 
   @override
   Future<void> linkEmail(String email) => _guard(
-      () => _client.auth.updateUser(UserAttributes(email: email.trim())));
+    () => _client.auth.updateUser(UserAttributes(email: email.trim())),
+  );
 
   @override
-  Future<void> confirmEmailCode(
-          {required String email, required String code}) =>
-      _guard(
-        () => _client.auth.verifyOTP(
-            type: OtpType.emailChange, email: email.trim(), token: code.trim()),
-      );
+  Future<void> confirmEmailCode({
+    required String email,
+    required String code,
+  }) => _guard(
+    () => _client.auth.verifyOTP(
+      type: OtpType.emailChange,
+      email: email.trim(),
+      token: code.trim(),
+    ),
+  );
 
   @override
   Future<bool> checkEmailConfirmed() => _guard(() async {
-        await _client.auth.refreshSession();
-        final User? u = _client.auth.currentUser;
-        return u != null && !u.isAnonymous && u.emailConfirmedAt != null;
-      });
+    await _client.auth.refreshSession();
+    final User? u = _client.auth.currentUser;
+    return u != null && !u.isAnonymous && u.emailConfirmedAt != null;
+  });
 
   @override
   Future<void> setPassword(String password) =>
@@ -231,41 +286,46 @@ class SupabaseAccountRepository implements AccountRepository {
 
   @override
   Future<void> deleteAccount() => _guard(() async {
-        final String? id = userId;
-        await _client.functions.invoke('delete-account');
-        await _forget(id);
-        try {
-          // The account is already gone, so only the local session is cleared.
-          await _client.auth.signOut(scope: SignOutScope.local);
-        } catch (_) {
-          // Nothing left to sign out of.
-        }
-      });
+    final String? id = userId;
+    await _client.functions.invoke('delete-account');
+    await _forget(id);
+    try {
+      // The account is already gone, so only the local session is cleared.
+      await _client.auth.signOut(scope: SignOutScope.local);
+    } catch (_) {
+      // Nothing left to sign out of.
+    }
+  });
 
   @override
   Future<void> signInWithGoogle() => _guard(() async {
-        final bool opened = await _client.auth
-            .signInWithOAuth(OAuthProvider.google, redirectTo: _redirect);
-        if (!opened) {
-          throw const AccountException("Couldn't open Google sign-in.");
-        }
-      });
+    final bool opened = await _client.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: _redirect,
+    );
+    if (!opened) {
+      throw const AccountException("Couldn't open Google sign-in.");
+    }
+  });
 
   @override
   Future<void> linkGoogle() => _guard(() async {
-        final bool opened = await _client.auth
-            .linkIdentity(OAuthProvider.google, redirectTo: _redirect);
-        if (!opened) {
-          throw const AccountException("Couldn't open Google sign-in.");
-        }
-      });
+    final bool opened = await _client.auth.linkIdentity(
+      OAuthProvider.google,
+      redirectTo: _redirect,
+    );
+    if (!opened) {
+      throw const AccountException("Couldn't open Google sign-in.");
+    }
+  });
 
   @override
   Future<void> updateLanguage(String language) => _guard(() async {
-        final String? id = userId;
-        if (id == null) return;
-        await _client
-            .from('profiles')
-            .update(<String, dynamic>{'language': language}).eq('id', id);
-      });
+    final String? id = userId;
+    if (id == null) return;
+    await _client
+        .from('profiles')
+        .update(<String, dynamic>{'language': language})
+        .eq('id', id);
+  });
 }

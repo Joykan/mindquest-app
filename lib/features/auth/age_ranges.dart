@@ -17,5 +17,6 @@ const List<AgeRange> ageRanges = <AgeRange>[
   AgeRange('18_20', '18–20', '18–20'),
   AgeRange('21_24', '21–24', '21–24'),
   AgeRange('25_plus', '25 or older', '25 au zaidi'),
+  AgeRange('other', 'Other', 'Nyingine'),
   AgeRange('prefer_not', 'Prefer not to say', 'Sipendi kusema'),
 ];

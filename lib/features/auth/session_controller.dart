@@ -54,13 +54,22 @@ class SessionController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> completeOnboarding(
-      {required String username,
-      required String language,
-      String? ageRange}) async {
+  Future<void> completeOnboarding({
+    required String username,
+    required String language,
+    String? ageRange,
+  }) async {
     await account.completeOnboarding(
-        username: username, language: language, ageRange: ageRange);
-    await refresh();
+      username: username,
+      language: language,
+      ageRange: ageRange,
+    );
+    // Move on straight away; a saved older copy of the profile must not
+    // keep the user on this screen.
+    _profile = Profile(username: username, language: language, onboarded: true);
+    this.language = language;
+    notifyListeners();
+    unawaited(refresh());
   }
 
   Future<void> changeLanguage(String code) async {

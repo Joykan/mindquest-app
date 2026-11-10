@@ -74,124 +74,153 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               // Scrolls on very small phones; fills the screen otherwise.
               builder: (BuildContext context, BoxConstraints box) =>
                   SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: box.maxHeight),
-                  child: IntrinsicHeight(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          Row(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: box.maxHeight),
+                      child: IntrinsicHeight(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
-                              const LogoMark(size: 44),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  'MindQuest',
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w800),
+                              Row(
+                                children: <Widget>[
+                                  const LogoMark(size: 44),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      'MindQuest',
+                                      style: theme.textTheme.titleLarge
+                                          ?.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                    ),
+                                  ),
+                                  ListenableBuilder(
+                                    listenable: widget.session,
+                                    builder: (BuildContext context, _) =>
+                                        LanguageToggle(
+                                          value: widget.session.language,
+                                          onChanged: widget.session.setLanguage,
+                                          onDark: true,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                              // Leaves room for the brain in the background.
+                              const Spacer(flex: 5),
+                              const SizedBox(height: 160),
+                              Text(
+                                context.tr(
+                                  'Your safe space to check in, learn and grow',
+                                  'Mahali salama pa kujieleza, kujifunza na kukua',
+                                ),
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
-                              ListenableBuilder(
-                                listenable: widget.session,
-                                builder: (BuildContext context, _) =>
-                                    LanguageToggle(
-                                  value: widget.session.language,
-                                  onChanged: widget.session.setLanguage,
-                                  onDark: true,
+                              const SizedBox(height: 8),
+                              Text(
+                                context.tr(
+                                  'In English or Kiswahili, whenever you need it.',
+                                  'Kwa Kiingereza au Kiswahili, wakati wowote unapohitaji.',
+                                ),
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  color: Colors.white70,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              _Point(
+                                icon: Icons.chat_bubble_outline,
+                                text: context.tr(
+                                  'Talk it through, any time',
+                                  'Ongea nasi wakati wowote',
+                                ),
+                              ),
+                              _Point(
+                                icon: Icons.emoji_events_outlined,
+                                text: context.tr(
+                                  'Earn XP and badges for self-care',
+                                  'Pata XP na beji kwa kujitunza',
+                                ),
+                              ),
+                              _Point(
+                                icon: Icons.lock_outline,
+                                text: context.tr(
+                                  'No name or email needed',
+                                  'Huhitaji jina wala barua pepe',
+                                ),
+                              ),
+                              const Spacer(flex: 2),
+                              const SizedBox(height: 16),
+                              FilledButton(
+                                key: const Key('continue-anonymously'),
+                                onPressed: _busy ? null : _continueAnonymously,
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: AppPalette.mint,
+                                  foregroundColor: AppPalette.forest,
+                                ),
+                                child: _busy
+                                    ? const SizedBox(
+                                        width: 22,
+                                        height: 22,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                          color: AppPalette.forest,
+                                        ),
+                                      )
+                                    : Text(
+                                        context.tr(
+                                          'Continue anonymously',
+                                          'Endelea bila kujitambulisha',
+                                        ),
+                                      ),
+                              ),
+                              const SizedBox(height: 12),
+                              GoogleButton(
+                                onPressed: _busy ? null : _google,
+                                onDark: true,
+                              ),
+                              const SizedBox(height: 12),
+                              OutlinedButton(
+                                key: const Key('go-sign-in'),
+                                onPressed: _busy
+                                    ? null
+                                    : () => context.push('/sign-in'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  side: const BorderSide(
+                                    color: Colors.white54,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Text(
+                                  context.tr(
+                                    'Sign in with email or phone',
+                                    'Ingia kwa barua pepe au simu',
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                context.tr(
+                                  'MindQuest offers support and information. It does not diagnose or replace professional care.',
+                                  'MindQuest inatoa msaada na taarifa. Haitambui magonjwa wala haichukui nafasi ya huduma ya wataalamu.',
+                                ),
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: Colors.white60,
                                 ),
                               ),
                             ],
                           ),
-                          // Leaves room for the brain in the background.
-                          const Spacer(flex: 5),
-                          const SizedBox(height: 160),
-                          Text(
-                            context.tr(
-                                'Your safe space to check in, learn and grow',
-                                'Mahali salama pa kujieleza, kujifunza na kukua'),
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            context.tr(
-                                'In English or Kiswahili, whenever you need it.',
-                                'Kwa Kiingereza au Kiswahili, wakati wowote unapohitaji.'),
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyLarge
-                                ?.copyWith(color: Colors.white70),
-                          ),
-                          const SizedBox(height: 20),
-                          _Point(
-                              icon: Icons.chat_bubble_outline,
-                              text: context.tr('Talk it through, any time',
-                                  'Ongea nasi wakati wowote')),
-                          _Point(
-                              icon: Icons.emoji_events_outlined,
-                              text: context.tr(
-                                  'Earn XP and badges for self-care',
-                                  'Pata XP na beji kwa kujitunza')),
-                          _Point(
-                              icon: Icons.lock_outline,
-                              text: context.tr('No name or email needed',
-                                  'Huhitaji jina wala barua pepe')),
-                          const Spacer(flex: 2),
-                          const SizedBox(height: 16),
-                          FilledButton(
-                            key: const Key('continue-anonymously'),
-                            onPressed: _busy ? null : _continueAnonymously,
-                            style: FilledButton.styleFrom(
-                              backgroundColor: AppPalette.mint,
-                              foregroundColor: AppPalette.forest,
-                            ),
-                            child: _busy
-                                ? const SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2.5,
-                                        color: AppPalette.forest),
-                                  )
-                                : Text(context.tr('Continue anonymously',
-                                    'Endelea bila kujitambulisha')),
-                          ),
-                          const SizedBox(height: 12),
-                          GoogleButton(
-                              onPressed: _busy ? null : _google, onDark: true),
-                          const SizedBox(height: 12),
-                          OutlinedButton(
-                            key: const Key('go-sign-in'),
-                            onPressed:
-                                _busy ? null : () => context.push('/sign-in'),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              side: const BorderSide(
-                                  color: Colors.white54, width: 1.5),
-                            ),
-                            child: Text(context.tr(
-                                'Sign in or create account with email',
-                                'Ingia au fungua akaunti kwa barua pepe')),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            context.tr(
-                                'MindQuest offers support and information. It does not diagnose or replace professional care.',
-                                'MindQuest inatoa msaada na taarifa. Haitambui magonjwa wala haichukui nafasi ya huduma ya wataalamu.'),
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodySmall
-                                ?.copyWith(color: Colors.white60),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
             ),
           ),
         ],
@@ -217,9 +246,13 @@ class _Point extends StatelessWidget {
           const SizedBox(width: 10),
           // Flexible so large system text sizes wrap instead of overflowing.
           Flexible(
-            child: Text(text,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600)),
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),

@@ -36,8 +36,28 @@ class FakeAccount implements AccountRepository {
   Future<void> signInAnonymously() async {
     _userId = 'anon-1';
     _anonymous = true;
-    profile =
-        const Profile(username: 'Friend', language: 'en', onboarded: false);
+    profile = const Profile(
+      username: 'Friend',
+      language: 'en',
+      onboarded: false,
+    );
+  }
+
+  String? codeSentTo;
+
+  @override
+  Future<void> sendPhoneCode(String phone) async => codeSentTo = phone;
+
+  @override
+  Future<void> verifyPhoneCode({
+    required String phone,
+    required String code,
+  }) async {
+    if (code != '123456') {
+      throw const AccountException('Token has expired or is invalid');
+    }
+    _userId = 'user-2';
+    profile = const Profile(username: 'Neema', language: 'en', onboarded: true);
   }
 
   @override
@@ -50,9 +70,10 @@ class FakeAccount implements AccountRepository {
   }
 
   @override
-  Future<bool> signUp(
-          {required String email, required String password}) async =>
-      false;
+  Future<bool> signUp({
+    required String email,
+    required String password,
+  }) async => false;
 
   @override
   Future<void> signOut() async => _userId = null;
@@ -61,10 +82,11 @@ class FakeAccount implements AccountRepository {
   Future<Profile?> loadProfile() async => _userId == null ? null : profile;
 
   @override
-  Future<void> completeOnboarding(
-      {required String username,
-      required String language,
-      String? ageRange}) async {
+  Future<void> completeOnboarding({
+    required String username,
+    required String language,
+    String? ageRange,
+  }) async {
     onboardedName = username;
     onboardedLanguage = language;
     onboardedAge = ageRange;
@@ -83,14 +105,17 @@ class FakeAccount implements AccountRepository {
   Future<void> linkEmail(String email) async {
     if (email == 'taken@example.com') {
       throw const AccountException(
-          'A user with this email address has already been registered');
+        'A user with this email address has already been registered',
+      );
     }
     linkedEmail = email;
   }
 
   @override
-  Future<void> confirmEmailCode(
-      {required String email, required String code}) async {
+  Future<void> confirmEmailCode({
+    required String email,
+    required String code,
+  }) async {
     if (code != '123456') {
       throw const AccountException('Token has expired or is invalid');
     }
@@ -130,7 +155,10 @@ class FakeAccount implements AccountRepository {
     final Profile? p = profile;
     if (p != null) {
       profile = Profile(
-          username: p.username, language: language, onboarded: p.onboarded);
+        username: p.username,
+        language: language,
+        onboarded: p.onboarded,
+      );
     }
   }
 }
@@ -187,8 +215,9 @@ void main() {
     expect(s.onboarded, isFalse);
   });
 
-  testWidgets('Onboarding needs a nickname and consent, then saves them',
-      (tester) async {
+  testWidgets('Onboarding needs only consent, then saves the choices', (
+    tester,
+  ) async {
     final FakeAccount account = FakeAccount();
     await account.signInAnonymously();
     final SessionController s = SessionController(account);
@@ -197,35 +226,110 @@ void main() {
 
     FilledButton finish() =>
         tester.widget<FilledButton>(find.byKey(const Key('finish-onboarding')));
+    // The button is always on screen, and waits for the tick only.
     expect(finish().onPressed, isNull);
 
     await tester.enterText(find.byKey(const Key('nickname')), '  Wanjiru ');
-    await tester.pump();
-    expect(finish().onPressed, isNull, reason: 'consent not given yet');
-
     await tester.tap(find.byKey(const Key('lang-sw')));
-    await tester.ensureVisible(find.byKey(const Key('consent')));
     await tester.tap(find.byKey(const Key('consent')));
-    await tester.pump();
-    expect(finish().onPressed, isNull, reason: 'age range not chosen yet');
-
-    await tester.ensureVisible(find.byKey(const Key('age-18_20')));
-    await tester.tap(find.byKey(const Key('age-18_20')));
     await tester.pump();
     expect(finish().onPressed, isNotNull);
 
-    await tester.ensureVisible(find.byKey(const Key('finish-onboarding')));
+    // An age range can be chosen and cleared again, and "Other" exists.
+    await tester.ensureVisible(find.byKey(const Key('age-18_20')));
+    await tester.tap(find.byKey(const Key('age-18_20')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('age-18_20')));
+    await tester.pump();
+    expect(
+      tester.widget<ChoiceChip>(find.byKey(const Key('age-18_20'))).selected,
+      isFalse,
+    );
+    await tester.ensureVisible(find.byKey(const Key('age-other')));
+    await tester.tap(find.byKey(const Key('age-other')));
+    await tester.pump();
+
     await tester.tap(find.byKey(const Key('finish-onboarding')));
     await tester.pumpAndSettle();
 
     expect(account.onboardedName, 'Wanjiru');
     expect(account.onboardedLanguage, 'sw');
-    expect(account.onboardedAge, '18_20');
+    expect(account.onboardedAge, 'other');
     expect(s.onboarded, isTrue);
   });
 
-  testWidgets('Sign in checks the email and shows wrong-password errors',
-      (tester) async {
+  testWidgets('Onboarding works with no nickname and no age', (tester) async {
+    final FakeAccount account = FakeAccount();
+    await account.signInAnonymously();
+    final SessionController s = SessionController(account);
+    await s.refresh();
+    await tester.pumpWidget(wrap(OnboardingScreen(session: s)));
+    await tester.tap(find.byKey(const Key('consent')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('finish-onboarding')));
+    await tester.pumpAndSettle();
+    expect(account.onboardedName, 'Friend');
+    expect(account.onboardedAge, isNull);
+    expect(s.onboarded, isTrue);
+  });
+
+  testWidgets('Back from onboarding signs out and returns to Welcome', (
+    tester,
+  ) async {
+    final FakeAccount account = FakeAccount();
+    await account.signInAnonymously();
+    final SessionController s = SessionController(account);
+    await s.refresh();
+    await tester.pumpWidget(wrap(OnboardingScreen(session: s)));
+    await tester.tap(find.byKey(const Key('onboarding-back')));
+    await tester.pump();
+    await tester.pump();
+    expect(s.signedIn, isFalse);
+    expect(redirectFor(s, '/onboarding'), '/welcome');
+  });
+
+  testWidgets('Sign in with a phone number and a code', (tester) async {
+    final FakeAccount account = FakeAccount();
+    final SessionController s = SessionController(account);
+    await tester.pumpWidget(wrap(SignInScreen(session: s)));
+    await tester.ensureVisible(find.text('Phone'));
+    await tester.tap(find.text('Phone'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('phone')), '0712 345 678');
+    await tester.ensureVisible(find.byKey(const Key('phone-submit')));
+    await tester.tap(find.byKey(const Key('phone-submit')));
+    await tester.pumpAndSettle();
+    expect(account.codeSentTo, '+254712345678');
+
+    await tester.enterText(find.byKey(const Key('code')), '000000');
+    await tester.ensureVisible(find.byKey(const Key('phone-submit')));
+    await tester.tap(find.byKey(const Key('phone-submit')));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('That code is not right, or it has expired.'),
+      findsOneWidget,
+    );
+
+    await tester.enterText(find.byKey(const Key('code')), '123456');
+    await tester.ensureVisible(find.byKey(const Key('phone-submit')));
+    await tester.tap(find.byKey(const Key('phone-submit')));
+    await tester.pumpAndSettle();
+    expect(s.signedIn, isTrue);
+  });
+
+  test('Phone numbers are written the way Supabase wants them', () {
+    expect(normalizePhone('0712 345 678'), '+254712345678');
+    expect(normalizePhone('712345678'), '+254712345678');
+    expect(normalizePhone('254712345678'), '+254712345678');
+    expect(normalizePhone('+254 712-345-678'), '+254712345678');
+    expect(normalizePhone('0110123456'), '+254110123456');
+    expect(normalizePhone('12345'), isNull);
+    expect(normalizePhone('abc'), isNull);
+  });
+
+  testWidgets('Sign in checks the email and shows wrong-password errors', (
+    tester,
+  ) async {
     final SessionController s = SessionController(FakeAccount());
     await tester.pumpWidget(wrap(SignInScreen(session: s)));
 
@@ -247,24 +351,34 @@ void main() {
   });
 
   testWidgets(
-      'Create account asks for 8+ characters and explains email confirmation',
-      (tester) async {
-    final SessionController s = SessionController(FakeAccount());
-    await tester
-        .pumpWidget(wrap(SignInScreen(session: s, createAccount: true)));
+    'Create account asks for 8+ characters and explains email confirmation',
+    (tester) async {
+      final SessionController s = SessionController(FakeAccount());
+      await tester.pumpWidget(
+        wrap(SignInScreen(session: s, createAccount: true)),
+      );
 
-    await tester.enterText(find.byKey(const Key('email')), 'amani@example.com');
-    await tester.enterText(find.byKey(const Key('password')), 'short');
-    await tester.tap(find.byKey(const Key('submit')));
-    await tester.pump();
-    expect(find.text('Use at least 8 characters'), findsOneWidget);
+      await tester.enterText(
+        find.byKey(const Key('email')),
+        'amani@example.com',
+      );
+      await tester.enterText(find.byKey(const Key('password')), 'short');
+      await tester.tap(find.byKey(const Key('submit')));
+      await tester.pump();
+      expect(find.text('Use at least 8 characters'), findsOneWidget);
 
-    await tester.enterText(find.byKey(const Key('password')), 'long-enough-1');
-    await tester.tap(find.byKey(const Key('submit')));
-    await tester.pumpAndSettle();
-    expect(
-        find.textContaining('Open it to confirm your email'), findsOneWidget);
-  });
+      await tester.enterText(
+        find.byKey(const Key('password')),
+        'long-enough-1',
+      );
+      await tester.tap(find.byKey(const Key('submit')));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('Open it to confirm your email'),
+        findsOneWidget,
+      );
+    },
+  );
 
   Future<(FakeAccount, SessionController)> anonymousUser() async {
     final FakeAccount account = FakeAccount();
@@ -290,7 +404,9 @@ void main() {
         tester.widget<FilledButton>(find.byKey(const Key('send-code')));
     expect(send().onPressed, isNull, reason: 'no email yet');
     await tester.enterText(
-        find.byKey(const Key('save-email')), 'candy@example.com');
+      find.byKey(const Key('save-email')),
+      'candy@example.com',
+    );
     await tester.pump();
     await tester.tap(find.byKey(const Key('send-code')));
     await tester.pumpAndSettle();
@@ -316,9 +432,13 @@ void main() {
     expect(find.text('Use at least 8 characters.'), findsOneWidget);
 
     await tester.enterText(
-        find.byKey(const Key('save-password')), 'long-enough-1');
+      find.byKey(const Key('save-password')),
+      'long-enough-1',
+    );
     await tester.enterText(
-        find.byKey(const Key('save-password2')), 'long-enough-1');
+      find.byKey(const Key('save-password2')),
+      'long-enough-1',
+    );
     await tester.tap(find.byKey(const Key('save-password-button')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('save-done')), findsOneWidget);
@@ -326,29 +446,39 @@ void main() {
     expect(account.isAnonymous, isFalse);
   });
 
-  testWidgets('Save your progress explains an email that is already used',
-      (tester) async {
+  testWidgets('Save your progress explains an email that is already used', (
+    tester,
+  ) async {
     tallScreen(tester);
     final (FakeAccount _, SessionController s) = await anonymousUser();
     await tester.pumpWidget(wrap(SaveProgressScreen(session: s)));
     await tester.enterText(
-        find.byKey(const Key('save-email')), 'taken@example.com');
+      find.byKey(const Key('save-email')),
+      'taken@example.com',
+    );
     await tester.pump();
     await tester.tap(find.byKey(const Key('send-code')));
     await tester.pumpAndSettle();
     expect(
-        find.textContaining('already has a MindQuest account'), findsOneWidget);
+      find.textContaining('already has a MindQuest account'),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('Delete my data needs DELETE typed, then signs out',
-      (tester) async {
+  testWidgets('Delete my data needs DELETE typed, then signs out', (
+    tester,
+  ) async {
     tallScreen(tester);
     final (FakeAccount account, SessionController s) = await anonymousUser();
-    await tester.pumpWidget(wrap(ProfileScreen(
-      session: s,
-      theme: ThemeController(),
-      onSaveProgress: () {},
-    )));
+    await tester.pumpWidget(
+      wrap(
+        ProfileScreen(
+          session: s,
+          theme: ThemeController(),
+          onSaveProgress: () {},
+        ),
+      ),
+    );
     expect(find.byKey(const Key('open-save-progress')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('delete-data')));
@@ -357,7 +487,9 @@ void main() {
         tester.widget<TextButton>(find.byKey(const Key('delete-confirm')));
     expect(confirm().onPressed, isNull);
     await tester.enterText(
-        find.byKey(const Key('delete-confirm-field')), 'delete');
+      find.byKey(const Key('delete-confirm-field')),
+      'delete',
+    );
     await tester.pump();
     await tester.tap(find.byKey(const Key('delete-confirm')));
     await tester.pumpAndSettle();
@@ -382,30 +514,40 @@ void main() {
   });
 
   testWidgets(
-      'Save your progress with Google finishes when the account is linked',
-      (tester) async {
-    tallScreen(tester);
-    final (FakeAccount account, SessionController s) = await anonymousUser();
-    await tester.pumpWidget(wrap(SaveProgressScreen(session: s)));
-    await tester.tap(find.byKey(const Key('google')));
-    await tester.pumpAndSettle();
-    expect(account.googleLinks, 1);
-    expect(find.byKey(const Key('save-done')), findsOneWidget);
-    expect(find.textContaining('Continue with Google'), findsOneWidget);
-  });
+    'Save your progress with Google finishes when the account is linked',
+    (tester) async {
+      tallScreen(tester);
+      final (FakeAccount account, SessionController s) = await anonymousUser();
+      await tester.pumpWidget(wrap(SaveProgressScreen(session: s)));
+      await tester.tap(find.byKey(const Key('google')));
+      await tester.pumpAndSettle();
+      expect(account.googleLinks, 1);
+      expect(find.byKey(const Key('save-done')), findsOneWidget);
+      expect(find.textContaining('Continue with Google'), findsOneWidget);
+    },
+  );
 
-  testWidgets('Profile shows Give feedback only when a form link is set',
-      (tester) async {
+  testWidgets('Profile shows Give feedback only when a form link is set', (
+    tester,
+  ) async {
     tallScreen(tester);
     final (FakeAccount _, SessionController s) = await anonymousUser();
-    await tester.pumpWidget(wrap(
-        ProfileScreen(session: s, theme: ThemeController(), feedbackUrl: '')));
+    await tester.pumpWidget(
+      wrap(
+        ProfileScreen(session: s, theme: ThemeController(), feedbackUrl: ''),
+      ),
+    );
     expect(find.byKey(const Key('give-feedback')), findsNothing);
 
-    await tester.pumpWidget(wrap(ProfileScreen(
-        session: s,
-        theme: ThemeController(),
-        feedbackUrl: 'https://forms.gle/example')));
+    await tester.pumpWidget(
+      wrap(
+        ProfileScreen(
+          session: s,
+          theme: ThemeController(),
+          feedbackUrl: 'https://forms.gle/example',
+        ),
+      ),
+    );
     expect(find.byKey(const Key('give-feedback')), findsOneWidget);
     expect(find.text('Give feedback on MindQuest'), findsOneWidget);
   });

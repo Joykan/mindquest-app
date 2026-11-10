@@ -7,15 +7,19 @@ import '../learn/learn_repository.dart';
 
 /// One goal in a challenge, e.g. "Do box breathing 3 times".
 class ChallengeStep {
-  const ChallengeStep(
-      {required this.kind, required this.target, this.category, this.done = 0});
+  const ChallengeStep({
+    required this.kind,
+    required this.target,
+    this.category,
+    this.done = 0,
+  });
 
   factory ChallengeStep.fromJson(Map<String, dynamic> json) => ChallengeStep(
-        kind: json['kind'] as String,
-        target: (json['target'] as num?)?.toInt() ?? 1,
-        category: json['category'] as String?,
-        done: (json['done'] as num?)?.toInt() ?? 0,
-      );
+    kind: json['kind'] as String,
+    target: (json['target'] as num?)?.toInt() ?? 1,
+    category: json['category'] as String?,
+    done: (json['done'] as num?)?.toInt() ?? 0,
+  );
 
   /// checkin, note, chat, breathing, grounding or read (see the database's
   /// challenge_progress).
@@ -32,41 +36,55 @@ class ChallengeStep {
     final int n = target;
     String times(String one, String many) => n == 1 ? one : many;
     return switch (kind) {
-      'checkin' => tr(language, 'Check in on $n ${times('day', 'days')}',
-          'Rekodi hisia siku $n'),
+      'checkin' => tr(
+        language,
+        'Check in on $n ${times('day', 'days')}',
+        'Rekodi hisia siku $n',
+      ),
       'note' => tr(
-          language,
-          'Write one good thing in your check-in note on $n ${times('day', 'days')}',
-          'Andika jambo moja zuri kwenye maelezo ya hisia siku $n'),
-      'chat' => tr(language, 'Chat with Chipu on $n ${times('day', 'days')}',
-          'Ongea na Chipu siku $n'),
+        language,
+        'Write one good thing in your check-in note on $n ${times('day', 'days')}',
+        'Andika jambo moja zuri kwenye maelezo ya hisia siku $n',
+      ),
+      'chat' => tr(
+        language,
+        'Chat with Chipu on $n ${times('day', 'days')}',
+        'Ongea na Chipu siku $n',
+      ),
       'breathing' => tr(
-          language,
-          'Do box breathing ${times('once', '$n times')}',
-          'Fanya zoezi la kupumua ${times('mara moja', 'mara $n')}'),
+        language,
+        'Do box breathing ${times('once', '$n times')}',
+        'Fanya zoezi la kupumua ${times('mara moja', 'mara $n')}',
+      ),
       'grounding' => tr(
-          language,
-          'Do 5-4-3-2-1 grounding ${times('once', '$n times')}',
-          'Fanya zoezi la kutuliza akili 5-4-3-2-1 ${times('mara moja', 'mara $n')}'),
-      'read' => category == null
-          ? tr(language, 'Read $n ${times('article', 'articles')}',
-              'Soma makala $n')
-          : tr(
-              language,
-              'Read $n ${times('article', 'articles')} about ${categoryName(category!, 'en').toLowerCase()}',
-              'Soma makala $n kuhusu ${categoryName(category!, 'sw').toLowerCase()}'),
+        language,
+        'Do 5-4-3-2-1 grounding ${times('once', '$n times')}',
+        'Fanya zoezi la kutuliza akili 5-4-3-2-1 ${times('mara moja', 'mara $n')}',
+      ),
+      'read' =>
+        category == null
+            ? tr(
+                language,
+                'Read $n ${times('article', 'articles')}',
+                'Soma makala $n',
+              )
+            : tr(
+                language,
+                'Read $n ${times('article', 'articles')} about ${categoryName(category!, 'en').toLowerCase()}',
+                'Soma makala $n kuhusu ${categoryName(category!, 'sw').toLowerCase()}',
+              ),
       _ => kind,
     };
   }
 
   /// Where in the app to do it: mood, chat, support or learn.
   String get place => switch (kind) {
-        'checkin' || 'note' => 'mood',
-        'chat' => 'chat',
-        'breathing' || 'grounding' => 'support',
-        'read' => 'learn',
-        _ => 'home',
-      };
+    'checkin' || 'note' => 'mood',
+    'chat' => 'chat',
+    'breathing' || 'grounding' => 'support',
+    'read' => 'learn',
+    _ => 'home',
+  };
 }
 
 /// A themed challenge, e.g. "Exam calm".
@@ -86,22 +104,21 @@ class Challenge {
   });
 
   factory Challenge.fromJson(Map<String, dynamic> json) => Challenge(
-        id: json['id'] as String,
-        emoji: json['emoji'] as String? ?? '🎯',
-        title: json['title'] as String? ?? '',
-        titleSw: json['title_sw'] as String? ?? '',
-        description: json['description'] as String? ?? '',
-        descriptionSw: json['description_sw'] as String? ?? '',
-        days: (json['days'] as num?)?.toInt() ?? 7,
-        xp: (json['xp'] as num?)?.toInt() ?? 40,
-        badgeId: json['badge_id'] as String?,
-        completed: (json['completed'] as num?)?.toInt() ?? 0,
-        steps: <ChallengeStep>[
-          for (final dynamic s
-              in json['steps'] as List<dynamic>? ?? <dynamic>[])
-            ChallengeStep.fromJson(s as Map<String, dynamic>),
-        ],
-      );
+    id: json['id'] as String,
+    emoji: json['emoji'] as String? ?? '🎯',
+    title: json['title'] as String? ?? '',
+    titleSw: json['title_sw'] as String? ?? '',
+    description: json['description'] as String? ?? '',
+    descriptionSw: json['description_sw'] as String? ?? '',
+    days: (json['days'] as num?)?.toInt() ?? 7,
+    xp: (json['xp'] as num?)?.toInt() ?? 40,
+    badgeId: json['badge_id'] as String?,
+    completed: (json['completed'] as num?)?.toInt() ?? 0,
+    steps: <ChallengeStep>[
+      for (final dynamic s in json['steps'] as List<dynamic>? ?? <dynamic>[])
+        ChallengeStep.fromJson(s as Map<String, dynamic>),
+    ],
+  );
 
   final String id;
   final String emoji;
@@ -121,17 +138,18 @@ class Challenge {
       language == 'sw' && titleSw.isNotEmpty ? titleSw : title;
   String describe(String language) =>
       language == 'sw' && descriptionSw.isNotEmpty
-          ? descriptionSw
-          : description;
+      ? descriptionSw
+      : description;
 }
 
 /// The challenge the user is doing now.
 class ActiveChallenge {
-  const ActiveChallenge(
-      {required this.runId,
-      required this.challenge,
-      required this.endsAt,
-      required this.steps});
+  const ActiveChallenge({
+    required this.runId,
+    required this.challenge,
+    required this.endsAt,
+    required this.steps,
+  });
 
   final String runId;
   final Challenge challenge;
@@ -218,7 +236,7 @@ class ChallengeException implements Exception {
 }
 
 abstract class ChallengesRepository {
-  Future<ChallengesState> load();
+  Future<ChallengesState> load({bool fresh = false});
   Future<void> start(String challengeId);
   Future<void> leave();
 
@@ -229,7 +247,7 @@ abstract class ChallengesRepository {
 
 class SupabaseChallengesRepository implements ChallengesRepository {
   SupabaseChallengesRepository({SupabaseClient? client, this.offline})
-      : _client = client ?? Supabase.instance.client {
+    : _client = client ?? Supabase.instance.client {
     offline?.register('activity', _insertActivity);
   }
 
@@ -242,7 +260,7 @@ class SupabaseChallengesRepository implements ChallengesRepository {
       _client.from('wellbeing_activities').insert(data);
 
   @override
-  Future<ChallengesState> load() async {
+  Future<ChallengesState> load({bool fresh = false}) async {
     Future<dynamic> query() => _client.rpc('my_challenges');
     final OfflineStore? store = offline;
     dynamic data;
@@ -250,7 +268,10 @@ class SupabaseChallengesRepository implements ChallengesRepository {
       data = await query();
     } else {
       await store.flush();
-      data = await store.load('challenges', query);
+      // After starting or leaving one, the saved copy is out of date.
+      data = fresh
+          ? await store.loadFresh('challenges', query)
+          : await store.load('challenges', query);
     }
     return ChallengesState.fromJson(Map<String, dynamic>.from(data as Map));
   }

@@ -25,17 +25,21 @@ void tall(WidgetTester tester) {
   addTearDown(tester.view.reset);
 }
 
-Widget app(Widget screen,
-        {String language = 'en', OutfitController? outfits}) =>
-    MaterialApp(
-      theme: AppTheme.light(),
-      builder: (BuildContext context, Widget? child) => LanguageScope(
-        language: language,
-        child: OutfitScope(
-            controller: outfits ?? OutfitController(), child: child!),
-      ),
-      home: screen,
-    );
+Widget app(
+  Widget screen, {
+  String language = 'en',
+  OutfitController? outfits,
+}) => MaterialApp(
+  theme: AppTheme.light(),
+  builder: (BuildContext context, Widget? child) => LanguageScope(
+    language: language,
+    child: OutfitScope(
+      controller: outfits ?? OutfitController(),
+      child: child!,
+    ),
+  ),
+  home: screen,
+);
 
 class FakeRewards implements RewardsRepository {
   FakeRewards(this.summary);
@@ -60,7 +64,7 @@ class FakeChallenges implements ChallengesRepository {
   final List<String> activities = <String>[];
 
   @override
-  Future<ChallengesState> load() async => state;
+  Future<ChallengesState> load({bool fresh = false}) async => state;
 
   @override
   Future<void> start(String challengeId) async {
@@ -77,74 +81,69 @@ class FakeChallenges implements ChallengesRepository {
 
 /// A real answer from public.my_challenges() (one challenge running).
 Map<String, dynamic> myChallenges({bool active = true}) => <String, dynamic>{
-      'challenges': <dynamic>[
-        <String, dynamic>{
-          'id': 'exam_calm',
-          'emoji': '📝',
-          'title': 'Exam calm',
-          'title_sw': 'Utulivu wa mitihani',
-          'description':
-              'Stay steady through a busy week of exams or deadlines.',
-          'description_sw':
-              'Baki mtulivu katika wiki yenye mitihani au kazi nyingi.',
-          'days': 7,
-          'xp': 40,
-          'badge_id': 'challenge_exam_calm',
-          'completed': 0,
+  'challenges': <dynamic>[
+    <String, dynamic>{
+      'id': 'exam_calm',
+      'emoji': '📝',
+      'title': 'Exam calm',
+      'title_sw': 'Utulivu wa mitihani',
+      'description': 'Stay steady through a busy week of exams or deadlines.',
+      'description_sw':
+          'Baki mtulivu katika wiki yenye mitihani au kazi nyingi.',
+      'days': 7,
+      'xp': 40,
+      'badge_id': 'challenge_exam_calm',
+      'completed': 0,
+      'steps': <dynamic>[
+        <String, dynamic>{'kind': 'checkin', 'target': 4},
+        <String, dynamic>{'kind': 'breathing', 'target': 3},
+        <String, dynamic>{'kind': 'read', 'target': 1, 'category': 'stress'},
+      ],
+    },
+    <String, dynamic>{
+      'id': 'mindful',
+      'emoji': '🌿',
+      'title': 'Mindful moments',
+      'title_sw': 'Nyakati za utulivu',
+      'description': 'Slow down and come back to the present moment.',
+      'description_sw': 'Punguza mwendo na urudi kwenye wakati huu.',
+      'days': 7,
+      'xp': 40,
+      'badge_id': 'challenge_mindful',
+      'completed': 2,
+      'steps': <dynamic>[
+        <String, dynamic>{'kind': 'breathing', 'target': 3},
+        <String, dynamic>{'kind': 'grounding', 'target': 2},
+      ],
+    },
+  ],
+  'active': active
+      ? <String, dynamic>{
+          'id': 'run-1',
+          'challenge_id': 'mindful',
+          'started_at': '2026-10-20T11:00:00+00:00',
+          'ends_at': DateTime.now()
+              .toUtc()
+              .add(const Duration(days: 3, hours: 2))
+              .toIso8601String(),
           'steps': <dynamic>[
-            <String, dynamic>{'kind': 'checkin', 'target': 4},
-            <String, dynamic>{'kind': 'breathing', 'target': 3},
             <String, dynamic>{
-              'kind': 'read',
-              'target': 1,
-              'category': 'stress'
+              'done': 3,
+              'kind': 'breathing',
+              'target': 3,
+              'category': null,
+            },
+            <String, dynamic>{
+              'done': 1,
+              'kind': 'grounding',
+              'target': 2,
+              'category': null,
             },
           ],
-        },
-        <String, dynamic>{
-          'id': 'mindful',
-          'emoji': '🌿',
-          'title': 'Mindful moments',
-          'title_sw': 'Nyakati za utulivu',
-          'description': 'Slow down and come back to the present moment.',
-          'description_sw': 'Punguza mwendo na urudi kwenye wakati huu.',
-          'days': 7,
-          'xp': 40,
-          'badge_id': 'challenge_mindful',
-          'completed': 2,
-          'steps': <dynamic>[
-            <String, dynamic>{'kind': 'breathing', 'target': 3},
-            <String, dynamic>{'kind': 'grounding', 'target': 2},
-          ],
-        },
-      ],
-      'active': active
-          ? <String, dynamic>{
-              'id': 'run-1',
-              'challenge_id': 'mindful',
-              'started_at': '2026-10-20T11:00:00+00:00',
-              'ends_at': DateTime.now()
-                  .toUtc()
-                  .add(const Duration(days: 3, hours: 2))
-                  .toIso8601String(),
-              'steps': <dynamic>[
-                <String, dynamic>{
-                  'done': 3,
-                  'kind': 'breathing',
-                  'target': 3,
-                  'category': null
-                },
-                <String, dynamic>{
-                  'done': 1,
-                  'kind': 'grounding',
-                  'target': 2,
-                  'category': null
-                },
-              ],
-            }
-          : null,
-      'recent': null,
-    };
+        }
+      : null,
+  'recent': null,
+};
 
 void main() {
   group('rest days: the same rule as public.checkin_streak', () {
@@ -163,8 +162,10 @@ void main() {
       expect(streakRun(days(<int>[17, 20]), day(20)).length, 1);
     });
     test('a full week', () {
-      expect(streakRun(days(<int>[12, 13, 14, 15, 16, 17, 18]), day(18)).length,
-          7);
+      expect(
+        streakRun(days(<int>[12, 13, 14, 15, 16, 17, 18]), day(18)).length,
+        7,
+      );
     });
     test('the newest missed day takes the week\'s rest day', () {
       expect(streakRun(days(<int>[11, 13, 15]), day(15)).length, 2);
@@ -173,8 +174,10 @@ void main() {
 
   group('the streak shown today', () {
     test('yesterday missed: the rest day keeps it until tonight', () {
-      final StreakStatus s =
-          streakStatus(today: day(22), checkins: days(<int>[19, 20]));
+      final StreakStatus s = streakStatus(
+        today: day(22),
+        checkins: days(<int>[19, 20]),
+      );
       expect(s.days, 2);
       expect(s.restYesterday, isTrue);
       expect(s.restUsedThisWeek, isTrue);
@@ -183,78 +186,98 @@ void main() {
       expect(streakStatus(today: day(22), checkins: days(<int>[19])).days, 0);
     });
     test("last week's rest day doesn't use this week's", () {
-      final StreakStatus s =
-          streakStatus(today: day(20), checkins: days(<int>[16, 17, 19, 20]));
+      final StreakStatus s = streakStatus(
+        today: day(20),
+        checkins: days(<int>[16, 17, 19, 20]),
+      );
       expect(s.days, 4);
       expect(s.restUsedThisWeek, isFalse);
       expect(s.restYesterday, isFalse);
     });
     test('a streak longer than the days loaded comes from the profile', () {
       final StreakStatus s = streakStatus(
-          today: day(20),
-          checkins: days(<int>[18, 19, 20]),
-          savedStreak: 150,
-          lastCheckin: day(19));
+        today: day(20),
+        checkins: days(<int>[18, 19, 20]),
+        savedStreak: 150,
+        lastCheckin: day(19),
+      );
       expect(s.days, 151);
     });
   });
 
   group('outfits', () {
     test('unlock at the same levels as public.outfit_level', () {
-      expect(<String, int>{
-        for (final Outfit o in outfits) o.id: o.level
-      }, <String, int>{
-        'daisy': 2,
-        'glasses': 3,
-        'beads': 4,
-        'medal': 5,
-        'cape': 6,
-      });
-      expect(outfitsUnlocked(1, 3).map((Outfit o) => o.id),
-          <String>['daisy', 'glasses']);
+      expect(
+        <String, int>{for (final Outfit o in outfits) o.id: o.level},
+        <String, int>{
+          'daisy': 2,
+          'glasses': 3,
+          'beads': 4,
+          'medal': 5,
+          'cape': 6,
+        },
+      );
+      expect(outfitsUnlocked(1, 3).map((Outfit o) => o.id), <String>[
+        'daisy',
+        'glasses',
+      ]);
     });
 
     test('a new level is celebrated once', () async {
       SharedPreferences.setMockInitialValues(<String, Object>{});
       final OutfitController c = OutfitController(
-          prefs: await SharedPreferences.getInstance(), userId: () => 'u1');
+        prefs: await SharedPreferences.getInstance(),
+        userId: () => 'u1',
+      );
       expect(c.newUnlocks(2), isEmpty); // first time: just remembered
       expect(c.newUnlocks(2), isEmpty);
-      expect(c.newUnlocks(4).map((Outfit o) => o.id),
-          <String>['glasses', 'beads']);
+      expect(c.newUnlocks(4).map((Outfit o) => o.id), <String>[
+        'glasses',
+        'beads',
+      ]);
       expect(c.newUnlocks(4), isEmpty);
     });
   });
 
-  testWidgets('wardrobe: wear an unlocked outfit, locked ones stay locked',
-      (tester) async {
+  testWidgets('wardrobe: wear an unlocked outfit, locked ones stay locked', (
+    tester,
+  ) async {
     tall(tester);
-    final FakeRewards repo = FakeRewards(const RewardsSummary(
-      xp: 120, // Level 3
-      streak: 2,
-      badges: <BadgeStatus>[],
-      weekCheckinDays: 2,
-      weeklyQuestDone: false,
-      questsCompleted: 0,
-      outfit: 'daisy',
-    ));
+    final FakeRewards repo = FakeRewards(
+      const RewardsSummary(
+        xp: 120, // Level 3
+        streak: 2,
+        badges: <BadgeStatus>[],
+        weekCheckinDays: 2,
+        weeklyQuestDone: false,
+        questsCompleted: 0,
+        outfit: 'daisy',
+      ),
+    );
     final OutfitController outfits = OutfitController()..save = repo.wearOutfit;
-    await tester.pumpWidget(app(
+    await tester.pumpWidget(
+      app(
         RewardsScreen(repository: repo, outfits: outfits),
-        outfits: outfits));
+        outfits: outfits,
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(outfits.id, 'daisy'); // from the saved profile
     expect(find.byKey(const Key('wardrobe')), findsOneWidget);
-    expect(find.textContaining('Reach Level 4 to unlock the beaded headband'),
-        findsOneWidget);
+    expect(
+      find.textContaining('Reach Level 4 to unlock the beaded headband'),
+      findsOneWidget,
+    );
 
     await tester.tap(find.byKey(const Key('outfit-glasses')));
     await tester.pumpAndSettle();
     expect(outfits.id, 'glasses');
     expect(repo.worn, <String?>['glasses']);
     expect(
-        find.text('Chipu is wearing the reading glasses 👓'), findsOneWidget);
+      find.text('Chipu is wearing the reading glasses 👓'),
+      findsOneWidget,
+    );
 
     await tester.ensureVisible(find.byKey(const Key('outfit-cape')));
     await tester.pumpAndSettle();
@@ -270,23 +293,31 @@ void main() {
     expect(outfits.id, isNull);
   });
 
-  testWidgets('Home celebrates a new level and can put the outfit on',
-      (tester) async {
+  testWidgets('Home celebrates a new level and can put the outfit on', (
+    tester,
+  ) async {
     tall(tester);
-    SharedPreferences.setMockInitialValues(
-        <String, Object>{'outfits.u1.seenLevel': 1});
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      'outfits.u1.seenLevel': 1,
+    });
     final OutfitController outfits = OutfitController(
-        prefs: await SharedPreferences.getInstance(), userId: () => 'u1');
-    await tester.pumpWidget(app(
+      prefs: await SharedPreferences.getInstance(),
+      userId: () => 'u1',
+    );
+    await tester.pumpWidget(
+      app(
         HomeScreen(
           repository: FakeProgress(
-              const HomeSummary(username: 'Amani', xp: 105, streak: 2)),
+            const HomeSummary(username: 'Amani', xp: 105, streak: 2),
+          ),
           onMoodTap: (_) {},
           onTalk: () {},
           onProfile: () {},
           outfits: outfits,
         ),
-        outfits: outfits));
+        outfits: outfits,
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('level-up-dialog')), findsOneWidget);
@@ -300,19 +331,31 @@ void main() {
 
   testWidgets('Home explains a rest day', (tester) async {
     tall(tester);
-    await tester.pumpWidget(app(HomeScreen(
-      repository: FakeProgress(const HomeSummary(
-          username: 'A', xp: 0, streak: 4, restYesterday: true)),
-      onMoodTap: (_) {},
-      onTalk: () {},
-      onProfile: () {},
-    )));
+    await tester.pumpWidget(
+      app(
+        HomeScreen(
+          repository: FakeProgress(
+            const HomeSummary(
+              username: 'A',
+              xp: 0,
+              streak: 4,
+              restYesterday: true,
+            ),
+          ),
+          onMoodTap: (_) {},
+          onTalk: () {},
+          onProfile: () {},
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('4-day streak'), findsOneWidget);
     expect(
-        find.text(
-            'Yesterday was your rest day. Check in today to keep your streak!'),
-        findsOneWidget);
+      find.text(
+        'Yesterday was your rest day. Check in today to keep your streak!',
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.byKey(const Key('rest-day')));
     await tester.pumpAndSettle();
     expect(find.textContaining('one rest day'), findsOneWidget);
@@ -320,15 +363,24 @@ void main() {
 
   testWidgets('rest day in Kiswahili', (tester) async {
     tall(tester);
-    await tester.pumpWidget(app(
+    await tester.pumpWidget(
+      app(
         HomeScreen(
-          repository: FakeProgress(const HomeSummary(
-              username: 'A', xp: 0, streak: 2, restUsedThisWeek: true)),
+          repository: FakeProgress(
+            const HomeSummary(
+              username: 'A',
+              xp: 0,
+              streak: 2,
+              restUsedThisWeek: true,
+            ),
+          ),
           onMoodTap: (_) {},
           onTalk: () {},
           onProfile: () {},
         ),
-        language: 'sw'));
+        language: 'sw',
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Siku ya kupumzika imetumika wiki hii'), findsOneWidget);
   });
@@ -343,16 +395,21 @@ void main() {
       expect(a.done, 4);
       expect(a.target, 5);
       expect(a.daysLeft(), 4);
-      expect(s.challenges.first.steps[2].label('en'),
-          'Read 1 article about stress');
-      expect(s.challenges.first.steps[2].label('sw'),
-          'Soma makala 1 kuhusu msongo');
+      expect(
+        s.challenges.first.steps[2].label('en'),
+        'Read 1 article about stress',
+      );
+      expect(
+        s.challenges.first.steps[2].label('sw'),
+        'Soma makala 1 kuhusu msongo',
+      );
       expect(s.challenges.first.steps[1].place, 'support');
     });
 
     test('a different suggestion each week', () {
-      final ChallengesState s =
-          ChallengesState.fromJson(myChallenges(active: false));
+      final ChallengesState s = ChallengesState.fromJson(
+        myChallenges(active: false),
+      );
       final Challenge? a = s.featured(DateTime.utc(2026, 10, 20, 9));
       final Challenge? b = s.featured(DateTime.utc(2026, 10, 27, 9));
       expect(a, isNotNull);
@@ -363,15 +420,22 @@ void main() {
     testWidgets('Home shows the running challenge', (tester) async {
       tall(tester);
       bool opened = false;
-      await tester.pumpWidget(app(HomeScreen(
-        repository:
-            FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0)),
-        onMoodTap: (_) {},
-        onTalk: () {},
-        onProfile: () {},
-        challenges: FakeChallenges(ChallengesState.fromJson(myChallenges())),
-        onChallenges: () => opened = true,
-      )));
+      await tester.pumpWidget(
+        app(
+          HomeScreen(
+            repository: FakeProgress(
+              const HomeSummary(username: 'A', xp: 0, streak: 0),
+            ),
+            onMoodTap: (_) {},
+            onTalk: () {},
+            onProfile: () {},
+            challenges: FakeChallenges(
+              ChallengesState.fromJson(myChallenges()),
+            ),
+            onChallenges: () => opened = true,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('challenge-card')), findsOneWidget);
       expect(find.text('Mindful moments'), findsOneWidget);
@@ -384,34 +448,47 @@ void main() {
 
     testWidgets("Home suggests this week's challenge", (tester) async {
       tall(tester);
-      await tester.pumpWidget(app(HomeScreen(
-        repository:
-            FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0)),
-        onMoodTap: (_) {},
-        onTalk: () {},
-        onProfile: () {},
-        challenges: FakeChallenges(
-            ChallengesState.fromJson(myChallenges(active: false))),
-        onChallenges: () {},
-      )));
+      await tester.pumpWidget(
+        app(
+          HomeScreen(
+            repository: FakeProgress(
+              const HomeSummary(username: 'A', xp: 0, streak: 0),
+            ),
+            onMoodTap: (_) {},
+            onTalk: () {},
+            onProfile: () {},
+            challenges: FakeChallenges(
+              ChallengesState.fromJson(myChallenges(active: false)),
+            ),
+            onChallenges: () {},
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
       expect(find.text("This week's challenge"), findsOneWidget);
     });
 
     testWidgets('start, a step opens its place, and leave', (tester) async {
       tall(tester);
-      final FakeChallenges repo =
-          FakeChallenges(ChallengesState.fromJson(myChallenges()));
+      final FakeChallenges repo = FakeChallenges(
+        ChallengesState.fromJson(myChallenges()),
+      );
       final List<String> places = <String>[];
-      await tester.pumpWidget(app(ChallengesScreen(
-          repository: repo, onStep: places.add, onChanged: () {})));
+      await tester.pumpWidget(
+        app(
+          ChallengesScreen(
+            repository: repo,
+            onStep: places.add,
+            onChanged: () {},
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('active-challenge')), findsOneWidget);
       // Another one can't start while one is running.
-      final FilledButton start =
-          tester.widget<FilledButton>(find.byKey(const Key('start-exam_calm')));
-      expect(start.onPressed, isNull);
+      expect(find.byKey(const Key('start-exam_calm')), findsNothing);
+      expect(find.byKey(const Key('waiting-exam_calm')), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('step-grounding')));
       expect(places, <String>['support']);
@@ -429,29 +506,39 @@ void main() {
       await tester.pumpAndSettle();
       expect(repo.started, <String>['exam_calm']);
       expect(
-          find.text("📝 Exam calm started. You've got this!"), findsOneWidget);
+        find.text("📝 Exam calm started. You've got this!"),
+        findsOneWidget,
+      );
     });
 
     testWidgets('a challenge already running is explained', (tester) async {
       tall(tester);
       final FakeChallenges repo = FakeChallenges(
-          ChallengesState.fromJson(myChallenges(active: false)),
-          busy: true);
+        ChallengesState.fromJson(myChallenges(active: false)),
+        busy: true,
+      );
       await tester.pumpWidget(app(ChallengesScreen(repository: repo)));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('start-mindful')));
       await tester.pumpAndSettle();
-      expect(find.text('Finish or leave your current challenge first.'),
-          findsOneWidget);
+      expect(
+        find.text('Finish or leave your current challenge first.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('Challenges screen in Kiswahili', (tester) async {
       tall(tester);
-      await tester.pumpWidget(app(
+      await tester.pumpWidget(
+        app(
           ChallengesScreen(
-              repository: FakeChallenges(
-                  ChallengesState.fromJson(myChallenges(active: false)))),
-          language: 'sw'));
+            repository: FakeChallenges(
+              ChallengesState.fromJson(myChallenges(active: false)),
+            ),
+          ),
+          language: 'sw',
+        ),
+      );
       await tester.pumpAndSettle();
       expect(find.text('Changamoto'), findsOneWidget);
       expect(find.text('Utulivu wa mitihani'), findsOneWidget);
@@ -463,10 +550,14 @@ void main() {
   testWidgets('finished exercises count for challenges', (tester) async {
     tall(tester);
     final List<String> done = <String>[];
-    await tester.pumpWidget(app(SupportScreen(
-      loadHelplines: () async => const <Helpline>[],
-      onExerciseDone: done.add,
-    )));
+    await tester.pumpWidget(
+      app(
+        SupportScreen(
+          loadHelplines: () async => const <Helpline>[],
+          onExerciseDone: done.add,
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('breathing-button')));

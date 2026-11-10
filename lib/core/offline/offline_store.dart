@@ -76,14 +76,17 @@ class ConnectionStatus extends ChangeNotifier {
 
 /// Something done without internet, waiting to be sent to the server.
 class PendingAction {
-  const PendingAction(
-      {required this.id, required this.kind, required this.data});
+  const PendingAction({
+    required this.id,
+    required this.kind,
+    required this.data,
+  });
 
   factory PendingAction.fromJson(Map<String, dynamic> json) => PendingAction(
-        id: json['id'] as String,
-        kind: json['kind'] as String,
-        data: Map<String, dynamic>.from(json['data'] as Map),
-      );
+    id: json['id'] as String,
+    kind: json['kind'] as String,
+    data: Map<String, dynamic>.from(json['data'] as Map),
+  );
 
   final String id;
 
@@ -93,8 +96,11 @@ class PendingAction {
   /// The row to insert.
   final Map<String, dynamic> data;
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{'id': id, 'kind': kind, 'data': data};
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'id': id,
+    'kind': kind,
+    'data': data,
+  };
 }
 
 typedef PendingSender = Future<void> Function(Map<String, dynamic> data);
@@ -196,8 +202,18 @@ class OfflineStore with WidgetsBindingObserver {
     return _fetch(uid, name, remote);
   }
 
+  /// Like [load], but always asks the server first (the saved copy is used
+  /// only when there is no internet). For screens that just changed something.
+  Future<dynamic> loadFresh(
+    String name,
+    Future<dynamic> Function() remote,
+  ) async => _fetch(userId(), name, remote);
+
   Future<dynamic> _fetch(
-      String? uid, String name, Future<dynamic> Function() remote) async {
+    String? uid,
+    String name,
+    Future<dynamic> Function() remote,
+  ) async {
     try {
       final dynamic value = await _ask('$uid|$name', remote);
       status.markOnline();
@@ -205,8 +221,9 @@ class OfflineStore with WidgetsBindingObserver {
       return value;
     } catch (e) {
       if (!isOfflineError(e)) rethrow;
-      final String? raw =
-          uid == null ? null : _prefs.getString(_key(uid, 'cache.$name'));
+      final String? raw = uid == null
+          ? null
+          : _prefs.getString(_key(uid, 'cache.$name'));
       if (raw == null) {
         status.markOffline();
         rethrow;
@@ -240,13 +257,18 @@ class OfflineStore with WidgetsBindingObserver {
   }
 
   /// Asks the server in the background after the saved copy was shown.
-  Future<void> _refresh(String uid, String name,
-      Future<dynamic> Function() remote, String shown) async {
+  Future<void> _refresh(
+    String uid,
+    String name,
+    Future<dynamic> Function() remote,
+    String shown,
+  ) async {
     try {
       final dynamic value = await _ask('$uid|$name', remote);
       status.markOnline();
-      final String before =
-          jsonEncode((jsonDecode(shown) as Map<String, dynamic>)['value']);
+      final String before = jsonEncode(
+        (jsonDecode(shown) as Map<String, dynamic>)['value'],
+      );
       await _keep(uid, name, value);
       if (jsonEncode(value) == before) return;
       _justRefreshed['$uid|$name'] = DateTime.now();
@@ -257,8 +279,11 @@ class OfflineStore with WidgetsBindingObserver {
       });
     } catch (e) {
       if (isOfflineError(e)) {
-        status.markOffline(DateTime.parse(
-            (jsonDecode(shown) as Map<String, dynamic>)['at'] as String));
+        status.markOffline(
+          DateTime.parse(
+            (jsonDecode(shown) as Map<String, dynamic>)['at'] as String,
+          ),
+        );
       }
     }
   }
@@ -266,8 +291,9 @@ class OfflineStore with WidgetsBindingObserver {
   /// The saved copy of [name], if any (without asking the server).
   dynamic saved(String name) {
     final String? uid = userId();
-    final String? raw =
-        uid == null ? null : _prefs.getString(_key(uid, 'cache.$name'));
+    final String? raw = uid == null
+        ? null
+        : _prefs.getString(_key(uid, 'cache.$name'));
     if (raw == null) return null;
     return (jsonDecode(raw) as Map<String, dynamic>)['value'];
   }
@@ -290,8 +316,10 @@ class OfflineStore with WidgetsBindingObserver {
   bool isPending(String id) => pending().any((PendingAction a) => a.id == id);
 
   Future<void> _save(String uid, List<PendingAction> queue) async {
-    await _prefs.setString(_key(uid, 'queue'),
-        jsonEncode(queue.map((PendingAction a) => a.toJson()).toList()));
+    await _prefs.setString(
+      _key(uid, 'queue'),
+      jsonEncode(queue.map((PendingAction a) => a.toJson()).toList()),
+    );
     _updatePending();
   }
 
@@ -336,7 +364,8 @@ class OfflineStore with WidgetsBindingObserver {
         // everything behind it. Anything else (login expired, server busy):
         // try again later.
         final bool done = code == '23505';
-        final bool rejected = code.startsWith('23') ||
+        final bool rejected =
+            code.startsWith('23') ||
             code.startsWith('22') ||
             code.startsWith('42');
         if (!done && !rejected) break;
