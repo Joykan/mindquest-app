@@ -124,3 +124,9 @@ See [uat-plan.md](uat-plan.md).
 - Profile has "Give feedback on MindQuest", opening the Google Form; it only
   shows when `FEEDBACK_URL` is set in `config/dev.json`.
 - `nlp/rasa/Dockerfile` so Rasa can run online during UAT instead of on the PC.
+
+## Sign-in, onboarding and challenges (10 Nov 2026)
+- Onboarding: the "Let's go" button is pinned to the bottom of the screen and needs only the privacy tick; the nickname (default "Friend") and the age range are optional, and a chosen age range is cleared by tapping it again. "Other" is an age option (migration age_range_other). The back arrow, the phone's back button and "Already have an account? Sign in" sign the empty account out and return to Welcome or Sign in. Tests in `auth_test.dart`.
+- Phone sign-in: Sign in has an Email / Phone switch; a code is texted to the number and entered in the app. Needs an SMS provider switched on in Supabase (Authentication, Sign In / Providers, Phone), otherwise the app says phone sign-in is not available yet. Numbers are written as +254... (`normalizePhone`).
+- Challenges: only the tapped challenge's Start shows progress; while one runs, the others say "Finish or leave your current challenge" instead of dead buttons; the screen asks the server for the real state after starting or leaving.
+
