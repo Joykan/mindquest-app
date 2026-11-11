@@ -130,3 +130,9 @@ See [uat-plan.md](uat-plan.md).
 - Phone sign-in: Sign in has an Email / Phone switch; a code is texted to the number and entered in the app. Needs an SMS provider switched on in Supabase (Authentication, Sign In / Providers, Phone), otherwise the app says phone sign-in is not available yet. Numbers are written as +254... (`normalizePhone`).
 - Challenges: only the tapped challenge's Start shows progress; while one runs, the others say "Finish or leave your current challenge" instead of dead buttons; the screen asks the server for the real state after starting or leaving.
 
+
+## Chat modes, safety question and patterns (11 Nov 2026)
+- Modes: Vent only listens (no cause questions, no exercises unless asked), Comfort validates and offers a choice (tell more, stay with me, a small idea), Guide is the existing practical flow and the default. The mode is kept on the chat session (`chat_sessions.mode`). Tests: `logic_test.ts`, `chat_screen_test.dart`.
+- Indirect distress: phrases such as "what's the point" or "I'm a burden" make Chipu ask directly whether the person is thinking of hurting themselves. "Yes" or "not sure" shows the helplines and logs a crisis event; "no" gets a supportive reply. The Kiswahili phrases need review by a fluent speaker.
+- Pattern check-in: numb or lonely messages, or the "disconnected" check-in topic, on 3 different days in 14 days make Chipu gently ask whether it is getting harder (at most once every 14 days, only labels are used).
+- Check-in topics: "Feeling disconnected" and "Worried about the future" added.
