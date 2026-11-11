@@ -150,8 +150,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               _Point(
                                 icon: Icons.lock_outline,
                                 text: context.tr(
-                                  'No name or email needed',
-                                  'Huhitaji jina wala barua pepe',
+                                  'No name or email needed to start',
+                                  'Huhitaji jina wala barua pepe kuanza',
                                 ),
                               ),
                               const Spacer(flex: 2),
