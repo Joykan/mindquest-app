@@ -578,33 +578,36 @@ class _ChallengeTile extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             if (running)
-              Text(
-                tr(
-                  lang,
-                  'Finish or leave your current challenge to start this one.',
-                  'Kamilisha au acha changamoto yako ya sasa ili uanze hii.',
-                ),
-                key: Key('waiting-${c.id}'),
-                style: theme.textTheme.bodySmall?.copyWith(color: mq.textMuted),
-              )
-            else
-              Align(
-                alignment: Alignment.centerRight,
-                child: FilledButton(
-                  key: Key('start-${c.id}'),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(120, 44),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  tr(
+                    lang,
+                    'Finish or leave your current challenge to start this one.',
+                    'Kamilisha au acha changamoto yako ya sasa ili uanze hii.',
                   ),
-                  onPressed: busy ? null : onStart,
-                  child: starting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2.5),
-                        )
-                      : Text(tr(lang, 'Start', 'Anza')),
+                  key: Key('waiting-${c.id}'),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: mq.textMuted,
+                  ),
                 ),
               ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton(
+                key: Key('start-${c.id}'),
+                style: FilledButton.styleFrom(minimumSize: const Size(120, 44)),
+                // Greyed out (not hidden) while another challenge is running.
+                onPressed: busy || running ? null : onStart,
+                child: starting
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2.5),
+                      )
+                    : Text(tr(lang, 'Start', 'Anza')),
+              ),
+            ),
           ],
         ),
       ),

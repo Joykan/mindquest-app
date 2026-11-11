@@ -486,8 +486,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('active-challenge')), findsOneWidget);
-      // Another one can't start while one is running.
-      expect(find.byKey(const Key('start-exam_calm')), findsNothing);
+      // Another one can't start while one is running: the button stays, greyed out.
+      final FilledButton blocked = tester.widget<FilledButton>(
+        find.byKey(const Key('start-exam_calm')),
+      );
+      expect(blocked.onPressed, isNull);
       expect(find.byKey(const Key('waiting-exam_calm')), findsOneWidget);
 
       await tester.tap(find.byKey(const Key('step-grounding')));
