@@ -1,7 +1,15 @@
 // Picks the bot's reply from the Rasa result. Kept free of network and
 // database code so it can be unit tested (logic_test.ts).
 
+import { SAFETY_OPTIONS } from "./distress.ts";
 import { type Lang, REPLIES } from "./replies.ts";
+
+/** How Chipu answers: only listens (vent), comforts, or gives practical help (guide, the default). */
+export type Mode = "vent" | "comfort" | "guide";
+
+export function parseMode(value: unknown): Mode {
+  return value === "vent" || value === "comfort" ? value : "guide";
+}
 
 /** Same cut-off as the FallbackClassifier in nlp/rasa/config.yml. */
 export const THRESHOLD = 0.5;
@@ -158,6 +166,15 @@ const OPTIONS: Record<string, Record<Lang, string[]>> = {
     en: ["Not sleeping well", "Too much going on", "Both"],
     sw: ["Sipati usingizi", "Mambo mengi sana", "Vyote viwili"],
   },
+  ask_safety: SAFETY_OPTIONS,
+  comfort_start: {
+    en: ["Let me tell you more", "Just stay with me", "A small idea to try"],
+    sw: ["Niambie zaidi", "Kaa nami tu", "Wazo dogo la kujaribu"],
+  },
+  pattern: {
+    en: ["Yes, it's getting harder", "Not really", "I'd rather not say"],
+    sw: ["Ndiyo, imekuwa ngumu zaidi", "Sio sana", "Sipendi kusema"],
+  },
   yes_no: { en: ["Yes, please", "No, thanks"], sw: ["Ndiyo, tafadhali", "Hapana, asante"] },
   confirm: { en: ["Yes", "No"], sw: ["Ndiyo", "Hapana"] },
   follow_up: {
@@ -173,6 +190,13 @@ const YES_NO_AFTER = new Set([
   "feel_stressed",
   "feel_anxious",
 ]);
+
+/** What each tapped answer means, by the reply it answers (same order as the options). */
+const TAP_INTENTS: Record<string, string[]> = {
+  ask_safety: ["safety_yes", "safety_no", "safety_unsure"],
+  comfort_start: ["comfort_talk", "comfort_stay", "comfort_try"],
+  pattern: ["pattern_yes", "pattern_no", "pattern_skip"],
+};
 
 /** The tappable answers for a reply (empty when there are none). */
 export function optionsFor(replyKey: string | null, lang: Lang): string[] {
@@ -204,6 +228,8 @@ export function chipParse(text: string, previousReplyKey: string | null): RasaPa
       name = i === 0 ? "affirm" : "deny";
     } else if (options === OPTIONS.follow_up[lang]) {
       name = ["follow_better", "follow_same", "follow_worse"][i];
+    } else if (previousReplyKey && previousReplyKey in TAP_INTENTS) {
+      name = TAP_INTENTS[previousReplyKey][i];
     }
     return { intent: { name, confidence: 1 }, entities: [] };
   }
@@ -317,6 +343,7 @@ export function decide(
   text = "",
   threshold = THRESHOLD,
   nick: string | null = null,
+  mode: Mode = "guide",
 ): Decision {
   if (!parse) {
     return { intent: null, confidence: null, replyKey: "unavailable", text: pick("unavailable", lang, rng) };
@@ -364,6 +391,53 @@ export function decide(
   if (previousReplyKey === "offer_rest") {
     if (r.intent === "affirm") return out("rest_tips");
     if (r.intent === "deny") return out("deny");
+  }
+  // Answers to the check on a pattern (pattern.ts / patternAsk below).
+  if (previousReplyKey === "pattern") {
+    const yes = r.intent === "pattern_yes" || r.intent === "affirm";
+    const no = r.intent === "pattern_no" || r.intent === "deny";
+    if (yes) {
+      return {
+        intent: "pattern_yes",
+        confidence: r.confidence,
+        replyKey: "offer_ideas",
+        text: `${pick("pattern_yes", lang, rng, undefined, nick)} ${
+          pick("offer_ideas", lang, rng, undefined, nick)
+        }`,
+      };
+    }
+    if (no) return { ...out("pattern_no"), intent: "pattern_no" };
+    if (r.intent === "pattern_skip" || UNSURE.test(words(text))) {
+      return { ...out("pattern_skip"), intent: "pattern_skip" };
+    }
+  }
+  // Answers to Comfort mode's choice.
+  if (previousReplyKey === "comfort_start") {
+    if (r.intent === "comfort_stay") return out("comfort_stay");
+    if (r.intent === "comfort_try") return out("ask_ideas");
+    if (r.intent === "comfort_talk") return out("vent_start");
+  }
+
+  // Vent and Comfort modes: Chipu doesn't ask what's behind a feeling or push
+  // exercises. The worry named (school, money, ...) is still saved as a label,
+  // so Chipu can check in on it later.
+  if (
+    mode !== "guide" &&
+    (r.intent in FEELINGS || r.intent === "fallback" || r.intent === "affirm" || r.intent === "deny")
+  ) {
+    const talking = previousReplyKey !== null &&
+      (previousReplyKey.startsWith("vent_") || previousReplyKey.startsWith("comfort_"));
+    const kind = findCause(text);
+    const intent = FOLLOW_UP_CAUSES.includes(kind) ? `cause_${kind}` : r.intent;
+    const reply = (replyKey: string, textKey = replyKey): Decision => ({
+      intent,
+      confidence: r.confidence,
+      replyKey,
+      text: pick(textKey, lang, rng, undefined, nick),
+    });
+    if (mode === "vent") return reply(talking ? "vent_more" : "vent_start");
+    if (talking) return reply("comfort_more");
+    return reply("comfort_start", r.intent in FEELINGS ? `comfort_${r.intent}` : "comfort_generic");
   }
 
   // An understanding reply about what's behind the feeling (school, money,
@@ -459,5 +533,29 @@ export function followUp(
     replyKey,
     text: pick(`follow_up_${kind}`, lang, rng, undefined, nick),
     options: optionsFor(replyKey, lang),
+  };
+}
+
+/** A pattern is noticed when feelings of numbness or loneliness come up on this many different days... */
+export const PATTERN_DAYS = 3;
+/** ...within this many days. */
+export const PATTERN_WINDOW_DAYS = 14;
+
+/** How many different Nairobi days the timestamps fall on. */
+export function distinctDays(timestamps: string[], offsetMs = 3 * 60 * 60 * 1000): number {
+  return new Set(timestamps.map((t) => new Date(new Date(t).getTime() + offsetMs).toISOString().slice(0, 10)))
+    .size;
+}
+
+/** Chipu gently asks whether things are getting harder (reply key "pattern"). */
+export function patternAsk(
+  lang: Lang,
+  rng: () => number = Math.random,
+  nick: string | null = null,
+): { replyKey: string; text: string; options: string[] } {
+  return {
+    replyKey: "pattern",
+    text: pick("pattern_ask", lang, rng, undefined, nick),
+    options: optionsFor("pattern", lang),
   };
 }

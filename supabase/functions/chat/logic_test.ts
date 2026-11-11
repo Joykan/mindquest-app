@@ -1,20 +1,26 @@
 import { deepStrictEqual as assertEquals, ok as assert } from "node:assert";
 import { isCrisis, normalize } from "./crisis.ts";
+import { isIndirectDistress, safetyAnswer } from "./distress.ts";
 import {
   chipParse,
   cleanName,
   decide,
+  distinctDays,
   findCause,
   FOLLOW_UP_CAUSES,
   followUp,
   introducesName,
   nickname,
   optionsFor,
+  parseMode,
+  patternAsk,
   type RasaParse,
   resolve,
   soundsHappy,
   THRESHOLD,
 } from "./logic.ts";
+
+import { REPLIES } from "./replies.ts";
 
 const first = () => 0; // always pick the first reply variant
 
@@ -466,4 +472,200 @@ Deno.test("the check-in's answers: better is celebrated, same or worse gets help
     decide(parse("feel_stressed", 0.9), "follow_up:school", "en", first, "still stressed").replyKey,
     "ask_cause_stress",
   );
+});
+
+// --- indirect distress ------------------------------------------------------
+
+Deno.test("indirect distress phrases are caught, ordinary worries are not", () => {
+  for (
+    const t of [
+      "what's the point of any of this",
+      "I can't go on like this",
+      "everyone would be better off without me",
+      "I feel like such a burden",
+      "maisha hayana maana",
+      "siwezi tena",
+    ]
+  ) assert(isIndirectDistress(t), t);
+  for (const t of ["I'm stressed about exams", "I feel lonely today", "nimechoka leo"]) {
+    assert(!isIndirectDistress(t), t);
+  }
+});
+
+Deno.test("answers to the safety question", () => {
+  assertEquals(safetyAnswer("Yes"), "yes");
+  assertEquals(safetyAnswer("Ndiyo"), "yes");
+  assertEquals(safetyAnswer("I'm not sure"), "unsure");
+  assertEquals(safetyAnswer("Sina uhakika"), "unsure");
+  assertEquals(safetyAnswer("No, I'm just worn out"), "no");
+  assertEquals(safetyAnswer("Hapana, nimechoka tu"), "no");
+  assertEquals(safetyAnswer("no"), "no");
+  // "no one ..." is not a "no"
+  assertEquals(safetyAnswer("no one cares about me"), null);
+  assertEquals(safetyAnswer("tell me about breathing"), null);
+});
+
+Deno.test("the safety question has tappable answers that mean what they say", () => {
+  assertEquals(optionsFor("ask_safety", "en").length, 3);
+  assertEquals(chipParse("Yes", "ask_safety")?.intent.name, "safety_yes");
+  assertEquals(chipParse("I'm not sure", "ask_safety")?.intent.name, "safety_unsure");
+});
+
+// --- modes ------------------------------------------------------------------
+
+Deno.test("parseMode defaults to guide", () => {
+  assertEquals(parseMode("vent"), "vent");
+  assertEquals(parseMode("comfort"), "comfort");
+  assertEquals(parseMode("guide"), "guide");
+  assertEquals(parseMode("nonsense"), "guide");
+  assertEquals(parseMode(undefined), "guide");
+});
+
+Deno.test("guide mode still asks what's behind a feeling", () => {
+  const d = decide(parse("feel_sad", 0.9), null, "en", first, "I feel sad", THRESHOLD, null, "guide");
+  assertEquals(d.replyKey, "ask_cause_sad");
+});
+
+Deno.test("vent mode only listens: no questions about causes, no exercises", () => {
+  const a = decide(
+    parse("feel_stressed", 0.9),
+    null,
+    "en",
+    first,
+    "I'm so stressed",
+    THRESHOLD,
+    null,
+    "vent",
+  );
+  assertEquals(a.replyKey, "vent_start");
+  assert(!/breathing|exercise/i.test(a.text));
+  const b = decide(
+    parse("nlu_fallback", 0.1),
+    "vent_start",
+    "en",
+    first,
+    "my exams went badly",
+    THRESHOLD,
+    null,
+    "vent",
+  );
+  assertEquals(b.replyKey, "vent_more");
+  assertEquals(b.intent, "cause_school"); // saved as a label so Chipu can check in later
+  const c = decide(
+    parse("feel_sad", 0.9),
+    "vent_more",
+    "en",
+    first,
+    "I feel so sad",
+    THRESHOLD,
+    null,
+    "vent",
+  );
+  assertEquals(c.replyKey, "vent_more");
+});
+
+Deno.test("vent mode still answers direct requests", () => {
+  assertEquals(
+    decide(
+      parse("ask_breathing", 0.9),
+      null,
+      "en",
+      first,
+      "breathing exercise please",
+      THRESHOLD,
+      null,
+      "vent",
+    ).replyKey,
+    "breathing",
+  );
+  assertEquals(
+    decide(parse("greet", 0.9), null, "en", first, "hi", THRESHOLD, null, "vent").replyKey,
+    "greet",
+  );
+});
+
+Deno.test("comfort mode validates and offers a gentle choice", () => {
+  const a = decide(parse("feel_lonely", 0.9), null, "en", first, "I feel lonely", THRESHOLD, null, "comfort");
+  assertEquals(a.replyKey, "comfort_start");
+  assertEquals(optionsFor(a.replyKey, "en").length, 3);
+  assert(!/school, money/.test(a.text));
+  const more = decide(
+    parse("nlu_fallback", 0.1),
+    "comfort_start",
+    "en",
+    first,
+    "I just miss everyone",
+    THRESHOLD,
+    null,
+    "comfort",
+  );
+  assertEquals(more.replyKey, "comfort_more");
+});
+
+Deno.test("comfort choices lead where they say", () => {
+  const stay = chipParse("Just stay with me", "comfort_start")!;
+  assertEquals(
+    decide(stay, "comfort_start", "en", first, "Just stay with me", 0, null, "comfort").replyKey,
+    "comfort_stay",
+  );
+  const idea = chipParse("A small idea to try", "comfort_start")!;
+  assertEquals(
+    decide(idea, "comfort_start", "en", first, "A small idea to try", 0, null, "comfort").replyKey,
+    "ask_ideas",
+  );
+  const talk = chipParse("Let me tell you more", "comfort_start")!;
+  assertEquals(
+    decide(talk, "comfort_start", "en", first, "Let me tell you more", 0, null, "comfort").replyKey,
+    "vent_start",
+  );
+});
+
+Deno.test("every mode reply exists in English and Kiswahili", () => {
+  const keys = [
+    "ask_safety",
+    "safety_ok",
+    "vent_start",
+    "vent_more",
+    "comfort_generic",
+    "comfort_more",
+    "comfort_stay",
+    "comfort_feel_stressed",
+    "comfort_feel_anxious",
+    "comfort_feel_sad",
+    "comfort_feel_numb",
+    "comfort_feel_lonely",
+    "comfort_feel_tired",
+    "pattern_ask",
+    "pattern_yes",
+    "pattern_no",
+    "pattern_skip",
+  ];
+  for (const k of keys) {
+    for (const lang of ["en", "sw"] as const) {
+      assert((REPLIES[k]?.[lang]?.length ?? 0) > 0, `${k} ${lang}`);
+    }
+  }
+});
+
+// --- patterns ---------------------------------------------------------------
+
+Deno.test("distinctDays counts Nairobi days", () => {
+  // 21:30 UTC on the 1st is 00:30 on the 2nd in Nairobi.
+  assertEquals(distinctDays(["2026-11-01T21:30:00Z", "2026-11-02T08:00:00Z", "2026-11-03T08:00:00Z"]), 2);
+  assertEquals(distinctDays([]), 0);
+});
+
+Deno.test("the pattern question and its answers", () => {
+  const ask = patternAsk("en", first, "Candy");
+  assertEquals(ask.replyKey, "pattern");
+  assertEquals(ask.options.length, 3);
+  assert(ask.text.includes("Candy"));
+  const yes = decide(chipParse(ask.options[0], "pattern")!, "pattern", "en", first, ask.options[0], 0);
+  assertEquals(yes.intent, "pattern_yes");
+  assertEquals(yes.replyKey, "offer_ideas");
+  assert(/counsellor/.test(yes.text));
+  const no = decide(chipParse(ask.options[1], "pattern")!, "pattern", "en", first, ask.options[1], 0);
+  assertEquals(no.replyKey, "pattern_no");
+  const skip = decide(chipParse(ask.options[2], "pattern")!, "pattern", "en", first, ask.options[2], 0);
+  assertEquals(skip.replyKey, "pattern_skip");
 });

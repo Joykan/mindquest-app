@@ -9,6 +9,15 @@
 // weighing on you..."). Only the saved label (cause_school) is used, never
 // the user's words, and each worry is checked in on once.
 //
+// POST { "text": "...", "mode": "vent" | "comfort" | "guide" } picks how Chipu
+// answers (logic.ts); guide, practical help, is the default. When there is no
+// worry to check in on, "opening" may instead ask gently whether feeling numb,
+// lonely or disconnected on several days has been getting harder.
+//
+// A message that hints at distress without the crisis phrases ("what's the
+// point") makes Chipu ask directly about safety (distress.ts); "yes" or "not
+// sure" shows the helplines.
+//
 // Replies that ask something come with tappable answers ("options"). A tapped
 // answer is read without the model (chipParse), so it always means what it says.
 //
@@ -31,7 +40,22 @@
 import { createClient } from "@supabase/supabase-js";
 import { isCrisis } from "./crisis.ts";
 import { BACKUP_THRESHOLD, backupParse } from "./backup_nlu.ts";
-import { chipParse, decide, followUp, nickname, optionsFor, type RasaParse, THRESHOLD } from "./logic.ts";
+import { isIndirectDistress, safetyAnswer } from "./distress.ts";
+import {
+  chipParse,
+  decide,
+  distinctDays,
+  followUp,
+  nickname,
+  optionsFor,
+  parseMode,
+  PATTERN_DAYS,
+  PATTERN_WINDOW_DAYS,
+  patternAsk,
+  pick,
+  type RasaParse,
+  THRESHOLD,
+} from "./logic.ts";
 import { type Lang, REPLIES } from "./replies.ts";
 
 const MAX_LENGTH = 1000;
@@ -119,7 +143,7 @@ Deno.serve(async (req) => {
   const userId = auth.user.id;
 
   // What did they send?
-  let body: { text?: unknown; session_id?: unknown; action?: unknown };
+  let body: { text?: unknown; session_id?: unknown; action?: unknown; mode?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -134,61 +158,47 @@ Deno.serve(async (req) => {
   const lang: Lang = profile?.language === "sw" ? "sw" : "en";
 
   // Use the given session if it is theirs and still open, otherwise start one.
+  // The mode (vent, comfort or guide) is kept on the session.
+  const mode = parseMode(body.mode);
   let sessionId: string | null = null;
   if (typeof body.session_id === "string") {
-    const { data: s } = await db.from("chat_sessions").select("id")
+    const { data: s } = await db.from("chat_sessions").select("id, mode")
       .eq("id", body.session_id).eq("user_id", userId).is("ended_at", null).maybeSingle();
     sessionId = s?.id ?? null;
+    if (s && s.mode !== mode) await db.from("chat_sessions").update({ mode }).eq("id", s.id);
   }
   if (!sessionId) {
-    const { data: s, error } = await db.from("chat_sessions").insert({ user_id: userId }).select("id")
+    const { data: s, error } = await db.from("chat_sessions").insert({ user_id: userId, mode }).select("id")
       .single();
     if (error) return json({ error: "could not start a session" }, 500);
     sessionId = s.id;
   }
 
-  // 1. Crisis check, before the model.
-  if (isCrisis(text)) {
-    await db.from("crisis_events").insert({ user_id: userId });
-    const { data: lines } = await db.from("helplines").select("name, phone, description, description_sw")
-      .eq("verified", true).order("sort_order");
-    // Descriptions in the user's language (the names are the organisations' own).
-    const helplines = lines && lines.length > 0
-      ? lines.map((l) => ({
-        name: l.name,
-        phone: l.phone,
-        description: lang === "sw" && l.description_sw ? l.description_sw : l.description,
-      }))
-      : EMERGENCY_FALLBACK[lang];
-    const reply = REPLIES.crisis[lang][0];
-    await db.from("messages").insert({
-      session_id: sessionId,
-      sender: "user",
-      content: text,
-      intent: "crisis",
-    });
-    await db.from("messages").insert({
-      session_id: sessionId,
-      sender: "bot",
-      content: reply,
-      reply_key: "crisis",
-      response_ms: elapsed(),
-    });
-    return json({
-      session_id: sessionId,
-      reply,
-      crisis: true,
-      helplines,
-      intent: "crisis",
-      confidence: null,
-    });
-  }
-
-  // 2. Ask Rasa and pick the reply, using the bot's last message for context.
+  // What Chipu said last, so a short answer can be read in context.
   const { data: last } = await db.from("messages").select("reply_key")
     .eq("session_id", sessionId).eq("sender", "bot")
     .order("created_at", { ascending: false }).limit(1).maybeSingle();
   const previousKey: string | null = last?.reply_key ?? null;
+  const nick = nickname(profile?.username);
+
+  // 1. Crisis check, before the model.
+  if (isCrisis(text)) return await crisisResponse(userId, sessionId!, text, lang, elapsed);
+
+  // 1b. Indirect distress ("what's the point"): Chipu asks directly about
+  // safety. "Yes" or "not sure" gets the helplines; "no" gets support.
+  if (previousKey === "ask_safety") {
+    const answer = safetyAnswer(text);
+    if (answer === "yes" || answer === "unsure" || (answer === null && isIndirectDistress(text))) {
+      return await crisisResponse(userId, sessionId!, text, lang, elapsed);
+    }
+    if (answer === "no") {
+      return await quickReply(sessionId!, text, "safety_no", "safety_ok", lang, nick, elapsed);
+    }
+  } else if (isIndirectDistress(text)) {
+    return await quickReply(sessionId!, text, "distress_indirect", "ask_safety", lang, nick, elapsed);
+  }
+
+  // 2. Ask Rasa and pick the reply, using the bot's last message for context.
   const nluStarted = performance.now();
   // A tapped answer needs no model.
   const tapped = chipParse(text, previousKey);
@@ -203,7 +213,8 @@ Deno.serve(async (req) => {
     Math.random,
     text,
     tapped ? 0 : fromRasa ? THRESHOLD : BACKUP_THRESHOLD,
-    nickname(profile?.username),
+    nick,
+    mode,
   );
   const responseMs = elapsed();
 
@@ -236,6 +247,78 @@ Deno.serve(async (req) => {
   });
 });
 
+/** The crisis reply: logs a crisis event (no text), returns the verified helplines. */
+async function crisisResponse(
+  userId: string,
+  sessionId: string,
+  text: string,
+  lang: Lang,
+  elapsed: () => number,
+): Promise<Response> {
+  await db.from("crisis_events").insert({ user_id: userId });
+  const { data: lines } = await db.from("helplines").select("name, phone, description, description_sw")
+    .eq("verified", true).order("sort_order");
+  // Descriptions in the user's language (the names are the organisations' own).
+  const helplines = lines && lines.length > 0
+    ? lines.map((l) => ({
+      name: l.name,
+      phone: l.phone,
+      description: lang === "sw" && l.description_sw ? l.description_sw : l.description,
+    }))
+    : EMERGENCY_FALLBACK[lang];
+  const reply = REPLIES.crisis[lang][0];
+  await db.from("messages").insert({
+    session_id: sessionId,
+    sender: "user",
+    content: text,
+    intent: "crisis",
+  });
+  await db.from("messages").insert({
+    session_id: sessionId,
+    sender: "bot",
+    content: reply,
+    reply_key: "crisis",
+    response_ms: elapsed(),
+  });
+  return json({
+    session_id: sessionId,
+    reply,
+    crisis: true,
+    helplines,
+    intent: "crisis",
+    confidence: null,
+  });
+}
+
+/** A fixed reply that needs no model (the safety question and its "no"). */
+async function quickReply(
+  sessionId: string,
+  text: string,
+  intent: string,
+  replyKey: string,
+  lang: Lang,
+  nick: string | null,
+  elapsed: () => number,
+): Promise<Response> {
+  const reply = pick(replyKey, lang, Math.random, undefined, nick);
+  await db.from("messages").insert({ session_id: sessionId, sender: "user", content: text, intent });
+  await db.from("messages").insert({
+    session_id: sessionId,
+    sender: "bot",
+    content: reply,
+    reply_key: replyKey,
+    response_ms: elapsed(),
+  });
+  return json({
+    session_id: sessionId,
+    reply,
+    crisis: false,
+    intent,
+    confidence: null,
+    options: optionsFor(replyKey, lang),
+  });
+}
+
 /**
  * Chipu's check-in on the latest worry from the last few days, in a new
  * session. Returns no reply when there is nothing to check in on: the
@@ -244,22 +327,11 @@ Deno.serve(async (req) => {
  */
 async function opening(userId: string): Promise<Response> {
   const none = json({ session_id: null, reply: null, crisis: false, options: [] });
-  const { data: latest } = await db.from("messages")
-    .select("intent, created_at, chat_sessions!inner(user_id)")
-    .eq("chat_sessions.user_id", userId).eq("sender", "user").like("intent", "cause_%")
-    .gte("created_at", nairobiMidnight(FOLLOW_UP_DAYS))
-    .order("created_at", { ascending: false }).limit(1).maybeSingle();
-  if (!latest || new Date(latest.created_at) >= new Date(nairobiMidnight(0))) return none;
-
-  const { count } = await db.from("messages")
-    .select("id, chat_sessions!inner(user_id)", { count: "exact", head: true })
-    .eq("chat_sessions.user_id", userId).eq("sender", "bot").like("reply_key", "follow_up:%")
-    .gt("created_at", latest.created_at);
-  if ((count ?? 0) > 0) return none;
-
   const { data: profile } = await db.from("profiles").select("language, username").eq("id", userId).single();
   const lang: Lang = profile?.language === "sw" ? "sw" : "en";
-  const check = followUp(latest.intent, lang, Math.random, nickname(profile?.username));
+  const nick = nickname(profile?.username);
+
+  const check = (await worryCheckIn(userId, lang, nick)) ?? (await patternCheckIn(userId, lang, nick));
   if (!check) return none;
 
   const { data: s, error } = await db.from("chat_sessions").insert({ user_id: userId }).select("id").single();
@@ -271,4 +343,48 @@ async function opening(userId: string): Promise<Response> {
     reply_key: check.replyKey,
   });
   return json({ session_id: s.id, reply: check.text, crisis: false, options: check.options });
+}
+
+type CheckIn = { replyKey: string; text: string; options: string[] };
+
+/** The check-in on the latest worry from the last few days, or null. */
+async function worryCheckIn(userId: string, lang: Lang, nick: string | null): Promise<CheckIn | null> {
+  const { data: latest } = await db.from("messages")
+    .select("intent, created_at, chat_sessions!inner(user_id)")
+    .eq("chat_sessions.user_id", userId).eq("sender", "user").like("intent", "cause_%")
+    .gte("created_at", nairobiMidnight(FOLLOW_UP_DAYS))
+    .order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (!latest || new Date(latest.created_at) >= new Date(nairobiMidnight(0))) return null;
+
+  const { count } = await db.from("messages")
+    .select("id, chat_sessions!inner(user_id)", { count: "exact", head: true })
+    .eq("chat_sessions.user_id", userId).eq("sender", "bot").like("reply_key", "follow_up:%")
+    .gt("created_at", latest.created_at);
+  if ((count ?? 0) > 0) return null;
+  return followUp(latest.intent, lang, Math.random, nick);
+}
+
+/**
+ * A gentle question when numbness, loneliness or feeling disconnected has come
+ * up on several different days in the last two weeks (from the saved intent
+ * labels and the "disconnected" check-in tag, never the user's words). Asked at
+ * most once every two weeks.
+ */
+async function patternCheckIn(userId: string, lang: Lang, nick: string | null): Promise<CheckIn | null> {
+  const since = nairobiMidnight(PATTERN_WINDOW_DAYS);
+  const { count: asked } = await db.from("messages")
+    .select("id, chat_sessions!inner(user_id)", { count: "exact", head: true })
+    .eq("chat_sessions.user_id", userId).eq("sender", "bot").eq("reply_key", "pattern")
+    .gte("created_at", since);
+  if ((asked ?? 0) > 0) return null;
+
+  const { data: said } = await db.from("messages")
+    .select("created_at, chat_sessions!inner(user_id)")
+    .eq("chat_sessions.user_id", userId).eq("sender", "user")
+    .in("intent", ["feel_numb", "feel_lonely"]).gte("created_at", since);
+  const { data: tagged } = await db.from("mood_logs").select("created_at")
+    .eq("user_id", userId).contains("tags", ["disconnected"]).gte("created_at", since);
+  const days = distinctDays([...(said ?? []), ...(tagged ?? [])].map((r) => r.created_at as string));
+  if (days < PATTERN_DAYS) return null;
+  return patternAsk(lang, Math.random, nick);
 }

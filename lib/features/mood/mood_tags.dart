@@ -20,6 +20,8 @@ const List<MoodTag> moodTags = <MoodTag>[
   MoodTag('health', '🩺', 'Health', 'Afya'),
   MoodTag('work', '💼', 'Work', 'Kazi'),
   MoodTag('money', '💰', 'Money', 'Pesa'),
+  MoodTag('disconnected', '🫥', 'Feeling disconnected', 'Kujihisi nimejitenga'),
+  MoodTag('future', '🔮', 'Worried about the future', 'Wasiwasi kuhusu siku zijazo'),
 ];
 
 MoodTag? moodTagById(String id) {

@@ -40,6 +40,10 @@ class RestoredChat {
 /// The chat screen only talks to this interface, so tests can use a fake
 /// (the default methods do nothing).
 abstract class ChatBackend {
+  /// How Chipu answers: 'vent' (only listens), 'comfort' (kind words) or
+  /// 'guide' (practical help, the default). Sent with every message.
+  String mode = 'guide';
+
   Future<ChatReply> send(String text);
 
   /// Ends the current conversation; the next message starts a new one.
@@ -89,6 +93,7 @@ class SupabaseChatBackend extends ChatBackend {
       'chat',
       body: <String, dynamic>{
         'text': text,
+        'mode': mode,
         if (_sessionId != null) 'session_id': _sessionId,
       },
     ).timeout(replyTimeout);

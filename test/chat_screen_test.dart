@@ -432,4 +432,25 @@ void main() {
     expect(
         ChatReply.fromJson(<String, dynamic>{'reply': 'Hi'}).options, isEmpty);
   });
+
+  testWidgets('the mode chips switch how Chipu answers', (tester) async {
+    final FakeBackend backend = FakeBackend(<ChatReply>[]);
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(), home: ChatScreen(backend: backend)));
+    await tester.pumpAndSettle();
+
+    // Guide is the default.
+    expect(backend.mode, 'guide');
+    expect(find.text('Practical ideas and exercises.'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('mode-vent')));
+    await tester.pumpAndSettle();
+    expect(backend.mode, 'vent');
+    expect(find.text("I'll just listen. No advice."), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('mode-comfort')));
+    await tester.pumpAndSettle();
+    expect(backend.mode, 'comfort');
+    expect(find.text('Kind words and reassurance.'), findsOneWidget);
+  });
 }

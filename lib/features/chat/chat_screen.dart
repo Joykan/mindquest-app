@@ -78,6 +78,14 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _input = TextEditingController();
   final List<ChatMessage> _messages = <ChatMessage>[];
 
+  /// Vent, comfort or guide (kept on the backend so it is sent with each message).
+  late String _mode = widget.backend.mode;
+
+  void _setMode(String mode) {
+    setState(() => _mode = mode);
+    widget.backend.mode = mode;
+  }
+
   ChatMessage _firstMessage() {
     final String lang = context.lang;
     return widget.progress == null
@@ -437,6 +445,7 @@ class _ChatScreenState extends State<ChatScreen> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
+            _ModeBar(mode: _mode, onChanged: _setMode),
             Expanded(
               child: ListView.builder(
                 reverse: true,
@@ -492,6 +501,83 @@ class _ChatScreenState extends State<ChatScreen> {
             _Composer(controller: _input, sending: _sending, onSend: _send),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ModeOption {
+  const _ModeOption(this.id, this.label, this.hint, this.emoji);
+
+  final String id;
+  final String label;
+  final String hint;
+  final String emoji;
+}
+
+/// Vent / Comfort / Guide: what the user wants from Chipu in this chat.
+class _ModeBar extends StatelessWidget {
+  const _ModeBar({required this.mode, required this.onChanged});
+
+  final String mode;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final MindQuestColors mq =
+        Theme.of(context).extension<MindQuestColors>()!;
+    final List<_ModeOption> modes = <_ModeOption>[
+      _ModeOption(
+          'vent',
+          context.tr('Vent', 'Toa hisia'),
+          context.tr("I'll just listen. No advice.",
+              'Nitakusikiliza tu. Bila ushauri.'),
+          '🗣️'),
+      _ModeOption(
+          'comfort',
+          context.tr('Comfort', 'Faraja'),
+          context.tr(
+              'Kind words and reassurance.', 'Maneno ya upole na faraja.'),
+          '🫂'),
+      _ModeOption(
+          'guide',
+          context.tr('Guide', 'Mwongozo'),
+          context.tr('Practical ideas and exercises.',
+              'Mawazo na mazoezi ya vitendo.'),
+          '🧭'),
+    ];
+    final String hint =
+        modes.firstWhere((_ModeOption m) => m.id == mode).hint;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: <Widget>[
+                for (final _ModeOption m in modes)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      key: Key('mode-${m.id}'),
+                      avatar: Text(m.emoji),
+                      label: Text(m.label),
+                      selected: mode == m.id,
+                      onSelected: (bool _) => onChanged(m.id),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Text(hint,
+              key: const Key('mode-hint'),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall
+                  ?.copyWith(color: mq.textMuted)),
+        ],
       ),
     );
   }

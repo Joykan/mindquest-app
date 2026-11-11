@@ -338,6 +338,152 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
     en: ["Sorry about that! What would you like me to call you?"],
     sw: ["Samahani! Ungependa nikuite nani?"],
   },
+  // Safety question after an indirect message (distress.ts), and what Chipu
+  // says if the answer is "no".
+  ask_safety: {
+    en: [
+      "Thank you for telling me{, nick}. That sounds really heavy, and I want to make sure I understand. Are you having thoughts of hurting yourself or ending your life?",
+    ],
+    sw: [
+      "Asante kwa kuniambia{, nick}. Hilo linaonekana zito sana, na nataka kuhakikisha nimekuelewa. Je, una mawazo ya kujidhuru au kujiua?",
+    ],
+  },
+  safety_ok: {
+    en: [
+      "Thank you for being honest with me. Feeling this worn out is real, and you don't have to carry it alone. I'm here, and if those thoughts ever come, tell me straight away. Do you want to tell me more about what's been happening?",
+    ],
+    sw: [
+      "Asante kwa kuwa mkweli nami. Uchovu huu ni wa kweli, na huhitaji kuubeba peke yako. Niko hapa, na ikiwa mawazo hayo yatakuja, niambie mara moja. Ungependa kunieleza zaidi kilichokuwa kikiendelea?",
+    ],
+  },
+  // Vent mode: Chipu listens and does not try to fix anything.
+  vent_start: {
+    en: [
+      "I'm listening{, nick}. Say as much or as little as you like. I won't rush to fix anything or tell you what to do.",
+      "Go ahead{, nick}, I'm here. Nothing you say needs to make sense yet.",
+    ],
+    sw: [
+      "Nakusikiliza{, nick}. Sema kadri unavyotaka. Sitakimbilia kutatua chochote wala kukuambia la kufanya.",
+      "Endelea{, nick}, niko hapa. Hakuna unachosema kinachohitaji kueleweka bado.",
+    ],
+  },
+  vent_more: {
+    en: [
+      "I hear you. That sounds really heavy. What else is on your mind?",
+      "Thank you for telling me. I'm still here. Keep going if you want to.",
+      "That makes sense, and it's okay to feel that way. What's the hardest part of it?",
+      "I'm with you. Take your time.",
+    ],
+    sw: [
+      "Nakusikia. Hilo linaonekana zito sana. Kuna nini kingine akilini mwako?",
+      "Asante kwa kuniambia. Bado niko hapa. Endelea ukitaka.",
+      "Inaeleweka, na ni sawa kujisikia hivyo. Sehemu ngumu zaidi ni ipi?",
+      "Niko nawe. Chukua muda wako.",
+    ],
+  },
+  // Comfort mode: kind words first, one gentle choice.
+  comfort_feel_stressed: {
+    en: [
+      "That's a lot to carry{, nick}, and it makes sense that you feel stretched. You're doing better than you think. Would you like to tell me more, or just have me stay with you for a bit?",
+    ],
+    sw: [
+      "Huo ni mzigo mkubwa{, nick}, na inaeleweka kujisikia umelemewa. Unafanya vizuri kuliko unavyodhani. Ungependa kunieleza zaidi, au nikae nawe kwa muda tu?",
+    ],
+  },
+  comfort_feel_anxious: {
+    en: [
+      "Worry is exhausting{, nick}, and you're not doing anything wrong by feeling it. You're safe here. Would you like to tell me more, or just have me stay with you for a bit?",
+    ],
+    sw: [
+      "Wasiwasi unachosha{, nick}, na hufanyi kosa lolote kuuhisi. Uko salama hapa. Ungependa kunieleza zaidi, au nikae nawe kwa muda tu?",
+    ],
+  },
+  comfort_feel_sad: {
+    en: [
+      "I'm sorry it hurts{, nick}. Sadness doesn't mean you're weak, it means something matters to you. Would you like to tell me more, or just have me stay with you for a bit?",
+    ],
+    sw: [
+      "Pole kwa maumivu{, nick}. Huzuni haimaanishi kuwa dhaifu, inamaanisha kuna jambo lenye maana kwako. Ungependa kunieleza zaidi, au nikae nawe kwa muda tu?",
+    ],
+  },
+  comfort_feel_numb: {
+    en: [
+      "Feeling numb can happen when we've carried too much for too long{, nick}. It doesn't mean something is wrong with you, and you don't have to force yourself to feel anything. Would you like to tell me more, or just have me stay with you for a bit?",
+    ],
+    sw: [
+      "Kujihisi bila hisia kunaweza kutokea tukibeba mengi kwa muda mrefu{, nick}. Haimaanishi kuna tatizo kwako, na huhitaji kujilazimisha kuhisi chochote. Ungependa kunieleza zaidi, au nikae nawe kwa muda tu?",
+    ],
+  },
+  comfort_feel_lonely: {
+    en: [
+      "I'm really glad you told me{, nick}. Feeling lonely doesn't mean you're unlovable, it means you need connection, and that's human. Would you like to tell me more, or just have me stay with you for a bit?",
+    ],
+    sw: [
+      "Nafurahi sana umeniambia{, nick}. Kujihisi mpweke haimaanishi hupendwi, inamaanisha unahitaji uhusiano, na hilo ni la kibinadamu. Ungependa kunieleza zaidi, au nikae nawe kwa muda tu?",
+    ],
+  },
+  comfort_feel_tired: {
+    en: [
+      "You sound worn out{, nick}, and rest isn't something you have to earn. Would you like to tell me more, or just have me stay with you for a bit?",
+    ],
+    sw: [
+      "Unaonekana umechoka sana{, nick}, na kupumzika si jambo unalopaswa kulistahili. Ungependa kunieleza zaidi, au nikae nawe kwa muda tu?",
+    ],
+  },
+  comfort_generic: {
+    en: [
+      "I'm here with you{, nick}, and there's no pressure to say the right thing. Would you like to tell me more, or just have me stay with you for a bit?",
+    ],
+    sw: [
+      "Niko hapa nawe{, nick}, na hakuna shinikizo la kusema jambo sahihi. Ungependa kunieleza zaidi, au nikae nawe kwa muda tu?",
+    ],
+  },
+  comfort_more: {
+    en: [
+      "That sounds really hard, and it's okay to feel the way you do. You're not a burden for saying it out loud.",
+      "Thank you for trusting me with that. You don't have to be strong right now.",
+      "You've been carrying a lot. I'm glad you're not carrying it silently tonight.",
+    ],
+    sw: [
+      "Hilo linaonekana gumu sana, na ni sawa kujisikia hivyo. Wewe si mzigo kwa kusema waziwazi.",
+      "Asante kwa kuniamini na hilo. Huhitaji kuwa na nguvu sasa hivi.",
+      "Umekuwa ukibeba mengi. Nafurahi huyabebi kimya kimya leo.",
+    ],
+  },
+  comfort_stay: {
+    en: [
+      "Okay. I'm right here, and there's nothing you need to do or say. Whenever you want to talk, or want a small idea to try, just tell me. 💚",
+    ],
+    sw: [
+      "Sawa. Niko hapa hapa, na hakuna unachohitaji kufanya wala kusema. Ukitaka kuongea, au kupata wazo dogo la kujaribu, niambie tu. 💚",
+    ],
+  },
+  // Chipu notices a pattern over the last two weeks ("pattern"). Only the
+  // number of different days is used, never the user's words.
+  pattern_ask: {
+    en: [
+      "Hey{ nick}. I've noticed you've mentioned feeling numb, lonely or disconnected on a few different days lately. Has it been getting harder to manage?",
+    ],
+    sw: [
+      "Habari{ nick}. Nimegundua umetaja kujihisi bila hisia, mpweke au umejitenga katika siku kadhaa tofauti hivi karibuni. Je, imekuwa ngumu zaidi kuvumilia?",
+    ],
+  },
+  pattern_yes: {
+    en: [
+      "Thank you for telling me. When it has been like this for a while, it really helps to also have a person in your corner, like a counsellor at your university or someone you trust. The Support page has free helplines too, and I'm here as well.",
+    ],
+    sw: [
+      "Asante kwa kuniambia. Mambo yakiwa hivi kwa muda, inasaidia sana kuwa na mtu pembeni yako, kama mshauri wa chuo chako au mtu unayemwamini. Ukurasa wa Msaada pia una nambari za msaada bila malipo, na mimi niko hapa pia.",
+    ],
+  },
+  pattern_no: {
+    en: ["I'm glad it hasn't gotten worse. I'm here if that changes, any time."],
+    sw: ["Nafurahi haijazidi kuwa mbaya. Niko hapa ikibadilika, wakati wowote."],
+  },
+  pattern_skip: {
+    en: ["That's completely okay. You don't have to explain anything. I'm here whenever you want to talk."],
+    sw: ["Ni sawa kabisa. Huhitaji kueleza chochote. Niko hapa wakati wowote ukitaka kuongea."],
+  },
   fallback: {
     en: [
       "Sorry, I didn't quite get that. You can tell me how you're feeling, or ask for a breathing exercise.",
