@@ -134,6 +134,38 @@ class _SupportScreenState extends State<SupportScreen> {
   }
 }
 
+/// A screen of its own for the box-breathing exercise, opened from the
+/// "Start breathing" button in chat. It works without internet.
+class BreathingScreen extends StatelessWidget {
+  const BreathingScreen({super.key, this.onFinished, this.onBack});
+
+  /// Called when all four rounds are done (counts for the challenges).
+  final VoidCallback? onFinished;
+
+  /// "Back to Chipu".
+  final VoidCallback? onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(context.tr('Breathe', 'Pumua'))),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: <Widget>[
+          BoxBreathingCard(onFinished: onFinished),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            key: const Key('breathing-back'),
+            onPressed: onBack ?? () => Navigator.of(context).maybePop(),
+            icon: const Icon(Icons.chat_bubble_outline),
+            label: Text(context.tr('Back to Chipu', 'Rudi kwa Chipu')),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Box breathing: in 4, hold 4, out 4, hold 4, four rounds. A circle grows as
 /// you breathe in and shrinks as you breathe out.
 class BoxBreathingCard extends StatefulWidget {

@@ -66,6 +66,72 @@ export function soundsHappy(text: string): boolean {
   return HAPPY_WORDS.test(t);
 }
 
+/** Lower-case, no punctuation: the text the word lists below are matched against. */
+function plain(text: string): string {
+  return text.toLowerCase().replace(/['’`]/g, " ").replace(/[^\p{L}\p{N}]+/gu, " ");
+}
+
+/** Saying things are getting better ("I now feel better", "nimepona"). */
+const BETTER =
+  /\b(feel(ing)? (a (bit|little) |much |so much |now )?better|(i m|i am|im) (ok|okay|fine|good|better) now|better now|nimepona|najisikia vizuri zaidi|ninajisikia vizuri zaidi|nimeanza kujisikia vizuri)\b/;
+const NOT_BETTER = /\b(not|no|never|isn t|aren t|don t|sijapata|sio|siko)\b( \w+){0,2} (better|vizuri)\b/;
+
+/** Asking to be encouraged. */
+const ENCOURAGE =
+  /\b(encourage me|motivate me|cheer me up|give me (some )?(hope|motivation|encouragement)|say something (nice|kind|encouraging)|nitie moyo|nipe moyo|nihamasishe|nifariji)\b/;
+
+/** Asking for advice or something to try. */
+const ADVICE =
+  /\b(advice|tips?|suggest(ions?)?|ideas?|what (can|should) i do|how (can|do|should) i (stop|cope|calm|deal|handle|manage)|ushauri|nishauri|nifanye nini|nifanyeje)\b/;
+
+/** Words that say how someone feels, when the model read the message as feeling good or as unclear. */
+const FEELING_WORDS: [string, RegExp][] = [
+  ["feel_stressed", /\b(stress(ed|ful)?|pressure|pressured|msongo|nimesongwa|nimesongamana)\b/],
+  [
+    "feel_anxious",
+    /\b(anxious|anxiety|worried|worrying|worry|nervous|panic(king)?|scared|afraid|wasiwasi|nina hofu|naogopa)\b/,
+  ],
+  [
+    "feel_sad",
+    /\b(sad|down|depressed|crying|cry|hurt(ing)?|heartbroken|unhappy|huzuni|nimehuzunika|nina huzuni)\b/,
+  ],
+  ["feel_lonely", /\b(lonely|alone|isolated|upweke|nimetengwa)\b/],
+  ["feel_tired", /\b(tired|exhausted|drained|worn out|burnt out|burned out|nimechoka|uchovu)\b/],
+  ["feel_numb", /\b(numb|empty|hollow|sina hisia|mtupu)\b/],
+];
+
+/**
+ * Corrects the model where plain words are clearer than its guess: "I am
+ * feeling very stressed today" read as feeling good, "I now feel better"
+ * read as venting, "give me some advice" read as anxiety. Only changes an
+ * unclear or feeling reading, never yes/no or a tapped answer.
+ */
+export function refine(r: Resolved, text: string): Resolved {
+  const t = plain(text);
+  const open = r.intent === "fallback" || r.intent === "feel_good" || r.intent in FEELINGS ||
+    r.intent === "greet" || r.intent === "thank";
+  if (!open) return r;
+  const as = (intent: string): Resolved => ({ intent, confidence: Math.max(r.confidence, 0.9) });
+  if (ENCOURAGE.test(t)) return as("ask_encouragement");
+  if (BETTER.test(t) && !NOT_BETTER.test(t)) return as("feel_better");
+  if (ADVICE.test(t)) return as("ask_ideas");
+  if (r.intent === "feel_good" || r.intent === "fallback") {
+    for (const [intent, re] of FEELING_WORDS) {
+      const m = re.exec(t);
+      // "not stressed", "I'm no longer sad": leave those to the model.
+      if (m && !/\b(not|no longer|never|sio|siko|si tena)\b( \w+){0,2} $/.test(t.slice(0, m.index))) {
+        return as(intent);
+      }
+    }
+  }
+  return r;
+}
+
+/** An action the app can offer with a reply (a button). */
+export function actionFor(replyKey: string): string | null {
+  return replyKey === "breathing" ? "breathing" : null;
+}
+
 /** Replies after which a yes/no answer means something specific. */
 const OFFERS_BREATHING = new Set(["feel_stressed", "feel_anxious", "offer_breathing"]);
 
@@ -352,6 +418,12 @@ export function decide(
   if (r.intent === "fallback" && parse.intent.name === "tell_name" && soundsHappy(text)) {
     r = { intent: "feel_good", confidence: parse.intent.confidence };
   }
+  // A tapped answer (threshold 0) and answers to a question are read as they are.
+  const answering = previousReplyKey !== null &&
+    (previousReplyKey.startsWith("follow_up:") || previousReplyKey.startsWith("confirm_name:") ||
+      previousReplyKey === "ask_safety" || previousReplyKey === "comfort_start" ||
+      previousReplyKey === "pattern");
+  if (threshold !== 0 && !answering) r = refine(r, text);
   const out = (replyKey: string, textKey = replyKey, name?: string): Decision => ({
     intent: r.intent,
     confidence: r.confidence,

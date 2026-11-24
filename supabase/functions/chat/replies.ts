@@ -282,10 +282,41 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
     en: [
       "That's great to hear! Why not log it in your mood check-in?",
       "Love that! What made today good?",
+      "That's lovely to hear{, nick}. What's been going well?",
+      "Glad to hear it{, nick}! Anything you'd like to hold on to from today?",
     ],
     sw: [
       "Hiyo ni habari njema! Kwa nini usiirekodi kwenye hisia zako za leo?",
       "Vizuri sana! Nini kimefanya leo kuwa siku nzuri?",
+      "Ni vizuri kusikia hivyo{, nick}. Nini kimekuwa kikienda vizuri?",
+      "Nafurahi kusikia{, nick}! Kuna jambo la leo ungependa kulikumbuka?",
+    ],
+  },
+  // Said it is getting better, or asked to be encouraged.
+  feel_better: {
+    en: [
+      "I'm really glad you're feeling a bit better{, nick}. Do you want to log it in a mood check-in so you can see it on your graph?",
+      "That's good to hear{, nick}. Small shifts count. A quick mood check-in will keep track of it.",
+      "Thank you for telling me{, nick}. I'm glad it's easing. Would you like to log how you feel now?",
+    ],
+    sw: [
+      "Nafurahi sana kwamba unajisikia vizuri kidogo{, nick}. Ungependa kuirekodi kwenye hisia zako ili uione kwenye grafu?",
+      "Ni vizuri kusikia hivyo{, nick}. Hata mabadiliko madogo yana maana. Kurekodi hisia kwa haraka kutaendelea kufuatilia.",
+      "Asante kwa kuniambia{, nick}. Nafurahi unaendelea kupata nafuu. Ungependa kurekodi unavyojisikia sasa?",
+    ],
+  },
+  ask_encouragement: {
+    en: [
+      "You showed up today, and that already takes effort{, nick}. You don't have to fix everything at once. One small step is enough.",
+      "Hard days don't last, and you've gotten through hard days before. I'm proud of you for looking after yourself{, nick}.",
+      "You're doing better than you think{, nick}. Be as kind to yourself as you would be to a friend.",
+      "Feeling low doesn't mean you're failing. Rest if you need to, then take the next small step when you're ready{, nick}.",
+    ],
+    sw: [
+      "Umekuja leo, na hilo tayari linahitaji juhudi{, nick}. Huhitaji kutatua kila kitu kwa wakati mmoja. Hatua moja ndogo inatosha.",
+      "Siku ngumu hazidumu, na umewahi kupitia siku ngumu hapo awali. Najivunia kwamba unajitunza{, nick}.",
+      "Unafanya vizuri kuliko unavyofikiri{, nick}. Jifanyie wema kama ungemfanyia rafiki.",
+      "Kujisikia vibaya haimaanishi umeshindwa. Pumzika ukihitaji, kisha chukua hatua ndogo inayofuata ukiwa tayari{, nick}.",
     ],
   },
   ask_about_bot: {
@@ -308,10 +339,10 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
   },
   breathing: {
     en: [
-      "Let's breathe together. Breathe in through your nose for 4 seconds, hold for 4, then breathe out slowly for 6. Repeat this 5 times. How do you feel now?",
+      "Let's breathe together. Tap Start breathing below and follow the circle: in for 4, hold for 4, out for 4, hold for 4. Come back and tell me how you feel after.",
     ],
     sw: [
-      "Tupumue pamoja. Vuta pumzi kupitia pua kwa sekunde 4, ishikilie kwa sekunde 4, kisha itoe polepole kwa sekunde 6. Rudia mara 5. Unajisikiaje sasa?",
+      "Tupumue pamoja. Gusa Anza kupumua hapa chini ufuate duara: vuta pumzi kwa 4, shikilia kwa 4, toa kwa 4, shikilia kwa 4. Rudi uniambie unajisikiaje baadaye.",
     ],
   },
   declined_breathing: {
@@ -487,9 +518,13 @@ export const REPLIES: Record<string, Record<Lang, string[]>> = {
   fallback: {
     en: [
       "Sorry, I didn't quite get that. You can tell me how you're feeling, or ask for a breathing exercise.",
+      "I'm not sure I followed{, nick}. Could you say it another way? You can also ask me for ideas, encouragement or a breathing exercise.",
+      "Hmm, I didn't catch that one. Tell me how you're feeling, or ask for a breathing exercise.",
     ],
     sw: [
       "Samahani, sijaelewa vizuri. Unaweza kuniambia unavyojisikia, au uombe zoezi la kupumua.",
+      "Sina uhakika nimekuelewa{, nick}. Unaweza kusema kwa njia nyingine? Pia unaweza kuniomba mawazo, kutiwa moyo au zoezi la kupumua.",
+      "Hmm, sijaelewa hiyo. Niambie unavyojisikia, au uombe zoezi la kupumua.",
     ],
   },
   unavailable: {

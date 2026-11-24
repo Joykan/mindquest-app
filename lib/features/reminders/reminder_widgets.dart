@@ -139,8 +139,17 @@ class ReminderSettingsTile extends StatelessWidget {
                 key: const Key('reminder-time'),
                 leading: const Icon(Icons.schedule),
                 title: Text(context.tr('Reminder time', 'Muda wa kikumbusho')),
-                trailing: Text(_clock(reminders.time),
-                    style: Theme.of(context).textTheme.titleMedium),
+                subtitle: Text(context.tr('Tap to choose any time you like',
+                    'Gusa kuchagua muda wowote unaopenda')),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(_clock(reminders.time),
+                        style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.edit_outlined, size: 18),
+                  ],
+                ),
                 onTap: () => _pickTime(context),
               ),
             if (on)

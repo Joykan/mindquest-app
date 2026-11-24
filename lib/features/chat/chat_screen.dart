@@ -13,6 +13,7 @@ import 'chat_models.dart';
 import '../support/support_screen.dart' show emergencyHelplines;
 import 'crisis_phrases.dart';
 import 'crisis_sheet.dart';
+import 'offline_chipu.dart';
 
 /// Chat (wireframe 05). Sends each message to the chat Edge Function and
 /// shows the reply. A crisis reply opens the crisis support sheet (wireframe 06).
@@ -27,6 +28,7 @@ class ChatScreen extends StatefulWidget {
     this.onMoodSaved,
     this.onMessageSent,
     this.onHelplines,
+    this.onBreathe,
     this.onPastChats,
   });
 
@@ -49,6 +51,9 @@ class ChatScreen extends StatefulWidget {
 
   /// Opens the helplines (offered after a run of hard days).
   final VoidCallback? onHelplines;
+
+  /// Opens the breathing exercise (the button under a breathing reply).
+  final VoidCallback? onBreathe;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -236,6 +241,13 @@ class _ChatScreenState extends State<ChatScreen> {
     if (text.isEmpty || _sending) return;
     final String lang = context.lang;
 
+    // "Log my mood": open the mood faces instead of sending it to Chipu.
+    if (widget.progress != null && isMoodCommand(text)) {
+      _input.clear();
+      _askMood(said: text);
+      return;
+    }
+
     setState(() {
       _messages.add(ChatMessage(text: text, fromUser: true));
       _sending = true;
@@ -247,7 +259,11 @@ class _ChatScreenState extends State<ChatScreen> {
       final ChatReply reply = await widget.backend.send(text);
       if (!mounted) return;
       setState(() {
-        _addBot(reply.reply);
+        _addBot(
+            reply.reply,
+            reply.action == 'breathing'
+                ? ChatItemKind.breathing
+                : ChatItemKind.text);
         _sending = false;
         _options = reply.options;
       });
@@ -270,14 +286,26 @@ class _ChatScreenState extends State<ChatScreen> {
         await showCrisisSheet(context, reply);
         return;
       }
-      _showError(isOfflineError(e)
-          ? tr(
-              lang,
-              "You're offline. Chipu needs the internet to reply, so try again when you're connected. "
-                  'Mood check-ins and Support still work.',
-              'Huna mtandao. Chipu anahitaji intaneti ili kujibu, kwa hiyo jaribu tena ukipata mtandao. '
-                  'Bado unaweza kurekodi hisia na kutumia ukurasa wa Msaada.')
-          : tr(
+      if (isOfflineError(e)) {
+        // Free conversation needs the server, but breathing, a mood check-in
+        // and a little encouragement work on the phone (offline_chipu.dart).
+        final OfflineAnswer answer = offlineAnswer(text, lang);
+        setState(() {
+          if (answer.move == OfflineMove.mood && widget.progress != null) {
+            _addBot(answer.text, ChatItemKind.moodPicker);
+          } else {
+            _addBot(
+                answer.text,
+                answer.move == OfflineMove.breathing && widget.onBreathe == null
+                    ? ChatItemKind.text
+                    : answer.kind);
+          }
+          _sending = false;
+        });
+        return;
+      }
+      _showError(
+          tr(
               lang,
               "Couldn't send your message. Check your connection and try again.",
               'Imeshindikana kutuma ujumbe wako. Angalia mtandao wako kisha ujaribu tena.'));
@@ -301,11 +329,12 @@ class _ChatScreenState extends State<ChatScreen> {
   static bool _isCheckIn(String chip) =>
       chip == checkInChip || chip == checkInChipSw;
 
-  void _askMood() {
+  void _askMood({String? said}) {
     if (_sending) return;
     setState(() {
       _messages.add(ChatMessage(
-          text: context.tr(checkInChip, checkInChipSw), fromUser: true));
+          text: said ?? context.tr(checkInChip, checkInChipSw),
+          fromUser: true));
       _addBot(
           context.tr(
               'How are you feeling right now?', 'Unajisikiaje sasa hivi?'),
@@ -468,6 +497,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         _sending ? null : (int mood) => _pickMood(index, mood),
                     week: _week,
                     onHelplines: widget.onHelplines,
+                    onBreathe: widget.onBreathe,
                   );
                 },
               ),
@@ -620,10 +650,12 @@ class _ChatItem extends StatelessWidget {
     required this.onPick,
     required this.week,
     this.onHelplines,
+    this.onBreathe,
   });
 
   final ChatMessage message;
   final VoidCallback? onHelplines;
+  final VoidCallback? onBreathe;
   final bool showAvatar;
   final int? picked;
   final ValueChanged<int>? onPick;
@@ -647,6 +679,23 @@ class _ChatItem extends StatelessWidget {
     }
     final Widget content = switch (message.kind) {
       ChatItemKind.text || ChatItemKind.note => _Bubble(message: message),
+      ChatItemKind.breathing => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _Bubble(message: message),
+            if (onBreathe != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 2, bottom: 6),
+                child: FilledButton.icon(
+                  key: const Key('chat-breathe'),
+                  onPressed: onBreathe,
+                  style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
+                  icon: const Icon(Icons.air),
+                  label: Text(context.tr('Start breathing', 'Anza kupumua')),
+                ),
+              ),
+          ],
+        ),
       ChatItemKind.moodPicker => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[

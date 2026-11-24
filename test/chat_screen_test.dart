@@ -453,4 +453,39 @@ void main() {
     expect(backend.mode, 'comfort');
     expect(find.text('Kind words and reassurance.'), findsOneWidget);
   });
+
+  testWidgets('a breathing reply has a Start breathing button',
+      (tester) async {
+    final FakeBackend backend = FakeBackend(<ChatReply>[
+      const ChatReply(
+          reply: "Let's breathe together.", sessionId: 's1', action: 'breathing'),
+    ]);
+    bool opened = false;
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(),
+        home: ChatScreen(backend: backend, onBreathe: () => opened = true)));
+
+    await sendMessage(tester, 'help me breathe');
+    expect(find.byKey(const Key('chat-breathe')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('chat-breathe')));
+    expect(opened, isTrue);
+  });
+
+  testWidgets('typing "log my mood" opens the mood faces, not the bot',
+      (tester) async {
+    tester.view.physicalSize = const Size(1080, 3600);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    final FakeBackend backend = FakeBackend(<ChatReply>[]);
+    final FakeProgress progress =
+        FakeProgress(const HomeSummary(username: 'A', xp: 0, streak: 0));
+    await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.light(),
+        home: ChatScreen(backend: backend, progress: progress)));
+
+    await sendMessage(tester, 'Log my mood.');
+    expect(backend.sent, isEmpty);
+    // The opening question has faces too, and typing the command adds a second.
+    expect(find.byKey(const Key('chat-mood-3')), findsNWidgets(2));
+  });
 }

@@ -2,6 +2,7 @@ import { deepStrictEqual as assertEquals, ok as assert } from "node:assert";
 import { isCrisis, normalize } from "./crisis.ts";
 import { isIndirectDistress, safetyAnswer } from "./distress.ts";
 import {
+  actionFor,
   chipParse,
   cleanName,
   decide,
@@ -15,6 +16,7 @@ import {
   parseMode,
   patternAsk,
   type RasaParse,
+  refine,
   resolve,
   soundsHappy,
   THRESHOLD,
@@ -668,4 +670,78 @@ Deno.test("the pattern question and its answers", () => {
   assertEquals(no.replyKey, "pattern_no");
   const skip = decide(chipParse(ask.options[2], "pattern")!, "pattern", "en", first, ask.options[2], 0);
   assertEquals(skip.replyKey, "pattern_skip");
+});
+
+// --- plain words correct the model --------------------------------------------
+
+const read = (
+  model: string,
+  text: string,
+  mode: "vent" | "comfort" | "guide" = "guide",
+  prev: string | null = null,
+) => decide(parse(model, 0.9), prev, "en", first, text, THRESHOLD, null, mode);
+
+Deno.test("'very stressed today' is not read as feeling good, in any mode", () => {
+  for (const mode of ["vent", "comfort", "guide"] as const) {
+    const d = read("feel_good", "I am feeling very stressed today.", mode);
+    assert(d.intent !== "feel_good", mode);
+    assert(!d.text.startsWith("That's great"), mode);
+  }
+  assertEquals(read("feel_good", "I am feeling very stressed today.").intent, "feel_stressed");
+  assertEquals(read("fallback", "nimesongwa sana leo").intent, "feel_stressed");
+});
+
+Deno.test("'not stressed' stays as the model read it", () => {
+  assertEquals(read("feel_good", "I am not stressed today").intent, "feel_good");
+});
+
+Deno.test("'I now feel better' gets its own reply in every mode", () => {
+  for (const mode of ["vent", "comfort", "guide"] as const) {
+    const d = read("feel_anxious", "I am now feeling better.", mode);
+    assertEquals(d.intent, "feel_better");
+    assertEquals(d.replyKey, "feel_better");
+  }
+  assertEquals(read("fallback", "nimepona kidogo").intent, "feel_better");
+  assert(read("feel_sad", "I do not feel better").intent !== "feel_better");
+});
+
+Deno.test("'encourage me' is answered with encouragement", () => {
+  for (const mode of ["vent", "comfort", "guide"] as const) {
+    const d = read("fallback", "Encourage me.", mode);
+    assertEquals(d.replyKey, "ask_encouragement");
+  }
+  assertEquals(read("fallback", "nitie moyo").replyKey, "ask_encouragement");
+});
+
+Deno.test("asking for advice gets ideas even in vent mode", () => {
+  const d = read("feel_anxious", "Please give me some advice to stop worrying about the future.", "vent");
+  assertEquals(d.replyKey, "ask_ideas");
+});
+
+Deno.test("tapped answers and answers to a question are not changed", () => {
+  const tapped = decide(
+    parse("follow_better", 1),
+    "follow_up:school",
+    "en",
+    first,
+    "Better 🙂",
+    0,
+    null,
+    "guide",
+  );
+  assertEquals(tapped.replyKey, "follow_better");
+  const r = refine({ intent: "affirm", confidence: 0.9 }, "yes I feel better");
+  assertEquals(r.intent, "affirm");
+});
+
+Deno.test("breathing replies carry the Start breathing action", () => {
+  assertEquals(actionFor("breathing"), "breathing");
+  assertEquals(actionFor("feel_sad"), null);
+  assertEquals(read("ask_breathing", "help me breathe").replyKey, "breathing");
+});
+
+Deno.test("every new reply has English and Kiswahili", () => {
+  for (const key of ["feel_better", "ask_encouragement"]) {
+    assert(REPLIES[key].en.length >= 3 && REPLIES[key].sw.length === REPLIES[key].en.length, key);
+  }
 });
