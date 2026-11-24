@@ -206,6 +206,20 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
           ),
         ),
         page(
+          '/breathe',
+          (context, state) => BreathingScreen(
+            onBack: () => context.canPop() ? context.pop() : context.go('/chat'),
+            onFinished: () async {
+              try {
+                await challenges?.logActivity('breathing');
+              } catch (_) {
+                // Only counts for challenges; the exercise itself is done.
+              }
+              ticker.bump();
+            },
+          ),
+        ),
+        page(
           '/challenges',
           (context, state) => ChallengesScreen(
             repository: challenges!,
@@ -252,6 +266,7 @@ GoRouter createRouter(ThemeController theme, SessionController? session,
                         progress: progress,
                         onBack: () => goHome(context),
                         onHelplines: () => showHelplines(context),
+                        onBreathe: () => context.push('/breathe'),
                         onMoodSaved: ticker.bump,
                         onMessageSent: badges?.check,
                         onPastChats: () => context.go('/chat/history'),

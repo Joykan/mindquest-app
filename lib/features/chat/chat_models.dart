@@ -12,6 +12,9 @@ enum ChatItemKind {
   /// A caring message with a button to the helplines.
   support,
 
+  /// A reply with a button that opens the breathing exercise.
+  breathing,
+
   /// A small centred note, e.g. "Continuing your chat from 09:41".
   note,
 }
@@ -71,6 +74,7 @@ class ChatReply {
     this.crisis = false,
     this.helplines = const <Helpline>[],
     this.options = const <String>[],
+    this.action,
   });
 
   factory ChatReply.fromJson(Map<String, dynamic> json) => ChatReply(
@@ -85,6 +89,7 @@ class ChatReply {
               in json['options'] as List<dynamic>? ?? <dynamic>[])
             if (o is String && o.isNotEmpty) o,
         ],
+        action: json['action'] as String?,
       );
 
   final String reply;
@@ -94,4 +99,7 @@ class ChatReply {
 
   /// Tappable answers to Chipu's question (empty when there are none).
   final List<String> options;
+
+  /// A button to show with the reply, e.g. 'breathing' (null for none).
+  final String? action;
 }

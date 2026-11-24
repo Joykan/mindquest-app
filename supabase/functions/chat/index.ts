@@ -42,6 +42,7 @@ import { isCrisis } from "./crisis.ts";
 import { BACKUP_THRESHOLD, backupParse } from "./backup_nlu.ts";
 import { isIndirectDistress, safetyAnswer } from "./distress.ts";
 import {
+  actionFor,
   chipParse,
   decide,
   distinctDays,
@@ -244,6 +245,7 @@ Deno.serve(async (req) => {
     intent: decision.intent,
     confidence: decision.confidence,
     options: optionsFor(decision.replyKey, lang),
+    action: actionFor(decision.replyKey),
   });
 });
 

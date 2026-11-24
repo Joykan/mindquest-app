@@ -136,3 +136,10 @@ See [uat-plan.md](uat-plan.md).
 - Indirect distress: phrases such as "what's the point" or "I'm a burden" make Chipu ask directly whether the person is thinking of hurting themselves. "Yes" or "not sure" shows the helplines and logs a crisis event; "no" gets a supportive reply. The Kiswahili phrases need review by a fluent speaker.
 - Pattern check-in: numb or lonely messages, or the "disconnected" check-in topic, on 3 different days in 14 days make Chipu gently ask whether it is getting harder (at most once every 14 days, only labels are used).
 - Check-in topics: "Feeling disconnected" and "Worried about the future" added.
+
+## Replies, breathing, offline and reminder time (24 Nov 2026)
+- Reply fixes (from device testing): "I am feeling very stressed today" is no longer read as feeling good; "I now feel better" and "nimepona" get a reply of their own; "Encourage me" / "nitie moyo" get encouragement; "give me advice" gets ideas, even in Vent mode; a typed "Log my mood" opens the mood faces in every mode. Plain words only correct an unclear or feeling reading, never a tapped answer or a yes/no. More wording variants for the common replies. Tests: `logic_test.ts`, `chat_screen_test.dart`.
+- Breathing: a breathing reply shows a Start breathing button that opens a Breathe screen (the animated box-breathing circle, 4 rounds, counts for the Box breathing challenge). It works offline.
+- Offline: when Chipu cannot be reached the chat answers on the phone: Start breathing, the mood faces (saved on the phone and synced later), a little encouragement, or a clear "You're offline" message. Crisis phrases still show the helplines. Free conversation still needs internet (the language model runs on a server). Tests: `offline_chipu_test.dart`, `offline_test.dart`.
+- Reminder time: Profile > Daily reminder > Reminder time already opened a time picker; the row now says "Tap to choose any time you like" and shows an edit icon.
+- The new Kiswahili lines (encouragement, feeling better, breathing reply, fallback variants) need review by a fluent speaker.
