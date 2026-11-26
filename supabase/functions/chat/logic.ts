@@ -447,7 +447,14 @@ export function decide(
   }
   // Answers to a check-in on a recent worry.
   if (previousReplyKey?.startsWith("follow_up:")) {
-    const how = r.intent === "feel_good" ? "follow_better" : r.intent;
+    // Typed answers: "I am feeling very stressed today" is not "better",
+    // whatever the model guessed; "I now feel better" is.
+    const typed = threshold !== 0 ? refine(r, text) : r;
+    let how = r.intent === "feel_good" ? "follow_better" : r.intent;
+    if (typed.intent === "feel_better") how = "follow_better";
+    else if (typed.intent in FEELINGS) {
+      how = /\b(worse|more|very|so|really|too|even)\b/.test(plain(text)) ? "follow_worse" : "follow_same";
+    }
     if (how === "follow_better") return { ...out("follow_better"), intent: how };
     if (how === "follow_same" || how === "follow_worse") {
       return {
