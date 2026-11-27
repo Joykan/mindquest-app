@@ -12,11 +12,16 @@ import 'chat_models.dart';
 enum OfflineMove { none, mood, breathing }
 
 class OfflineAnswer {
-  const OfflineAnswer(this.text, this.kind, [this.move = OfflineMove.none]);
+  const OfflineAnswer(this.text, this.kind,
+      [this.move = OfflineMove.none, this.known = true]);
 
   final String text;
   final ChatItemKind kind;
   final OfflineMove move;
+
+  /// False for the general "you're offline" reply, true for a message Chipu
+  /// can really answer on the phone.
+  final bool known;
 }
 
 String _plain(String text) => text
@@ -90,5 +95,7 @@ OfflineAnswer offlineAnswer(String text, String language, [Random? rng]) {
           language,
           "You're offline, so I can't reply to that right now. I can still help you breathe or log your mood, and your check-ins will sync later.",
           'Huna mtandao, kwa hiyo siwezi kujibu hilo sasa hivi. Bado naweza kukusaidia kupumua au kurekodi hisia zako, na zitatumwa baadaye.'),
-      ChatItemKind.text);
+      ChatItemKind.text,
+      OfflineMove.none,
+      false);
 }

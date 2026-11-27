@@ -286,7 +286,10 @@ class _ChatScreenState extends State<ChatScreen> {
         await showCrisisSheet(context, reply);
         return;
       }
-      if (isOfflineError(e)) {
+      // A weak connection can fail in other ways than "no network" (a timeout
+      // from the gateway, say), so a message Chipu can answer on the phone is
+      // answered there whatever the error was.
+      if (isOfflineError(e) || offlineAnswer(text, lang).known) {
         // Free conversation needs the server, but breathing, a mood check-in
         // and a little encouragement work on the phone (offline_chipu.dart).
         final OfflineAnswer answer = offlineAnswer(text, lang);
