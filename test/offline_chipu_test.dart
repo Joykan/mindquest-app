@@ -36,4 +36,10 @@ void main() {
         contains("You're offline"));
     expect(offlineAnswer('nina msongo', 'sw').text, contains('Huna mtandao'));
   });
+
+  test('only messages Chipu can answer on the phone are marked as known', () {
+    expect(offlineAnswer('encourage me', 'en').known, isTrue);
+    expect(offlineAnswer('help me breathe', 'en').known, isTrue);
+    expect(offlineAnswer('tell me a story', 'en').known, isFalse);
+  });
 }
