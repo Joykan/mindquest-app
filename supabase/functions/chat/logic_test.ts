@@ -465,14 +465,14 @@ Deno.test("the check-in's answers: better is celebrated, same or worse gets help
   // Then the offer's own answers.
   assertEquals(tap("Yes, please", worse.replyKey).replyKey, "breathing");
 
-  // Typed instead of tapped: a good mood counts as better; a feeling starts over.
+  // Typed instead of tapped: a good mood counts as better; a feeling means no change or worse.
   assertEquals(
     decide(parse("feel_good", 0.9), "follow_up:school", "en", first, "much better").intent,
     "follow_better",
   );
   assertEquals(
     decide(parse("feel_stressed", 0.9), "follow_up:school", "en", first, "still stressed").replyKey,
-    "ask_cause_stress",
+    "offer_breathing",
   );
 });
 
@@ -744,4 +744,52 @@ Deno.test("every new reply has English and Kiswahili", () => {
   for (const key of ["feel_better", "ask_encouragement"]) {
     assert(REPLIES[key].en.length >= 3 && REPLIES[key].sw.length === REPLIES[key].en.length, key);
   }
+});
+
+Deno.test("a typed 'very stressed' answer to a check-in is not read as better", () => {
+  const d = decide(
+    parse("feel_good", 0.9),
+    "follow_up:drained",
+    "en",
+    first,
+    "I am feeling very stressed today",
+    THRESHOLD,
+    null,
+    "guide",
+  );
+  assertEquals(d.intent, "follow_worse");
+  assert(!d.text.includes("really good to hear"));
+  const same = decide(
+    parse("feel_good", 0.9),
+    "follow_up:drained",
+    "en",
+    first,
+    "still stressed",
+    THRESHOLD,
+    null,
+    "guide",
+  );
+  assertEquals(same.intent, "follow_same");
+  const better = decide(
+    parse("feel_anxious", 0.9),
+    "follow_up:drained",
+    "en",
+    first,
+    "I now feel better",
+    THRESHOLD,
+    null,
+    "guide",
+  );
+  assertEquals(better.intent, "follow_better");
+  const tapped = decide(
+    parse("follow_worse", 1),
+    "follow_up:drained",
+    "en",
+    first,
+    "Worse",
+    0,
+    null,
+    "guide",
+  );
+  assertEquals(tapped.intent, "follow_worse");
 });
